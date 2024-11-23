@@ -24,6 +24,9 @@ const Scene = () => {
   function init() {
     const avatarMap = {} as any;
 
+    // Create a TWEEN group
+    const tweenGroup = new TWEEN.Group();
+
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({
       antialias: true
@@ -155,6 +158,9 @@ const Scene = () => {
       }
       */
 
+      // Update all tweens in the group
+      tweenGroup.update();
+
       // loop through avatarMap
       for (var id in avatarMap) {
         const avatar = avatarMap[id];
@@ -174,8 +180,6 @@ const Scene = () => {
           rotateAvatarInDirection(avatar, avatar.targetDirection, step);
         }
       }
-
-      TWEEN.update();
 
       controls.update();
       renderer.render(scene, camera);
@@ -377,7 +381,9 @@ const Scene = () => {
       */
 
 
-      console.log('avatar.vrm.scene.position', avatar.vrm.scene.position);
+      // console.log('avatar.vrm.scene.position', avatar.vrm.scene.position);
+
+      /*
       let pos = avatar.vrm.scene.position;
 
       // direction vector
@@ -405,6 +411,75 @@ const Scene = () => {
       tween2.start() // Start the tween immediately.
 
       // playAnimation(avatar.id, 'Walking');
+      */
+
+      /*
+      console.log('avatar.vrm.scene.position', avatar.vrm.scene.position);
+      let pos = avatar.vrm.scene.position;
+
+      // direction vector
+      const direction = target.clone().sub(pos).normalize();
+
+      // rotate avatar in direction
+      // rotateAvatarInDirection(avatar, direction);
+      avatar.targetDirection = direction;
+
+      const tween2 = new TWEEN.Tween(pos) // Create a new tween that modifies 'coords'.
+        .to({ x: target.x, y: target.y, z: target.z }, duration); // Move to (300, 200) in 1 second.
+      // .easing(TWEEN.Easing.Linear.None)
+      tween2.onUpdate(() => {
+        // Called after tween.js updates 'coords'.
+        // Move 'box' to the position described by 'coords' with a CSS translation.
+        // box.style.setProperty('transform', 'translate(' + coords.x + 'px, ' + coords.y + 'px)')
+
+        console.log('pos', pos);
+
+        // avatar.vrm.scene.position.set(coords.x, 0, coords.y); // TODO: parameterize 
+      })
+      tween2.onComplete(() => {
+        // playAnimation(avatar.id, 'Idle');
+      });
+      tween2.start() // Start the tween immediately.
+      */
+
+      // playAnimation(avatar.id, 'Walking');
+
+      // set avatar.vrm.scene.position to target
+      // avatar.vrm.scene.position.set(target.x, target.y, target.z);
+
+      // return;
+
+      // console.log('avatar.vrm.scene.position', avatar.vrm.scene.position);
+      const coords = { x: avatar.vrm.scene.position.x, y: avatar.vrm.scene.position.y, z: avatar.vrm.scene.position.z };
+
+      // direction vector
+      const direction = target.clone().sub(avatar.vrm.scene.position).normalize();
+
+      // rotate avatar in direction
+      avatar.targetDirection = direction;
+
+      // log coords
+      // console.log('coords', coords);
+      // log target
+      // console.log('target', target);
+
+      new TWEEN.Tween(coords, tweenGroup) // Create a new tween that modifies 'coords'.
+        .to({ x: target.x, y: target.y, z: target.z }, duration)
+        .easing(TWEEN.Easing.Linear.None)
+        .onUpdate(() => {
+          // Explicitly set the position to ensure it's updated
+          avatar.vrm.scene.position.set(coords.x, coords.y, coords.z);
+          // console.log('Updated position:', coords);
+
+          // log avatar.vrm.scene.position
+          // console.log('update avatar.vrm.scene.position', avatar.vrm.scene.position);
+        })
+        .onComplete(() => {
+          // console.log('Tween complete');
+          // Optionally play an idle animation or other actions
+          // playAnimation(avatar.id, 'Idle');
+        })
+        .start();
     }
 
     async function createAvatar(id: string, modelUrl: string) {
@@ -561,13 +636,17 @@ const Scene = () => {
         const avatar = avatars[i];
         playAnimation(avatar.id, 'Walking');
       }
-      
+
       while (true) {
         for (var i = 0; i < avatars.length; i++) {
           const avatar = avatars[i];
           const randomDirection = getRandomDirection();
           const target = avatar.vrm.scene.position.clone().add(randomDirection);
-  
+
+          // console.log('avatar.vrm.scene.position', avatar.vrm.scene.position);
+          // console.log('randomDirection', randomDirection);
+          // console.log('target', target);
+
           moveAvatarToPoint(avatar, target, 1000);
         }
 
@@ -716,4 +795,3 @@ const Scene = () => {
 };
 
 export default Scene;
-
