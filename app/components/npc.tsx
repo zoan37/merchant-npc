@@ -42,19 +42,25 @@ const Scene = () => {
             init();
         }
 
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
         };
-    }, []);
+    }, [isNearNPC, isChatting]);
 
     const handleKeyDown = (event) => {
+        console.log('Key pressed:', event.key);
+        
         if (['w', 'a', 's', 'd'].includes(event.key.toLowerCase())) {
             event.preventDefault();
             keyStates.current[event.key.toLowerCase()] = true;
         }
 
         if (event.key.toLowerCase() === 'f' && isNearNPC && !isChatting) {
+            console.log('Starting chat...');
             startChat();
         }
 
@@ -414,27 +420,27 @@ const Scene = () => {
     }
 
     return (
-        <>
-            <div ref={containerRef} />
+        <div className="relative w-full h-full">
+            <div ref={containerRef} className="w-full h-full" />
 
             {/* Interaction Prompt */}
             {isNearNPC && !isChatting && (
-                <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded">
+                <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded z-10">
                     Press F to talk
                 </div>
             )}
 
             {/* Chat Interface */}
             {isChatting && (
-                <Card className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-96 bg-white">
+                <Card className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-96 bg-white z-10">
                     <CardContent className="p-4">
                         <div className="h-48 overflow-y-auto mb-4 space-y-2">
                             {chatMessages.map((msg, index) => (
                                 <div
                                     key={index}
                                     className={`p-2 rounded ${msg.sender === 'User'
-                                            ? 'bg-blue-100 ml-8'
-                                            : 'bg-gray-100 mr-8'
+                                        ? 'bg-blue-100 ml-8'
+                                        : 'bg-gray-100 mr-8'
                                         }`}
                                 >
                                     <strong>{msg.sender}:</strong> {msg.message}
@@ -453,7 +459,7 @@ const Scene = () => {
                     </CardContent>
                 </Card>
             )}
-        </>
+        </div>
     );
 };
 
