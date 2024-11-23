@@ -58,14 +58,12 @@ const Scene = () => {
     scene.environment = pmremGenerator.fromScene(new RoomEnvironment(renderer), 0.04).texture;
 
     // Add ambient light
-    /*
     var ambientLight = new THREE.AmbientLight(0x404040); // soft white light
     scene.add(ambientLight);
 
     const light = new THREE.DirectionalLight(0xffffff);
     light.position.set(1.0, 1.0, 1.0).normalize();
     scene.add(light);
-    */
 
     // lights
 
@@ -608,7 +606,8 @@ const Scene = () => {
 
     async function initializeAvatars() {
       const fileList = [
-        "AvatarSample_B.vrm"
+        "Default_M.vrm",
+        "Default_F.vrm"
       ];
 
       const avatars = [];
