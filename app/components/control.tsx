@@ -120,6 +120,7 @@ const Scene = () => {
 
     const clock = new THREE.Clock();
     const moveSpeed = 0.1;
+    const rotationSpeed = 0.15;
 
     function animate() {
       requestAnimationFrame(animate);
@@ -135,7 +136,7 @@ const Scene = () => {
         cameraForward.y = 0;
         cameraForward.normalize();
 
-        // Get camera's right direction (fixed cross product direction)
+        // Get camera's right direction
         const cameraRight = new THREE.Vector3();
         cameraRight.crossVectors(cameraForward, new THREE.Vector3(0, 1, 0));
         cameraRight.normalize();
@@ -154,6 +155,20 @@ const Scene = () => {
           
           // Move the avatar
           avatar.position.add(moveVector.multiplyScalar(moveSpeed));
+          
+          // Calculate target rotation for the avatar (add Math.PI to face forward)
+          const targetRotation = Math.atan2(moveVector.x, moveVector.z) + Math.PI;
+          
+          // Smoothly rotate avatar towards movement direction
+          let currentRotation = avatar.rotation.y;
+          
+          // Calculate the shortest angle between current and target rotation
+          let angleDiff = targetRotation - currentRotation;
+          while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
+          while (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
+          
+          // Apply smooth rotation
+          avatar.rotation.y += angleDiff * rotationSpeed;
           
           // Update OrbitControls target to new avatar position
           controls.target.copy(avatar.position).add(new THREE.Vector3(0, 1, 0));
