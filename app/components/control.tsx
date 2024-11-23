@@ -122,8 +122,19 @@ const Scene = () => {
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     scene.environment = pmremGenerator.fromScene(new RoomEnvironment(renderer), 0.04).texture;
 
-    const ambientLight = new THREE.AmbientLight(0x404040);
+    // Add ambient light
+    var ambientLight = new THREE.AmbientLight(0x404040); // soft white light
     scene.add(ambientLight);
+
+    const light = new THREE.DirectionalLight(0xffffff);
+    light.position.set(1.0, 1.0, 1.0).normalize();
+    scene.add(light);
+
+    // lights
+
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x8d8d8d, 1);
+    hemiLight.position.set(0, 20, 0);
+    scene.add(hemiLight);
 
     const dirLight = new THREE.DirectionalLight(0xffffff, 1);
     dirLight.position.set(0, 20, 10);
@@ -132,7 +143,7 @@ const Scene = () => {
     // Ground
     const mesh = new THREE.Mesh(
       new THREE.PlaneGeometry(2000, 2000),
-      new THREE.MeshPhongMaterial({ color: 0xcbcbcb, depthWrite: false })
+      new THREE.MeshBasicMaterial({ color: 'rgb(210, 210, 210)', depthWrite: false })
     );
     mesh.rotation.x = -Math.PI / 2;
     scene.add(mesh);
