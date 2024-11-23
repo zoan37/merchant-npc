@@ -135,9 +135,9 @@ const Scene = () => {
         cameraForward.y = 0;
         cameraForward.normalize();
 
-        // Get camera's right direction
+        // Get camera's right direction (fixed cross product direction)
         const cameraRight = new THREE.Vector3();
-        cameraRight.crossVectors(new THREE.Vector3(0, 1, 0), cameraForward);
+        cameraRight.crossVectors(cameraForward, new THREE.Vector3(0, 1, 0));
         cameraRight.normalize();
 
         // Calculate movement direction
