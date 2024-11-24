@@ -26,6 +26,7 @@ const Scene = () => {
     const npcAnimationActionsRef = useRef({});
     const currentNpcAnimationRef = useRef(null);
     const tweenGroupRef = useRef(new TWEEN.Group());
+    const isTransitioningRef = useRef(false);
 
     const [isNearNPC, setIsNearNPC] = useState(false);
     const [isChatting, setIsChatting] = useState(false);
@@ -55,6 +56,11 @@ const Scene = () => {
 
     const handleKeyDown = (event) => {
         console.log('Key pressed:', event.key);
+
+        // Ignore movement keys if transitioning or chatting
+        if ((isTransitioningRef.current || isChatting) && ['w', 'a', 's', 'd'].includes(event.key.toLowerCase())) {
+            return;
+        }
         
         if (['w', 'a', 's', 'd'].includes(event.key.toLowerCase())) {
             event.preventDefault();
@@ -81,6 +87,8 @@ const Scene = () => {
         const camera = cameraRef.current;
         const controls = controlsRef.current;
 
+        isTransitioningRef.current = true;
+
         const startPosition = camera.position.clone();
         const startTarget = controls.target.clone();
 
@@ -97,6 +105,9 @@ const Scene = () => {
             .onUpdate(() => {
                 controls.target.copy(startTarget);
                 controls.update();
+            })
+            .onComplete(() => {
+                isTransitioningRef.current = false;
             });
 
         positionTween.start();
