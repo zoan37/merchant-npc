@@ -147,16 +147,27 @@ const Scene = () => {
             npc.position
         ).multiplyScalar(0.5);
 
+        // Calculate vector from midpoint to current camera position
+        const currentToCameraVector = new THREE.Vector3()
+            .copy(camera.position)
+            .sub(midpoint);
+        currentToCameraVector.y = 0; // Project onto XZ plane
+
         // Calculate vector from avatar to NPC
         const avatarToNPC = new THREE.Vector3()
             .copy(npc.position)
             .sub(avatar.position);
         avatarToNPC.y = 0; // Project onto XZ plane
 
-        // Calculate the angle (45 degrees = π/4 radians) for camera positioning
-        const angle = Math.PI / 4; // 45 degrees
-        const targetDistance = 2.5; // Increased distance for better view
-        const targetHeight = midpoint.y + 1.5; // Slightly higher camera position
+        // Determine if camera is on left or right using cross product
+        const crossProduct = new THREE.Vector3()
+            .crossVectors(avatarToNPC, currentToCameraVector);
+        const isOnLeftSide = crossProduct.y > 0;
+
+        // Calculate the angle for camera positioning (45 degrees = π/4 radians)
+        const angle = isOnLeftSide ? -Math.PI / 4 : Math.PI / 4;
+        const targetDistance = 2.5;
+        const targetHeight = midpoint.y + 1.5;
 
         // Calculate camera position behind and to the side of the avatar
         const targetCameraPosition = new THREE.Vector3();
