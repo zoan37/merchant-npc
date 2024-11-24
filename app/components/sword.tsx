@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { loadMixamoAnimation } from './loadMixamoAnimation.js';
 
 const Scene = () => {
@@ -23,17 +23,29 @@ const Scene = () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
         containerRef.current!.appendChild(renderer.domElement);
 
+        // Enhanced lighting setup
+        const pmremGenerator = new THREE.PMREMGenerator(renderer);
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0xe0e0e0);
         scene.fog = new THREE.Fog(0xe0e0e0, 20, 100);
+        scene.environment = pmremGenerator.fromScene(new RoomEnvironment(renderer), 0.04).texture;
 
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0x404040);
+        // Multiple light sources for better illumination
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
         scene.add(ambientLight);
 
-        const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-        dirLight.position.set(0, 20, 10);
-        scene.add(dirLight);
+        const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x8d8d8d, 1);
+        hemisphereLight.position.set(0, 20, 0);
+        scene.add(hemisphereLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(3, 10, 4);
+        directionalLight.castShadow = true;
+        scene.add(directionalLight);
+
+        const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+        fillLight.position.set(-3, 10, -4);
+        scene.add(fillLight);
 
         // Ground plane
         const mesh = new THREE.Mesh(
@@ -94,38 +106,28 @@ const Scene = () => {
                 mixer = new THREE.AnimationMixer(vrm.scene);
 
                 // Load sword model
-                const fbxLoader = new FBXLoader();
-                fbxLoader.load(
-                    './weapons/Sword.fbx',
-                    (sword) => {
+                loader.load(
+                    './weapons/Sword.glb',
+                    (gltf) => {
+                        const sword = gltf.scene;
                         // Scale and position the sword appropriately
                         sword.scale.setScalar(1.0);  // Adjust scale as needed
 
                         // Find the right hand bone in the VRM model
                         vrm.scene.traverse((child: THREE.Object3D) => {
-                            // log child name
                             console.log('child', child.name);
 
                             if (child.name.includes('J_Bip_R_Hand')) {
                                 // Attach sword to right hand
                                 child.add(sword);
 
-                                /*
-                                // Adjust sword position and rotation
-                                sword.position.set(0, 0, 0);
-                                // Rotate the sword to point upwards (adjust these values as needed)
-                                sword.rotation.set(
-                                    Math.PI, // Rotate 180 degrees around X axis
-                                    0,      // No rotation around Y axis
-                                    0       // No rotation around Z axis
-                                );
-                                */
-
                                 sword.position.z = 0.0;
                                 sword.position.x = 0.05;
                                 sword.position.y = -0.025;
-                                sword.rotation.x = Math.PI;
-                                sword.rotation.z = Math.PI / 2 + 2 * Math.PI / 16;
+
+                                sword.rotation.x = -Math.PI / 2 - 0 * Math.PI / 16;
+                                sword.rotation.y = Math.PI / 2 + 2 * Math.PI / 16;
+                                sword.rotation.z = Math.PI / 8 + -2 * Math.PI / 16;
                             }
                         });
 
@@ -134,7 +136,9 @@ const Scene = () => {
                             const action = mixer.clipAction(clip);
                             action.play();
                         });
-                    }
+                    },
+                    (progress) => console.log('Loading sword...', 100.0 * (progress.loaded / progress.total), '%'),
+                    (error) => console.error('Error loading sword:', error)
                 );
             },
             (progress) => console.log('Loading model...', 100.0 * (progress.loaded / progress.total), '%'),
