@@ -377,7 +377,48 @@ const Scene = () => {
             (error) => console.error(error)
         );
 
-        // Load NPC
+        // Add this function to create text sprite
+        function createTextSprite(text) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 256;
+            canvas.height = 64;
+
+            if (context) {
+                // Clear the canvas with transparent background
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                
+                context.font = 'Bold 24px Arial';
+                context.textAlign = 'center';
+                
+                // Add black outline
+                context.strokeStyle = 'black';
+                context.lineWidth = 4;
+                context.strokeText(text, canvas.width/2, canvas.height/2);
+                
+                // Add white text
+                context.fillStyle = 'white';
+                context.fillText(text, canvas.width/2, canvas.height/2);
+            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ 
+                map: texture,
+                transparent: true,
+                depthTest: false,
+                depthWrite: false,
+                // alphaTest: 0.1
+            });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            
+            sprite.scale.set(2, 0.5, 1);
+            sprite.position.y = 2;
+            sprite.renderOrder = 999;
+
+            return sprite;
+        }
+
+        // Modify the NPC loader section
         loader.load(
             './avatars/Merchant.vrm',
             async (gltf) => {
@@ -388,6 +429,10 @@ const Scene = () => {
                 vrm.scene.traverse((obj) => {
                     obj.frustumCulled = false;
                 });
+
+                // Create and add name sprite
+                const nameSprite = createTextSprite('Merchant');
+                vrm.scene.add(nameSprite);
 
                 VRMUtils.rotateVRM0(vrm);
                 vrm.scene.position.set(3, 0, 0);
