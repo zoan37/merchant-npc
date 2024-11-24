@@ -33,6 +33,7 @@ const Scene = () => {
     const [isChatting, setIsChatting] = useState(false);
     const [chatMessages, setChatMessages] = useState([]);
     const [currentMessage, setCurrentMessage] = useState('');
+    const NPC_NAME = "Zoan";
 
     const keyStates = useRef({
         w: false,
@@ -54,6 +55,18 @@ const Scene = () => {
             window.removeEventListener('keyup', handleKeyUp);
         };
     }, [isNearNPC, isChatting]);
+
+    useEffect(() => {
+        if (npcRef.current?.scene) {
+            // Find the sprite in the NPC's children
+            const nameSprite = npcRef.current.scene.children.find(
+                child => child instanceof THREE.Sprite
+            );
+            if (nameSprite) {
+                nameSprite.visible = isNearNPC;
+            }
+        }
+    }, [isNearNPC]);
 
     const handleKeyDown = (event) => {
         console.log('Key pressed:', event.key);
@@ -136,7 +149,7 @@ const Scene = () => {
         animateCamera(targetCameraPosition, midpoint);
 
         setChatMessages([{
-            sender: 'NPC',
+            sender: NPC_NAME,
             message: 'Hello there! How can I help you today?'
         }]);
 
@@ -197,7 +210,7 @@ const Scene = () => {
 
         setTimeout(() => {
             setChatMessages(prev => [...prev, {
-                sender: 'NPC',
+                sender: NPC_NAME,
                 message: `I understand you said "${currentMessage}". How interesting!`
             }]);
             // Scroll after NPC reply
@@ -421,6 +434,7 @@ const Scene = () => {
             sprite.scale.set(1 * 1.5, 0.25 * 1.5, 1);
             sprite.position.y = 1.95;
             sprite.renderOrder = 999;
+            sprite.visible = false;
 
             return sprite;
         }
@@ -438,7 +452,7 @@ const Scene = () => {
                 });
 
                 // Create and add name sprite
-                const nameSprite = createTextSprite('Zoan');
+                const nameSprite = createTextSprite(NPC_NAME);
                 vrm.scene.add(nameSprite);
 
                 VRMUtils.rotateVRM0(vrm);
