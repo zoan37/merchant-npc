@@ -10,6 +10,7 @@ import { loadMixamoAnimation } from './loadMixamoAnimation.js';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import TWEEN from '@tweenjs/tween.js';
 
 const Scene = () => {
     const containerRef = useRef(null);
@@ -24,6 +25,7 @@ const Scene = () => {
     const npcMixerRef = useRef(null);
     const npcAnimationActionsRef = useRef({});
     const currentNpcAnimationRef = useRef(null);
+    const tweenGroupRef = useRef(new TWEEN.Group());
 
     const [isNearNPC, setIsNearNPC] = useState(false);
     const [isChatting, setIsChatting] = useState(false);
@@ -75,6 +77,32 @@ const Scene = () => {
         }
     };
 
+    const animateCamera = (targetPosition, targetLookAt, duration = 1000) => {
+        const camera = cameraRef.current;
+        const controls = controlsRef.current;
+
+        const startPosition = camera.position.clone();
+        const startTarget = controls.target.clone();
+
+        const positionTween = new TWEEN.Tween(startPosition, tweenGroupRef.current)
+            .to(targetPosition, duration)
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .onUpdate(() => {
+                camera.position.copy(startPosition);
+            });
+
+        const targetTween = new TWEEN.Tween(startTarget, tweenGroupRef.current)
+            .to(targetLookAt, duration)
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .onUpdate(() => {
+                controls.target.copy(startTarget);
+                controls.update();
+            });
+
+        positionTween.start();
+        targetTween.start();
+    };
+
     const startChat = () => {
         setIsChatting(true);
 
@@ -86,16 +114,14 @@ const Scene = () => {
             npc.position
         ).multiplyScalar(0.5);
 
-        const camera = cameraRef.current;
-        camera.position.set(
+        const targetCameraPosition = new THREE.Vector3(
             midpoint.x,
             midpoint.y + 1.5,
             midpoint.z + 3
         );
 
-        const controls = controlsRef.current;
-        controls.target.copy(midpoint);
-        controls.update();
+        // Animate camera to new position
+        animateCamera(targetCameraPosition, midpoint);
 
         setChatMessages([{
             sender: 'NPC',
@@ -113,13 +139,17 @@ const Scene = () => {
         setChatMessages([]);
         setCurrentMessage('');
 
-        const camera = cameraRef.current;
-        const controls = controlsRef.current;
-        const avatar = avatarRef.current.scene;
+        if (!avatarRef.current?.scene || !cameraRef.current || !controlsRef.current) {
+            console.error('Required references not found');
+            return;
+        }
 
-        camera.position.set(0, 2, 5).add(avatar.position);
-        controls.target.copy(avatar.position).add(new THREE.Vector3(0, 1, 0));
-        controls.update();
+        const avatar = avatarRef.current.scene;
+        const targetPosition = new THREE.Vector3(0, 2, 5).add(avatar.position);
+        const targetLookAt = avatar.position.clone().add(new THREE.Vector3(0, 1, 0));
+
+        // Animate camera back to original position
+        animateCamera(targetPosition, targetLookAt);
     };
 
     const handleChatSubmit = (e) => {
@@ -341,6 +371,9 @@ const Scene = () => {
         function animate() {
             requestAnimationFrame(animate);
             const deltaTime = clock.getDelta();
+
+            // Update tween group instead of TWEEN
+            tweenGroupRef.current.update();
 
             if (mixerRef.current) {
                 mixerRef.current.update(deltaTime);
