@@ -758,14 +758,12 @@ const Scene = () => {
                 </div>
             )}
 
-            {/* Chat Interface */}
+            {/* Modified Chat Interface */}
             {isChatting && (
-                <Card className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-96 bg-white z-10">
+                <Card className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-[800px] bg-white z-10">
                     <CardContent className="p-4">
                         <div className="flex justify-between items-center mb-3">
-                            <span className="text-sm text-gray-500">
-                                {showShop ? "Welcome to my shop!" : "Press ESC to exit"}
-                            </span>
+                            <span className="text-sm text-gray-500">Chatting with {NPC_NAME}</span>
                             <Button 
                                 variant="ghost" 
                                 size="sm" 
@@ -776,30 +774,65 @@ const Scene = () => {
                             </Button>
                         </div>
 
-                        {showShop ? (
-                            // Shop UI
-                            <div className="space-y-4">
-                                {weapons.map((weapon) => (
-                                    <div key={weapon.id} className="flex items-center justify-between p-2 bg-gray-100 rounded">
-                                        <div>
-                                            <h3 className="font-semibold">{weapon.name}</h3>
-                                            <p className="text-sm text-gray-600">{weapon.price}</p>
+                        {/* Two-column layout */}
+                        <div className="flex gap-4">
+                            {/* Chat column */}
+                            <div className="flex-1">
+                                <div 
+                                    ref={chatContainerRef}
+                                    className="h-48 overflow-y-auto mb-4 space-y-2"
+                                >
+                                    {chatMessages.map((msg, index) => (
+                                        <div
+                                            key={index}
+                                            className={`p-2 rounded ${msg.sender === 'User'
+                                                ? 'bg-blue-100 ml-8'
+                                                : 'bg-gray-100 mr-8'
+                                                }`}
+                                        >
+                                            <strong>{msg.sender}:</strong> {msg.message}
                                         </div>
-                                        <Button onClick={() => tryWeapon(weapon)}>
-                                            Try It
+                                    ))}
+                                </div>
+                                <form onSubmit={handleChatSubmit} className="flex gap-2">
+                                    <Input
+                                        type="text"
+                                        value={currentMessage}
+                                        onChange={(e) => setCurrentMessage(e.target.value)}
+                                        placeholder="Type your message..."
+                                        className="flex-1"
+                                    />
+                                    <Button type="submit">Send</Button>
+                                </form>
+                            </div>
+
+                            {/* Shop column */}
+                            <div className="w-72 border-l pl-4">
+                                <h3 className="font-semibold mb-3">Available Weapons</h3>
+                                {showShop ? (
+                                    <div className="space-y-4">
+                                        {weapons.map((weapon) => (
+                                            <div key={weapon.id} className="flex items-center justify-between p-2 bg-gray-100 rounded">
+                                                <div>
+                                                    <h3 className="font-semibold">{weapon.name}</h3>
+                                                    <p className="text-sm text-gray-600">{weapon.price}</p>
+                                                </div>
+                                                <Button onClick={() => tryWeapon(weapon)}>
+                                                    Try It
+                                                </Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center p-4 bg-gray-100 rounded">
+                                        <p className="mb-4">Currently trying: {equippedWeapon?.name}</p>
+                                        <Button onClick={returnToShop}>
+                                            Return to Shop
                                         </Button>
                                     </div>
-                                ))}
+                                )}
                             </div>
-                        ) : (
-                            // Weapon Trial UI
-                            <div className="text-center">
-                                <p className="mb-4">Currently trying: {equippedWeapon?.name}</p>
-                                <Button onClick={returnToShop}>
-                                    Return to Shop
-                                </Button>
-                            </div>
-                        )}
+                        </div>
                     </CardContent>
                 </Card>
             )}
