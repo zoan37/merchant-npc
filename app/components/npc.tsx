@@ -255,6 +255,8 @@ const Scene = () => {
     };
 
     const endChat = () => {
+        returnToShop();
+
         setIsChatting(false);
         setChatMessages([]);
         setCurrentMessage('');
