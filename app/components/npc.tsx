@@ -47,7 +47,8 @@ const Scene = () => {
 
     const [showShop, setShowShop] = useState(true);
     const [equippedWeapon, setEquippedWeapon] = useState(null);
-    
+    const equippedWeaponRef = useRef(null);
+
     const weapons = [
         {
             id: 'sword',
@@ -80,6 +81,11 @@ const Scene = () => {
     ];
 
     useEffect(() => {
+        equippedWeaponRef.current = equippedWeapon;
+        console.log('Equipped weapon ref updated:', equippedWeaponRef.current);
+    }, [equippedWeapon]);
+
+    useEffect(() => {
         if (!rendererRef.current) {
             init();
         }
@@ -104,6 +110,10 @@ const Scene = () => {
             }
         }
     }, [isNearNPC]);
+
+    useEffect(() => {
+        console.log('Equipped weapon changed:', equippedWeapon);
+    }, [equippedWeapon]);
 
     /*
     useEffect(() => {
@@ -607,7 +617,15 @@ const Scene = () => {
                         controls.target.copy(avatar.position).add(new THREE.Vector3(0, 1, 0));
                         camera.position.copy(controls.target).add(cameraOffset);
                     } else {
-                        playAnimation('Idle');
+                        const currentWeapon = equippedWeaponRef.current;
+                        if (currentWeapon) {
+                            const animationName = currentWeapon.id.includes('sword') 
+                                ? 'Great Sword Idle' 
+                                : 'Pistol Idle';
+                            playAnimation(animationName);
+                        } else {
+                            playAnimation('Idle');
+                        }
                     }
                 }
 
@@ -670,12 +688,14 @@ const Scene = () => {
                     }
                 });
 
+                /*
                 // Play the appropriate idle animation based on weapon type
                 if (weapon.id.includes('sword')) {
                     playAnimation('Great Sword Idle');
                 } else if (weapon.id.includes('pistol')) {
                     playAnimation('Pistol Idle');
                 }
+                */
             }
         );
     };
