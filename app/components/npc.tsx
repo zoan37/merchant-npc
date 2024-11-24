@@ -52,9 +52,9 @@ const Scene = () => {
     const weapons = [
         {
             id: 'sword',
-            name: 'Great Sword',
-            price: '1000 gold',
-            model: './weapons/Sword.glb',
+            name: 'Ice Sword',
+            price: '0.001 ETH',
+            model: './weapons/ice_sword_5_changed.glb',
             animation: './animations/Great Sword Idle.fbx',
             position: { x: 0.05, y: -0.025, z: 0.0 },
             rotation: { 
@@ -66,9 +66,9 @@ const Scene = () => {
         },
         {
             id: 'pistol',
-            name: 'Pistol',
-            price: '800 gold',
-            model: './weapons/Pistol.glb',
+            name: 'Ice Pistol',
+            price: '0.001 ETH',
+            model: './weapons/ice_pistol_8_change.glb',
             animation: './animations/Pistol Idle.fbx',
             position: { x: 0.05, y: -0.03, z: 0 },
             rotation: { 
@@ -430,7 +430,7 @@ const Scene = () => {
 
         const mesh = new THREE.Mesh(
             new THREE.PlaneGeometry(2000, 2000),
-            new THREE.MeshBasicMaterial({ color: 'rgb(210, 210, 210)', depthWrite: false })
+            new THREE.MeshBasicMaterial({ color: 'rgb(220, 220, 220)', depthWrite: false })
         );
         mesh.rotation.x = -Math.PI / 2;
         scene.add(mesh);
@@ -829,7 +829,7 @@ const Scene = () => {
 
                             {/* Shop column */}
                             <div className="w-72 border-l pl-4">
-                                <h3 className="font-semibold mb-3">Available Weapons</h3>
+                                <h3 className="font-semibold mb-3">Available Items</h3>
                                 {showShop ? (
                                     <div className="space-y-4">
                                         {weapons.map((weapon) => (
