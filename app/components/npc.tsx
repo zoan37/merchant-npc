@@ -131,7 +131,7 @@ const Scene = () => {
     };
 
     const startChat = () => {
-        // Store original camera position and target before starting chat
+        // Store original camera position and target
         originalCameraPositionRef.current = cameraRef.current.position.clone();
         originalCameraTargetRef.current = controlsRef.current.target.clone();
 
@@ -147,46 +147,25 @@ const Scene = () => {
             npc.position
         ).multiplyScalar(0.5);
 
-        // Calculate vector from midpoint to current camera position
-        const currentToCameraVector = new THREE.Vector3()
-            .copy(camera.position)
-            .sub(midpoint);
-        currentToCameraVector.y = 0; // Project onto XZ plane
-
         // Calculate vector from avatar to NPC
         const avatarToNPC = new THREE.Vector3()
             .copy(npc.position)
             .sub(avatar.position);
         avatarToNPC.y = 0; // Project onto XZ plane
 
-        // Determine if camera is on left or right using cross product
-        const crossProduct = new THREE.Vector3()
-            .crossVectors(avatarToNPC, currentToCameraVector);
-        const isOnLeftSide = crossProduct.y > 0;
+        // Calculate the angle (45 degrees = π/4 radians) for camera positioning
+        const angle = Math.PI / 4; // 45 degrees
+        const targetDistance = 2.5; // Increased distance for better view
+        const targetHeight = midpoint.y + 1.5; // Slightly higher camera position
 
-        // Calculate target camera position
-        const targetDistance = 3;
-        const targetHeight = midpoint.y + 1;
+        // Calculate camera position behind and to the side of the avatar
         const targetCameraPosition = new THREE.Vector3();
-
-        if (isOnLeftSide) {
-            // Position camera on the left side
-            targetCameraPosition.set(
-                midpoint.x + avatarToNPC.z,
-                targetHeight,
-                midpoint.z - avatarToNPC.x
-            );
-        } else {
-            // Position camera on the right side
-            targetCameraPosition.set(
-                midpoint.x - avatarToNPC.z,
-                targetHeight,
-                midpoint.z + avatarToNPC.x
-            );
-        }
-
-        // Normalize and scale the offset
-        targetCameraPosition.sub(midpoint).normalize().multiplyScalar(targetDistance).add(midpoint);
+        const avatarToNPCAngle = Math.atan2(avatarToNPC.z, avatarToNPC.x);
+        
+        // Position camera behind avatar at the calculated angle
+        targetCameraPosition.x = avatar.position.x - Math.cos(avatarToNPCAngle - angle) * targetDistance;
+        targetCameraPosition.z = avatar.position.z - Math.sin(avatarToNPCAngle - angle) * targetDistance;
+        targetCameraPosition.y = targetHeight;
 
         // Animate camera to new position
         animateCamera(targetCameraPosition, midpoint);
