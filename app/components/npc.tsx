@@ -478,6 +478,17 @@ const Scene = () => {
             {isChatting && (
                 <Card className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-96 bg-white z-10">
                     <CardContent className="p-4">
+                        <div className="flex justify-between items-center mb-3">
+                            <span className="text-sm text-gray-500">Press ESC to exit</span>
+                            <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={endChat}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                ✕ Exit
+                            </Button>
+                        </div>
                         <div className="h-48 overflow-y-auto mb-4 space-y-2">
                             {chatMessages.map((msg, index) => (
                                 <div
