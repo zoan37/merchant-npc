@@ -144,6 +144,14 @@ const Scene = () => {
         if (npcAnimationActionsRef.current['Idle']) {
             playNpcAnimation('Idle');
         }
+
+        // Add this: Focus on the input after a short delay to ensure the chat interface is rendered
+        setTimeout(() => {
+            const inputElement = document.querySelector('input[type="text"]');
+            if (inputElement) {
+                inputElement.focus();
+            }
+        }, 100);
     };
 
     const endChat = () => {
@@ -337,7 +345,7 @@ const Scene = () => {
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
         controls.enableZoom = true;
-        controls.minDistance = 3;
+        controls.minDistance = 2;
         controls.maxDistance = 10;
         controls.target.set(0, 1, 0);
         controls.enableKeys = false;
@@ -371,7 +379,7 @@ const Scene = () => {
 
         // Load NPC
         loader.load(
-            './avatars/Default_F.vrm',
+            './avatars/Merchant.vrm',
             async (gltf) => {
                 const vrm = gltf.userData.vrm;
                 scene.add(vrm.scene);
@@ -524,6 +532,7 @@ const Scene = () => {
                         </div>
                         <form onSubmit={handleChatSubmit} className="flex gap-2">
                             <Input
+                                type="text"
                                 value={currentMessage}
                                 onChange={(e) => setCurrentMessage(e.target.value)}
                                 placeholder="Type your message..."
