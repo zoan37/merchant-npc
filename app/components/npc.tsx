@@ -395,8 +395,8 @@ const Scene = () => {
                 
                 // Create outline by drawing the text multiple times with small offsets
                 context.fillStyle = 'black';
-                for (let i = -2; i <= 2; i++) {
-                    for (let j = -2; j <= 2; j++) {
+                for (let i = -3; i <= 3; i++) {
+                    for (let j = -3; j <= 3; j++) {
                         context.fillText(text, canvas.width/2 + i, canvas.height/2 + j);
                     }
                 }
@@ -418,8 +418,8 @@ const Scene = () => {
             });
             const sprite = new THREE.Sprite(spriteMaterial);
             
-            sprite.scale.set(2, 0.5, 1);
-            sprite.position.y = 2;
+            sprite.scale.set(1 * 1.5, 0.25 * 1.5, 1);
+            sprite.position.y = 1.95;
             sprite.renderOrder = 999;
 
             return sprite;
@@ -438,7 +438,7 @@ const Scene = () => {
                 });
 
                 // Create and add name sprite
-                const nameSprite = createTextSprite('Merchant');
+                const nameSprite = createTextSprite('Zoan');
                 vrm.scene.add(nameSprite);
 
                 VRMUtils.rotateVRM0(vrm);
