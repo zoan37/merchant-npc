@@ -45,6 +45,40 @@ const Scene = () => {
         d: false
     });
 
+    const [showShop, setShowShop] = useState(true);
+    const [equippedWeapon, setEquippedWeapon] = useState(null);
+    
+    const weapons = [
+        {
+            id: 'sword',
+            name: 'Great Sword',
+            price: '1000 gold',
+            model: './weapons/Sword.glb',
+            animation: './animations/Great Sword Idle.fbx',
+            position: { x: 0.05, y: -0.025, z: 0.0 },
+            rotation: { 
+                x: -Math.PI / 2 - 0 * Math.PI / 16,
+                y: Math.PI / 2 + 2 * Math.PI / 16,
+                z: Math.PI / 8 + -2 * Math.PI / 16
+            },
+            scale: 1.0
+        },
+        {
+            id: 'pistol',
+            name: 'Pistol',
+            price: '800 gold',
+            model: './weapons/Pistol.glb',
+            animation: './animations/Pistol Idle.fbx',
+            position: { x: 0.05, y: -0.03, z: 0 },
+            rotation: { 
+                x: -Math.PI / 2,
+                y: Math.PI / 2 + Math.PI / 16,
+                z: 0
+            },
+            scale: 0.8
+        }
+    ];
+
     useEffect(() => {
         if (!rendererRef.current) {
             init();
@@ -596,6 +630,71 @@ const Scene = () => {
         });
     }
 
+    const tryWeapon = async (weapon) => {
+        setShowShop(false);
+        setEquippedWeapon(weapon);
+
+        const loader = new GLTFLoader();
+        const avatar = avatarRef.current;
+
+        // Remove any existing weapon
+        avatar.scene.traverse((child) => {
+            if (child.name === 'weapon') {
+                child.parent.remove(child);
+            }
+        });
+
+        // Load and attach new weapon
+        loader.load(
+            weapon.model,
+            (gltf) => {
+                const weaponModel = gltf.scene;
+                weaponModel.name = 'weapon';
+                weaponModel.scale.setScalar(weapon.scale);
+
+                // Find right hand and attach weapon
+                avatar.scene.traverse((child) => {
+                    if (child.name.includes('J_Bip_R_Hand')) {
+                        child.add(weaponModel);
+                        
+                        weaponModel.position.set(
+                            weapon.position.x,
+                            weapon.position.y,
+                            weapon.position.z
+                        );
+                        weaponModel.rotation.set(
+                            weapon.rotation.x,
+                            weapon.rotation.y,
+                            weapon.rotation.z
+                        );
+                    }
+                });
+
+                // Load and play weapon animation
+                loadMixamoAnimation(weapon.animation, avatar).then((clip) => {
+                    const action = mixerRef.current.clipAction(clip);
+                    action.reset().play();
+                });
+            }
+        );
+    };
+
+    const returnToShop = () => {
+        setShowShop(true);
+        setEquippedWeapon(null);
+
+        // Remove equipped weapon
+        const avatar = avatarRef.current;
+        avatar.scene.traverse((child) => {
+            if (child.name === 'weapon') {
+                child.parent.remove(child);
+            }
+        });
+
+        // Reset to default animation
+        playAnimation('Idle');
+    };
+
     return (
         <div className="relative w-full h-full">
             <div ref={containerRef} className="w-full h-full" />
@@ -664,7 +763,9 @@ const Scene = () => {
                 <Card className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-96 bg-white z-10">
                     <CardContent className="p-4">
                         <div className="flex justify-between items-center mb-3">
-                            <span className="text-sm text-gray-500">Press ESC to exit</span>
+                            <span className="text-sm text-gray-500">
+                                {showShop ? "Welcome to my shop!" : "Press ESC to exit"}
+                            </span>
                             <Button 
                                 variant="ghost" 
                                 size="sm" 
@@ -674,32 +775,31 @@ const Scene = () => {
                                 ✕ Exit
                             </Button>
                         </div>
-                        <div 
-                            ref={chatContainerRef}
-                            className="h-48 overflow-y-auto mb-4 space-y-2"
-                        >
-                            {chatMessages.map((msg, index) => (
-                                <div
-                                    key={index}
-                                    className={`p-2 rounded ${msg.sender === 'User'
-                                        ? 'bg-blue-100 ml-8'
-                                        : 'bg-gray-100 mr-8'
-                                        }`}
-                                >
-                                    <strong>{msg.sender}:</strong> {msg.message}
-                                </div>
-                            ))}
-                        </div>
-                        <form onSubmit={handleChatSubmit} className="flex gap-2">
-                            <Input
-                                type="text"
-                                value={currentMessage}
-                                onChange={(e) => setCurrentMessage(e.target.value)}
-                                placeholder="Type your message..."
-                                className="flex-1"
-                            />
-                            <Button type="submit">Send</Button>
-                        </form>
+
+                        {showShop ? (
+                            // Shop UI
+                            <div className="space-y-4">
+                                {weapons.map((weapon) => (
+                                    <div key={weapon.id} className="flex items-center justify-between p-2 bg-gray-100 rounded">
+                                        <div>
+                                            <h3 className="font-semibold">{weapon.name}</h3>
+                                            <p className="text-sm text-gray-600">{weapon.price}</p>
+                                        </div>
+                                        <Button onClick={() => tryWeapon(weapon)}>
+                                            Try It
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            // Weapon Trial UI
+                            <div className="text-center">
+                                <p className="mb-4">Currently trying: {equippedWeapon?.name}</p>
+                                <Button onClick={returnToShop}>
+                                    Return to Shop
+                                </Button>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
             )}
