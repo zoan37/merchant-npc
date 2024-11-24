@@ -133,17 +133,54 @@ const Scene = () => {
 
         const avatar = avatarRef.current.scene;
         const npc = npcRef.current.scene;
+        const camera = cameraRef.current;
 
+        // Calculate midpoint between avatar and NPC
         const midpoint = new THREE.Vector3().addVectors(
             avatar.position,
             npc.position
         ).multiplyScalar(0.5);
 
-        const targetCameraPosition = new THREE.Vector3(
-            midpoint.x,
-            midpoint.y + 1.5,
-            midpoint.z + 3
-        );
+        // Calculate vector from midpoint to current camera position
+        const currentToCameraVector = new THREE.Vector3()
+            .copy(camera.position)
+            .sub(midpoint);
+        currentToCameraVector.y = 0; // Project onto XZ plane
+
+        // Calculate vector from avatar to NPC
+        const avatarToNPC = new THREE.Vector3()
+            .copy(npc.position)
+            .sub(avatar.position);
+        avatarToNPC.y = 0; // Project onto XZ plane
+
+        // Determine if camera is on left or right using cross product
+        const crossProduct = new THREE.Vector3()
+            .crossVectors(avatarToNPC, currentToCameraVector);
+        const isOnLeftSide = crossProduct.y > 0;
+
+        // Calculate target camera position
+        const targetDistance = 3;
+        const targetHeight = midpoint.y + 1;
+        const targetCameraPosition = new THREE.Vector3();
+
+        if (isOnLeftSide) {
+            // Position camera on the left side
+            targetCameraPosition.set(
+                midpoint.x + avatarToNPC.z,
+                targetHeight,
+                midpoint.z - avatarToNPC.x
+            );
+        } else {
+            // Position camera on the right side
+            targetCameraPosition.set(
+                midpoint.x - avatarToNPC.z,
+                targetHeight,
+                midpoint.z + avatarToNPC.x
+            );
+        }
+
+        // Normalize and scale the offset
+        targetCameraPosition.sub(midpoint).normalize().multiplyScalar(targetDistance).add(midpoint);
 
         // Animate camera to new position
         animateCamera(targetCameraPosition, midpoint);
@@ -153,12 +190,10 @@ const Scene = () => {
             message: 'Hello there! How can I help you today?'
         }]);
 
-        // Play idle animation for NPC
         if (npcAnimationActionsRef.current['Idle']) {
             playNpcAnimation('Idle');
         }
 
-        // Add this: Focus on the input after a short delay to ensure the chat interface is rendered
         setTimeout(() => {
             const inputElement = document.querySelector('input[type="text"]');
             if (inputElement) {
