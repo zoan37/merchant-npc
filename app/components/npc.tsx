@@ -358,7 +358,7 @@ const Scene = () => {
             mixerRef.current = mixer;
         }
 
-        const animations = ['Idle', 'Walking'];
+        const animations = ['Idle', 'Walking', 'Great Sword Idle', 'Pistol Idle'];
         const actions = {};
 
         for (const animation of animations) {
@@ -670,11 +670,12 @@ const Scene = () => {
                     }
                 });
 
-                // Load and play weapon animation
-                loadMixamoAnimation(weapon.animation, avatar).then((clip) => {
-                    const action = mixerRef.current.clipAction(clip);
-                    action.reset().play();
-                });
+                // Play the appropriate idle animation based on weapon type
+                if (weapon.id.includes('sword')) {
+                    playAnimation('Great Sword Idle');
+                } else if (weapon.id.includes('pistol')) {
+                    playAnimation('Pistol Idle');
+                }
             }
         );
     };
@@ -691,7 +692,7 @@ const Scene = () => {
             }
         });
 
-        // Reset to default animation
+        // Return to Idle animation
         playAnimation('Idle');
     };
 
