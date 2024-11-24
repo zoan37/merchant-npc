@@ -28,6 +28,8 @@ const Scene = () => {
     const tweenGroupRef = useRef(new TWEEN.Group());
     const isTransitioningRef = useRef(false);
     const chatContainerRef = useRef(null);
+    const originalCameraPositionRef = useRef(null);
+    const originalCameraTargetRef = useRef(null);
 
     const [isNearNPC, setIsNearNPC] = useState(false);
     const [isChatting, setIsChatting] = useState(false);
@@ -129,6 +131,10 @@ const Scene = () => {
     };
 
     const startChat = () => {
+        // Store original camera position and target before starting chat
+        originalCameraPositionRef.current = cameraRef.current.position.clone();
+        originalCameraTargetRef.current = controlsRef.current.target.clone();
+
         setIsChatting(true);
 
         const avatar = avatarRef.current.scene;
@@ -207,17 +213,16 @@ const Scene = () => {
         setChatMessages([]);
         setCurrentMessage('');
 
-        if (!avatarRef.current?.scene || !cameraRef.current || !controlsRef.current) {
-            console.error('Required references not found');
+        if (!originalCameraPositionRef.current || !originalCameraTargetRef.current) {
+            console.error('Original camera position not found');
             return;
         }
 
-        const avatar = avatarRef.current.scene;
-        const targetPosition = new THREE.Vector3(0, 2, 5).add(avatar.position);
-        const targetLookAt = avatar.position.clone().add(new THREE.Vector3(0, 1, 0));
-
-        // Animate camera back to original position
-        animateCamera(targetPosition, targetLookAt);
+        // Animate camera back to original position and target
+        animateCamera(
+            originalCameraPositionRef.current,
+            originalCameraTargetRef.current
+        );
     };
 
     const scrollToBottom = () => {
