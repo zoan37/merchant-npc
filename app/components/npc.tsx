@@ -27,6 +27,7 @@ const Scene = () => {
     const currentNpcAnimationRef = useRef(null);
     const tweenGroupRef = useRef(new TWEEN.Group());
     const isTransitioningRef = useRef(false);
+    const chatContainerRef = useRef(null);
 
     const [isNearNPC, setIsNearNPC] = useState(false);
     const [isChatting, setIsChatting] = useState(false);
@@ -163,6 +164,17 @@ const Scene = () => {
         animateCamera(targetPosition, targetLookAt);
     };
 
+    const scrollToBottom = () => {
+        if (chatContainerRef.current) {
+            const container = chatContainerRef.current;
+            const scrollOptions = {
+                top: container.scrollHeight,
+                behavior: 'smooth'
+            };
+            container.scrollTo(scrollOptions);
+        }
+    };
+
     const handleChatSubmit = (e) => {
         e.preventDefault();
         if (!currentMessage.trim()) return;
@@ -171,12 +183,17 @@ const Scene = () => {
             sender: 'User',
             message: currentMessage
         }]);
+        
+        // Scroll after user message
+        setTimeout(scrollToBottom, 100);
 
         setTimeout(() => {
             setChatMessages(prev => [...prev, {
                 sender: 'NPC',
                 message: `I understand you said "${currentMessage}". How interesting!`
             }]);
+            // Scroll after NPC reply
+            setTimeout(scrollToBottom, 100);
         }, 1000);
 
         setCurrentMessage('');
@@ -489,7 +506,10 @@ const Scene = () => {
                                 ✕ Exit
                             </Button>
                         </div>
-                        <div className="h-48 overflow-y-auto mb-4 space-y-2">
+                        <div 
+                            ref={chatContainerRef}
+                            className="h-48 overflow-y-auto mb-4 space-y-2"
+                        >
                             {chatMessages.map((msg, index) => (
                                 <div
                                     key={index}
