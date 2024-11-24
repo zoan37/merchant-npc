@@ -381,33 +381,40 @@ const Scene = () => {
         function createTextSprite(text) {
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
-            canvas.width = 256;
-            canvas.height = 64;
+            canvas.width = 512;
+            canvas.height = 128;
 
             if (context) {
-                // Clear the canvas with transparent background
+                context.imageSmoothingEnabled = false;
+                context.textBaseline = 'middle';
+                
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 
-                context.font = 'Bold 24px Arial';
+                context.font = 'Bold 42px Arial';
                 context.textAlign = 'center';
                 
-                // Add black outline
-                context.strokeStyle = 'black';
-                context.lineWidth = 4;
-                context.strokeText(text, canvas.width/2, canvas.height/2);
+                // Create outline by drawing the text multiple times with small offsets
+                context.fillStyle = 'black';
+                for (let i = -2; i <= 2; i++) {
+                    for (let j = -2; j <= 2; j++) {
+                        context.fillText(text, canvas.width/2 + i, canvas.height/2 + j);
+                    }
+                }
                 
-                // Add white text
+                // Draw the main text
                 context.fillStyle = 'white';
                 context.fillText(text, canvas.width/2, canvas.height/2);
             }
 
             const texture = new THREE.CanvasTexture(canvas);
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            
             const spriteMaterial = new THREE.SpriteMaterial({ 
                 map: texture,
                 transparent: true,
                 depthTest: false,
                 depthWrite: false,
-                // alphaTest: 0.1
             });
             const sprite = new THREE.Sprite(spriteMaterial);
             
