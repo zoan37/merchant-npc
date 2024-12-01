@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import TWEEN from '@tweenjs/tween.js';
 import chatService from './chat_service';
+import nipplejs from 'nipplejs';
 
 const Scene = () => {
     const containerRef = useRef(null);
@@ -858,10 +859,83 @@ const Scene = () => {
         }
     };
 
+    const joystickRef = useRef(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Add this useEffect to detect mobile devices
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+        };
+        
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    // Add this useEffect to initialize joystick
+    useEffect(() => {
+        if (isMobile && !joystickRef.current) {
+            const options = {
+                zone: document.getElementById('joystick-zone'),
+                mode: 'static',
+                position: { left: '15px', bottom: '15px' },
+                color: 'black',
+                size: 120,
+            };
+
+            const manager = nipplejs.create(options);
+            joystickRef.current = manager;
+
+            manager.on('move', (evt, data) => {
+                const forward = data.vector.y;
+                const right = data.vector.x;
+
+                keyStates.current.w = forward > 0;
+                keyStates.current.s = forward < 0;
+                keyStates.current.d = right > 0;
+                keyStates.current.a = right < 0;
+            });
+
+            manager.on('end', () => {
+                keyStates.current.w = false;
+                keyStates.current.s = false;
+                keyStates.current.d = false;
+                keyStates.current.a = false;
+            });
+        }
+
+        return () => {
+            if (joystickRef.current) {
+                joystickRef.current.destroy();
+                joystickRef.current = null;
+            }
+        };
+    }, [isMobile]);
+
     // Modify the return statement to add the avatar selector UI
     return (
         <div className="relative w-full h-full">
             <div ref={containerRef} className="w-full h-full" />
+
+            {/* Add joystick container for mobile */}
+            {isMobile && (
+                <div 
+                    id="joystick-zone" 
+                    className="fixed bottom-20 left-20 w-[150px] h-[150px] z-20"
+                />
+            )}
+
+            {/* Add mobile interaction button */}
+            {isMobile && isNearNPC && !isChatting && (
+                <Button
+                    className="fixed bottom-32 right-8 z-20 bg-black/75 text-white px-8 py-4 rounded-full"
+                    onClick={startChat}
+                >
+                    Talk
+                </Button>
+            )}
 
             {/* Settings Panel */}
             {showSettings && (
