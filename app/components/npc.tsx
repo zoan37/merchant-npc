@@ -575,6 +575,7 @@ const Scene = () => {
         controls.target.set(0, 1, 0);
         controls.enableKeys = false;
         controls.enablePan = false;
+        controls.rotateSpeed = isMobile ? ROTATE_SPEED.MOBILE : ROTATE_SPEED.DESKTOP;
         controlsRef.current = controls;
 
         const loader = new GLTFLoader();
@@ -862,10 +863,22 @@ const Scene = () => {
     const joystickRef = useRef(null);
     const [isMobile, setIsMobile] = useState(false);
 
-    // Add this useEffect to detect mobile devices
+    // Add these constants near the top of the file with other constants
+    const ROTATE_SPEED = {
+        MOBILE: 2,
+        DESKTOP: 1.0
+    };
+
+    // Modify the mobile detection useEffect
     useEffect(() => {
         const checkMobile = () => {
-            setIsMobile(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+            const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            setIsMobile(isMobileDevice);
+            
+            // Adjust rotate speed if controls exist
+            if (controlsRef.current) {
+                controlsRef.current.rotateSpeed = isMobileDevice ? ROTATE_SPEED.MOBILE : ROTATE_SPEED.DESKTOP;
+            }
         };
         
         checkMobile();
