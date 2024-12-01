@@ -969,8 +969,8 @@ const Scene = () => {
                                                 key={index}
                                                 className={`p-3 rounded ${
                                                     msg.sender === 'Player'
-                                                        ? 'bg-blue-100/90 ml-8'
-                                                        : 'bg-gray-100/90 mr-8'
+                                                        ? 'bg-blue-100/95 ml-8'
+                                                        : 'bg-gray-100/95 mr-8'
                                                 }`}
                                             >
                                                 <strong className="text-gray-700">{msg.sender}:</strong>{' '}
@@ -987,7 +987,7 @@ const Scene = () => {
                                         value={currentMessage}
                                         onChange={(e) => setCurrentMessage(e.target.value)}
                                         placeholder="Type your message..."
-                                        className="flex-1 bg-white/90"
+                                        className="flex-1 bg-white/95"
                                     />
                                     <Button type="submit">Send</Button>
                                 </form>
@@ -999,7 +999,7 @@ const Scene = () => {
                                 {showShop ? (
                                     <div className="space-y-4">
                                         {weapons.map((weapon) => (
-                                            <div key={weapon.id} className="p-2 bg-gray-100/90 rounded">
+                                            <div key={weapon.id} className="p-2 bg-gray-100/95 rounded">
                                                 <div className="flex items-center justify-between mb-2">
                                                     <div>
                                                         <h3 className="font-semibold">{weapon.name}</h3>
@@ -1059,7 +1059,7 @@ const Scene = () => {
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="text-center p-4 bg-gray-100/90 rounded">
+                                    <div className="text-center p-4 bg-gray-100/95 rounded">
                                         <p className="mb-4">Currently trying: {equippedWeapon?.name}</p>
                                         <Button onClick={returnToShop}>
                                             Return to Shop
