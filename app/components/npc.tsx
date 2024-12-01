@@ -255,12 +255,27 @@ const Scene = () => {
 
         setChatMessages([{
             sender: NPC_NAME,
-            message: 'Hello there! How can I help you today?'
+            message: '',
+            isStreaming: true
         }]);
 
-        if (npcAnimationActionsRef.current['Idle']) {
-            playNpcAnimation('Idle');
-        }
+        // Get initial greeting from chatService
+        chatService.getNPCResponse("*Player approaches*", (partialMessage) => {
+            setChatMessages([{
+                sender: NPC_NAME,
+                message: partialMessage,
+                isStreaming: true
+            }]);
+        }).then(response => {
+            setChatMessages([{
+                sender: NPC_NAME,
+                message: response.message
+            }]);
+
+            if (response.animation && npcAnimationActionsRef.current[response.animation]) {
+                playNpcAnimation(response.animation);
+            }
+        });
 
         setTimeout(() => {
             const inputElement = document.querySelector('input[type="text"]');
@@ -941,12 +956,12 @@ const Scene = () => {
                         </div>
 
                         {/* Two-column layout */}
-                        <div className="flex gap-4">
+                        <div className="flex gap-4 h-[375px]">
                             {/* Chat column */}
-                            <div className="flex-1">
+                            <div className="flex-1 flex flex-col">
                                 <div 
                                     ref={chatContainerRef}
-                                    className="h-96 overflow-y-auto mb-4 space-y-2"
+                                    className="flex-1 overflow-y-auto mb-4 space-y-2"
                                 >
                                     {chatMessages.map((msg, index) => (
                                         msg.sender === 'Player' || msg.message || !msg.isStreaming ? (
@@ -979,7 +994,7 @@ const Scene = () => {
                             </div>
 
                             {/* Shop column */}
-                            <div className="w-80 border-l pl-4">
+                            <div className="w-80 border-l pl-4 overflow-y-auto">
                                 <h3 className="font-semibold mb-3">Available Items</h3>
                                 {showShop ? (
                                     <div className="space-y-4">
@@ -1000,14 +1015,14 @@ const Scene = () => {
                                                             href={MARKETPLACE_LINKS.bat.doggyMarket}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="inline-flex items-center px-3 py-1.5 bg-orange-500 text-white rounded hover:bg-orange-600 text-sm"
+                                                            className="inline-flex items-center px-3 py-1.5 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-sm"
                                                         >
                                                             <img 
                                                                 src="/icons/doggy-market.png" 
                                                                 alt="Doggy Market" 
                                                                 className="w-4 h-4 mr-1"
                                                             />
-                                                            Buy on Doggy Market
+                                                            Doggy Market
                                                         </a>
                                                     ) : (
                                                         <>
@@ -1022,7 +1037,7 @@ const Scene = () => {
                                                                     alt="Nifty Island" 
                                                                     className="w-4 h-4 mr-1"
                                                                 />
-                                                                Buy on Nifty Island
+                                                                Nifty Island
                                                             </a>
                                                             <a 
                                                                 href={MARKETPLACE_LINKS[weapon.id].opensea}
@@ -1035,7 +1050,7 @@ const Scene = () => {
                                                                     alt="OpenSea" 
                                                                     className="w-4 h-4 mr-1"
                                                                 />
-                                                                Buy on OpenSea
+                                                                OpenSea
                                                             </a>
                                                         </>
                                                     )}
