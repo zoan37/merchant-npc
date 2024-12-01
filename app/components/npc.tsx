@@ -304,11 +304,11 @@ const Scene = () => {
         if (!currentMessage.trim()) return;
 
         setChatMessages(prev => [...prev, {
-            sender: 'User',
+            sender: 'Player',
             message: currentMessage
         }]);
         
-        // Scroll after user message
+        // Scroll after player message
         setTimeout(scrollToBottom, 100);
 
         setTimeout(() => {
@@ -902,7 +902,7 @@ const Scene = () => {
                                     {chatMessages.map((msg, index) => (
                                         <div
                                             key={index}
-                                            className={`p-2 rounded ${msg.sender === 'User'
+                                            className={`p-2 rounded ${msg.sender === 'Player'
                                                 ? 'bg-blue-100 ml-8'
                                                 : 'bg-gray-100 mr-8'
                                                 }`}
