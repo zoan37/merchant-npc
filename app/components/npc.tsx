@@ -11,6 +11,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import TWEEN from '@tweenjs/tween.js';
+import chatService from './chat_service';
 
 const Scene = () => {
     const containerRef = useRef(null);
@@ -299,10 +300,11 @@ const Scene = () => {
         }
     };
 
-    const handleChatSubmit = (e) => {
+    const handleChatSubmit = async (e) => {
         e.preventDefault();
         if (!currentMessage.trim()) return;
-
+    
+        // Add player message to UI
         setChatMessages(prev => [...prev, {
             sender: 'Player',
             message: currentMessage
@@ -310,16 +312,23 @@ const Scene = () => {
         
         // Scroll after player message
         setTimeout(scrollToBottom, 100);
-
-        setTimeout(() => {
-            setChatMessages(prev => [...prev, {
-                sender: NPC_NAME,
-                message: `I understand you said "${currentMessage}". How interesting!`
-            }]);
-            // Scroll after NPC reply
-            setTimeout(scrollToBottom, 100);
-        }, 1000);
-
+    
+        // Get NPC response
+        const response = await chatService.getNPCResponse(currentMessage);
+        
+        // Add NPC response to UI
+        setChatMessages(prev => [...prev, {
+            sender: NPC_NAME,
+            message: response.message
+        }]);
+    
+        // Play animation if specified
+        if (response.animation && npcAnimationActionsRef.current[response.animation]) {
+            playNpcAnimation(response.animation);
+        }
+    
+        // Scroll after NPC reply
+        setTimeout(scrollToBottom, 100);
         setCurrentMessage('');
     };
 
