@@ -68,9 +68,10 @@ class ChatService {
     /**
      * Get NPC's response to user message
      * @param {string} userMessage 
+     * @param {(partialMessage: string) => void} onStream - Callback for streaming updates
      * @returns {Promise<ChatResponse>}
      */
-    async getNPCResponse(userMessage) {
+    async getNPCResponse(userMessage, onStream = () => {}) {
         this.addMessage('user', userMessage);
 
         try {
@@ -117,17 +118,21 @@ class ChatService {
                         const json = JSON.parse(line.slice(5));
                         const content = json.choices[0].delta.content || '';
                         fullResponse += content;
+                        
+                        // Safely call the streaming callback
+                        if (typeof onStream === 'function') {
+                            onStream(fullResponse);
+                        }
                     } catch (e) {
                         console.error('Error parsing chunk:', e);
                     }
                 }
             }
 
-            // Parse the complete response as JSON
             const npcResponse = {
                 message: fullResponse,
-                emotion: "happy", // You might want to extract this from the response
-                animation: "Talk" // You might want to extract this from the response
+                emotion: "happy",
+                animation: "Talk"
             };
 
             this.addMessage('assistant', npcResponse.message);

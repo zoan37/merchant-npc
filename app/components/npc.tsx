@@ -303,33 +303,58 @@ const Scene = () => {
     const handleChatSubmit = async (e) => {
         e.preventDefault();
         if (!currentMessage.trim()) return;
-    
-        // Add player message to UI
+
+        const userMessage = currentMessage;
+        setCurrentMessage('');
+
         setChatMessages(prev => [...prev, {
             sender: 'Player',
-            message: currentMessage
+            message: userMessage
         }]);
         
         // Scroll after player message
         setTimeout(scrollToBottom, 100);
-    
-        // Get NPC response
-        const response = await chatService.getNPCResponse(currentMessage);
         
-        // Add NPC response to UI
         setChatMessages(prev => [...prev, {
             sender: NPC_NAME,
-            message: response.message
+            message: '',
+            isStreaming: true
         }]);
-    
-        // Play animation if specified
-        if (response.animation && npcAnimationActionsRef.current[response.animation]) {
-            playNpcAnimation(response.animation);
-        }
-    
-        // Scroll after NPC reply
+
+        // Scroll again after adding empty streaming message
         setTimeout(scrollToBottom, 100);
-        setCurrentMessage('');
+
+        const streamHandler = (partialMessage) => {
+            requestAnimationFrame(() => {
+                setChatMessages(prev => {
+                    const newMessages = [...prev];
+                    const lastMessage = newMessages[newMessages.length - 1];
+                    if (lastMessage.isStreaming) {
+                        lastMessage.message = partialMessage;
+                    }
+                    return newMessages;
+                });
+                scrollToBottom();
+            });
+        };
+
+        try {
+            const response = await chatService.getNPCResponse(userMessage, streamHandler);
+
+            setChatMessages(prev => {
+                const newMessages = [...prev];
+                const lastMessage = newMessages[newMessages.length - 1];
+                lastMessage.message = response.message;
+                delete lastMessage.isStreaming;
+                return newMessages;
+            });
+
+            if (response.animation && npcAnimationActionsRef.current[response.animation]) {
+                playNpcAnimation(response.animation);
+            }
+        } catch (error) {
+            console.error('Chat error:', error);
+        }
     };
 
     const playAnimation = (animation) => {
@@ -924,16 +949,21 @@ const Scene = () => {
                                     className="h-96 overflow-y-auto mb-4 space-y-2"
                                 >
                                     {chatMessages.map((msg, index) => (
-                                        <div
-                                            key={index}
-                                            className={`p-3 rounded ${msg.sender === 'Player'
-                                                ? 'bg-blue-100 ml-8'
-                                                : 'bg-gray-100 mr-8'
+                                        msg.sender === 'Player' || msg.message || !msg.isStreaming ? (
+                                            <div
+                                                key={index}
+                                                className={`p-3 rounded ${
+                                                    msg.sender === 'Player'
+                                                        ? 'bg-blue-100 ml-8'
+                                                        : 'bg-gray-100 mr-8'
                                                 }`}
-                                        >
-                                            <strong className="text-gray-700">{msg.sender}:</strong>{' '}
-                                            <span className="text-gray-800">{msg.message}</span>
-                                        </div>
+                                            >
+                                                <strong className="text-gray-700">{msg.sender}:</strong>{' '}
+                                                <span className="text-gray-800">
+                                                    {msg.message}
+                                                </span>
+                                            </div>
+                                        ) : null
                                     ))}
                                 </div>
                                 <form onSubmit={handleChatSubmit} className="flex gap-2">
