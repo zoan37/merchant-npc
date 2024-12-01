@@ -52,10 +52,11 @@ const Scene = () => {
     const weapons = [
         {
             id: 'sword',
-            name: 'Ice Sword',
+            name: 'Quantum Sword',
             price: '0.001 ETH',
-            model: './weapons/ice_sword_5_changed.glb',
+            model: './weapons/quantum_sword_6.1.glb',
             animation: './animations/Great Sword Idle.fbx',
+            weaponType: 'sword',
             position: { x: 0.05, y: -0.025, z: 0.0 },
             rotation: { 
                 x: -Math.PI / 2 - 0 * Math.PI / 16,
@@ -66,17 +67,33 @@ const Scene = () => {
         },
         {
             id: 'pistol',
-            name: 'Ice Pistol',
+            name: 'Quantum Pistol',
             price: '0.001 ETH',
-            model: './weapons/ice_pistol_8_change.glb',
+            model: './weapons/quantum_pistol_3.glb',
             animation: './animations/Pistol Idle.fbx',
+            weaponType: 'pistol',
             position: { x: 0.05, y: -0.03, z: 0 },
             rotation: { 
                 x: -Math.PI / 2,
                 y: Math.PI / 2 + Math.PI / 16,
                 z: 0
             },
-            scale: 0.8
+            scale: 1.0
+        },
+        {
+            id: 'bat',
+            name: 'Doginal Bat',
+            price: '6.9 DOGE',
+            model: './weapons/doginal_bat_super_finalizing__for_nifty.glb',
+            animation: './animations/Great Sword Idle.fbx',
+            weaponType: 'sword',
+            position: { x: 0.05, y: -0.025, z: 0.0 },
+            rotation: { 
+                x: -Math.PI / 2 - 0 * Math.PI / 16,
+                y: Math.PI / 2 + 2 * Math.PI / 16,
+                z: Math.PI / 8 + -2 * Math.PI / 16
+            },
+            scale: 1.0
         }
     ];
 
@@ -527,9 +544,11 @@ const Scene = () => {
             return sprite;
         }
 
+        const MERCHANT_VRM_URL = 'https://content.niftyisland.com/nftables/a3d3dc20-1852-42c0-91a7-5a121fbc5022/v/1/source.vrm';
+
         // Modify the NPC loader section
         loader.load(
-            './avatars/Merchant.vrm',
+            MERCHANT_VRM_URL,
             async (gltf) => {
                 const vrm = gltf.userData.vrm;
                 scene.add(vrm.scene);
@@ -621,8 +640,8 @@ const Scene = () => {
                     } else {
                         const currentWeapon = equippedWeaponRef.current;
                         if (currentWeapon) {
-                            const animationName = currentWeapon.id.includes('sword') 
-                                ? 'Great Sword Idle' 
+                            const animationName = currentWeapon.weaponType === 'sword'
+                                ? 'Great Sword Idle'
                                 : 'Pistol Idle';
                             playAnimation(animationName);
                         } else {
