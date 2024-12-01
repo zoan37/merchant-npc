@@ -1018,7 +1018,7 @@ const Scene = () => {
                                                             className="inline-flex items-center px-3 py-1.5 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-sm"
                                                         >
                                                             <img 
-                                                                src="/icons/doggy-market.png" 
+                                                                src="/images/logos/Doggy Market.png" 
                                                                 alt="Doggy Market" 
                                                                 className="w-4 h-4 mr-1"
                                                             />
@@ -1033,7 +1033,7 @@ const Scene = () => {
                                                                 className="inline-flex items-center px-3 py-1.5 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm"
                                                             >
                                                                 <img 
-                                                                    src="/icons/nifty-island.png" 
+                                                                    src="/images/logos/Icon - Color - Nifty Island.svg" 
                                                                     alt="Nifty Island" 
                                                                     className="w-4 h-4 mr-1"
                                                                 />
@@ -1046,7 +1046,7 @@ const Scene = () => {
                                                                 className="inline-flex items-center px-3 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
                                                             >
                                                                 <img 
-                                                                    src="/icons/opensea.png" 
+                                                                    src="/images/logos/OpenSea Logomark-Blue.svg" 
                                                                     alt="OpenSea" 
                                                                     className="w-4 h-4 mr-1"
                                                                 />
