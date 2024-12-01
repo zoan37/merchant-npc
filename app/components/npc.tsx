@@ -941,15 +941,15 @@ const Scene = () => {
 
             {/* Modified Chat Interface */}
             {isChatting && (
-                <Card className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-[1000px] bg-white z-10">
+                <Card className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-[1000px] bg-white/50 backdrop-blur-sm z-10">
                     <CardContent className="p-4">
                         <div className="flex justify-between items-center mb-3">
-                            <span className="text-sm text-gray-500">Chatting with {NPC_NAME}</span>
+                            <span className="text-sm text-gray-700">Chatting with {NPC_NAME}</span>
                             <Button 
                                 variant="ghost" 
                                 size="sm" 
                                 onClick={endChat}
-                                className="text-gray-500 hover:text-gray-700"
+                                className="text-gray-700 hover:text-gray-900"
                             >
                                 ✕ Exit
                             </Button>
@@ -969,8 +969,8 @@ const Scene = () => {
                                                 key={index}
                                                 className={`p-3 rounded ${
                                                     msg.sender === 'Player'
-                                                        ? 'bg-blue-100 ml-8'
-                                                        : 'bg-gray-100 mr-8'
+                                                        ? 'bg-blue-100/90 ml-8'
+                                                        : 'bg-gray-100/90 mr-8'
                                                 }`}
                                             >
                                                 <strong className="text-gray-700">{msg.sender}:</strong>{' '}
@@ -987,7 +987,7 @@ const Scene = () => {
                                         value={currentMessage}
                                         onChange={(e) => setCurrentMessage(e.target.value)}
                                         placeholder="Type your message..."
-                                        className="flex-1"
+                                        className="flex-1 bg-white/90"
                                     />
                                     <Button type="submit">Send</Button>
                                 </form>
@@ -999,7 +999,7 @@ const Scene = () => {
                                 {showShop ? (
                                     <div className="space-y-4">
                                         {weapons.map((weapon) => (
-                                            <div key={weapon.id} className="p-2 bg-gray-100 rounded">
+                                            <div key={weapon.id} className="p-2 bg-gray-100/90 rounded">
                                                 <div className="flex items-center justify-between mb-2">
                                                     <div>
                                                         <h3 className="font-semibold">{weapon.name}</h3>
@@ -1059,7 +1059,7 @@ const Scene = () => {
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="text-center p-4 bg-gray-100 rounded">
+                                    <div className="text-center p-4 bg-gray-100/90 rounded">
                                         <p className="mb-4">Currently trying: {equippedWeapon?.name}</p>
                                         <Button onClick={returnToShop}>
                                             Return to Shop
