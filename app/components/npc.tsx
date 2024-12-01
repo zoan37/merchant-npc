@@ -803,6 +803,21 @@ const Scene = () => {
         playAnimation('Idle');
     };
 
+    // Add these constants near the top of the file with other constants
+    const MARKETPLACE_LINKS = {
+        sword: {
+            niftyIsland: 'https://niftyisland.com/marketplace/item/123', // Replace with actual link
+            opensea: 'https://opensea.io/assets/ethereum/123' // Replace with actual link
+        },
+        pistol: {
+            niftyIsland: 'https://niftyisland.com/marketplace/item/456', // Replace with actual link
+            opensea: 'https://opensea.io/assets/ethereum/456' // Replace with actual link
+        },
+        bat: {
+            doggyMarket: 'https://doggy.market/marketplace/item/789' // Replace with actual link
+        }
+    };
+
     // Modify the return statement to add the avatar selector UI
     return (
         <div className="relative w-full h-full">
@@ -939,14 +954,62 @@ const Scene = () => {
                                 {showShop ? (
                                     <div className="space-y-4">
                                         {weapons.map((weapon) => (
-                                            <div key={weapon.id} className="flex items-center justify-between p-2 bg-gray-100 rounded">
-                                                <div>
-                                                    <h3 className="font-semibold">{weapon.name}</h3>
-                                                    <p className="text-sm text-gray-600">{weapon.price}</p>
+                                            <div key={weapon.id} className="p-2 bg-gray-100 rounded">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div>
+                                                        <h3 className="font-semibold">{weapon.name}</h3>
+                                                        <p className="text-sm text-gray-600">{weapon.price}</p>
+                                                    </div>
+                                                    <Button onClick={() => tryWeapon(weapon)}>
+                                                        Try It
+                                                    </Button>
                                                 </div>
-                                                <Button onClick={() => tryWeapon(weapon)}>
-                                                    Try It
-                                                </Button>
+                                                <div className="flex gap-2 mt-2 justify-end">
+                                                    {weapon.id === 'bat' ? (
+                                                        <a 
+                                                            href={MARKETPLACE_LINKS.bat.doggyMarket}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="inline-flex items-center px-3 py-1.5 bg-orange-500 text-white rounded hover:bg-orange-600 text-sm"
+                                                        >
+                                                            <img 
+                                                                src="/icons/doggy-market.png" 
+                                                                alt="Doggy Market" 
+                                                                className="w-4 h-4 mr-1"
+                                                            />
+                                                            Buy on Doggy Market
+                                                        </a>
+                                                    ) : (
+                                                        <>
+                                                            <a 
+                                                                href={MARKETPLACE_LINKS[weapon.id].niftyIsland}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="inline-flex items-center px-3 py-1.5 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm"
+                                                            >
+                                                                <img 
+                                                                    src="/icons/nifty-island.png" 
+                                                                    alt="Nifty Island" 
+                                                                    className="w-4 h-4 mr-1"
+                                                                />
+                                                                Buy on Nifty Island
+                                                            </a>
+                                                            <a 
+                                                                href={MARKETPLACE_LINKS[weapon.id].opensea}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="inline-flex items-center px-3 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+                                                            >
+                                                                <img 
+                                                                    src="/icons/opensea.png" 
+                                                                    alt="OpenSea" 
+                                                                    className="w-4 h-4 mr-1"
+                                                                />
+                                                                Buy on OpenSea
+                                                            </a>
+                                                        </>
+                                                    )}
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
