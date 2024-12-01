@@ -418,9 +418,15 @@ const Scene = () => {
     const [selectedAvatar, setSelectedAvatar] = useState('Default_M.vrm');
     
     const changeAvatar = async (avatarFile) => {
-        if (!sceneRef.current) return;
+        if (!sceneRef.current || !avatarRef.current) return;
         
         setSelectedAvatar(avatarFile);
+        
+        // Store current avatar properties
+        const currentAvatar = avatarRef.current;
+        const currentPosition = currentAvatar.scene.position.clone();
+        const currentRotation = currentAvatar.scene.rotation.clone();
+        const currentScale = currentAvatar.scene.scale.clone();
         
         const loader = new GLTFLoader();
         loader.crossOrigin = 'anonymous';
@@ -429,23 +435,30 @@ const Scene = () => {
         });
 
         // Remove existing avatar
-        if (avatarRef.current) {
-            avatarRef.current.scene.parent.remove(avatarRef.current.scene);
-        }
+        currentAvatar.scene.parent.remove(currentAvatar.scene);
 
         // Load new avatar
         loader.load(
             `./avatars/${avatarFile}`,
             async (gltf) => {
                 const vrm = gltf.userData.vrm;
+                
+                // Apply VRM rotation first
+                VRMUtils.rotateVRM0(vrm);
+                
+                // Then add to scene
                 sceneRef.current.add(vrm.scene);
                 avatarRef.current = vrm;
+
+                // Apply stored properties after VRM rotation
+                vrm.scene.position.copy(currentPosition);
+                vrm.scene.rotation.copy(currentRotation);
+                vrm.scene.scale.copy(currentScale);
 
                 vrm.scene.traverse((obj) => {
                     obj.frustumCulled = false;
                 });
 
-                VRMUtils.rotateVRM0(vrm);
                 await initializeAnimations(vrm, false);
 
                 // If weapon is equipped, reattach it
