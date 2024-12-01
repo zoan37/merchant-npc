@@ -414,8 +414,53 @@ const Scene = () => {
         }
     }
 
+    const sceneRef = useRef(null);
+    const [selectedAvatar, setSelectedAvatar] = useState('Default_M.vrm');
+    
+    const changeAvatar = async (avatarFile) => {
+        if (!sceneRef.current) return;
+        
+        setSelectedAvatar(avatarFile);
+        
+        const loader = new GLTFLoader();
+        loader.crossOrigin = 'anonymous';
+        loader.register((parser) => {
+            return new VRMLoaderPlugin(parser, { autoUpdateHumanBones: true });
+        });
+
+        // Remove existing avatar
+        if (avatarRef.current) {
+            avatarRef.current.scene.parent.remove(avatarRef.current.scene);
+        }
+
+        // Load new avatar
+        loader.load(
+            `./avatars/${avatarFile}`,
+            async (gltf) => {
+                const vrm = gltf.userData.vrm;
+                sceneRef.current.add(vrm.scene);
+                avatarRef.current = vrm;
+
+                vrm.scene.traverse((obj) => {
+                    obj.frustumCulled = false;
+                });
+
+                VRMUtils.rotateVRM0(vrm);
+                await initializeAnimations(vrm, false);
+
+                // If weapon is equipped, reattach it
+                if (equippedWeaponRef.current) {
+                    tryWeapon(equippedWeaponRef.current);
+                }
+            },
+            (progress) => console.log('Loading player model...', 100.0 * (progress.loaded / progress.total), '%'),
+            (error) => console.error(error)
+        );
+    };
+
     function init() {
         const scene = new THREE.Scene();
+        sceneRef.current = scene;
         scene.background = new THREE.Color(0xe0e0e0);
         scene.fog = new THREE.Fog(0xe0e0e0, 20, 100);
 
@@ -430,34 +475,34 @@ const Scene = () => {
         rendererRef.current = renderer;
 
         const pmremGenerator = new THREE.PMREMGenerator(renderer);
-        scene.environment = pmremGenerator.fromScene(new RoomEnvironment(renderer), 0.04).texture;
+        sceneRef.current.environment = pmremGenerator.fromScene(new RoomEnvironment(renderer), 0.04).texture;
 
         var ambientLight = new THREE.AmbientLight(0x404040);
-        scene.add(ambientLight);
+        sceneRef.current.add(ambientLight);
 
         const light = new THREE.DirectionalLight(0xffffff);
         light.position.set(1.0, 1.0, 1.0).normalize();
-        scene.add(light);
+        sceneRef.current.add(light);
 
         const hemiLight = new THREE.HemisphereLight(0xffffff, 0x8d8d8d, 1);
         hemiLight.position.set(0, 20, 0);
-        scene.add(hemiLight);
+        sceneRef.current.add(hemiLight);
 
         const dirLight = new THREE.DirectionalLight(0xffffff, 1);
         dirLight.position.set(0, 20, 10);
-        scene.add(dirLight);
+        sceneRef.current.add(dirLight);
 
         const mesh = new THREE.Mesh(
             new THREE.PlaneGeometry(2000, 2000),
             new THREE.MeshBasicMaterial({ color: 'rgb(220, 220, 220)', depthWrite: false })
         );
         mesh.rotation.x = -Math.PI / 2;
-        scene.add(mesh);
+        sceneRef.current.add(mesh);
 
         const grid = new THREE.GridHelper(200, 200, 0x000000, 0x000000);
         grid.material.opacity = 0.2;
         grid.material.transparent = true;
-        scene.add(grid);
+        sceneRef.current.add(grid);
 
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
@@ -478,10 +523,10 @@ const Scene = () => {
 
         // Load player avatar
         loader.load(
-            './avatars/Default_M.vrm',
+            `./avatars/${selectedAvatar}`,
             async (gltf) => {
                 const vrm = gltf.userData.vrm;
-                scene.add(vrm.scene);
+                sceneRef.current.add(vrm.scene);
                 avatarRef.current = vrm;
 
                 vrm.scene.traverse((obj) => {
@@ -551,7 +596,7 @@ const Scene = () => {
             MERCHANT_VRM_URL,
             async (gltf) => {
                 const vrm = gltf.userData.vrm;
-                scene.add(vrm.scene);
+                sceneRef.current.add(vrm.scene);
                 npcRef.current = vrm;
 
                 vrm.scene.traverse((obj) => {
@@ -655,7 +700,7 @@ const Scene = () => {
             }
 
             controls.update();
-            renderer.render(scene, camera);
+            renderer.render(sceneRef.current, camera);
         }
 
         animate();
@@ -737,9 +782,30 @@ const Scene = () => {
         playAnimation('Idle');
     };
 
+    // Modify the return statement to add the avatar selector UI
     return (
         <div className="relative w-full h-full">
             <div ref={containerRef} className="w-full h-full" />
+
+            {/* Avatar Selector - Add this new UI element */}
+            <div className="fixed top-4 left-4 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg z-10">
+                <div className="flex items-center gap-4">
+                    <Button
+                        variant={selectedAvatar === 'Default_M.vrm' ? 'secondary' : 'ghost'}
+                        onClick={() => changeAvatar('Default_M.vrm')}
+                        className="hover:bg-opacity-90"
+                    >
+                        Male
+                    </Button>
+                    <Button
+                        variant={selectedAvatar === 'Default_F.vrm' ? 'secondary' : 'ghost'}
+                        onClick={() => changeAvatar('Default_F.vrm')}
+                        className="hover:bg-opacity-90"
+                    >
+                        Female
+                    </Button>
+                </div>
+            </div>
 
             {/* Info Button */}
             <Button
