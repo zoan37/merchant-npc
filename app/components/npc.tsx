@@ -671,8 +671,8 @@ const Scene = () => {
                 vrm.scene.add(nameSprite);
 
                 VRMUtils.rotateVRM0(vrm);
-                vrm.scene.position.set(3, 0, 0);
-                vrm.scene.rotation.y = Math.PI / 2;
+                vrm.scene.position.set(0, 0, -6);
+                vrm.scene.rotation.y = 2 * Math.PI / 2;
 
                 await initializeAnimations(vrm, true);
             },
