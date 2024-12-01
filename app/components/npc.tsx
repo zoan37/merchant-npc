@@ -886,7 +886,7 @@ const Scene = () => {
 
             {/* Modified Chat Interface */}
             {isChatting && (
-                <Card className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-[800px] bg-white z-10">
+                <Card className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-[1000px] bg-white z-10">
                     <CardContent className="p-4">
                         <div className="flex justify-between items-center mb-3">
                             <span className="text-sm text-gray-500">Chatting with {NPC_NAME}</span>
@@ -906,17 +906,18 @@ const Scene = () => {
                             <div className="flex-1">
                                 <div 
                                     ref={chatContainerRef}
-                                    className="h-48 overflow-y-auto mb-4 space-y-2"
+                                    className="h-96 overflow-y-auto mb-4 space-y-2"
                                 >
                                     {chatMessages.map((msg, index) => (
                                         <div
                                             key={index}
-                                            className={`p-2 rounded ${msg.sender === 'Player'
+                                            className={`p-3 rounded ${msg.sender === 'Player'
                                                 ? 'bg-blue-100 ml-8'
                                                 : 'bg-gray-100 mr-8'
                                                 }`}
                                         >
-                                            <strong>{msg.sender}:</strong> {msg.message}
+                                            <strong className="text-gray-700">{msg.sender}:</strong>{' '}
+                                            <span className="text-gray-800">{msg.message}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -933,7 +934,7 @@ const Scene = () => {
                             </div>
 
                             {/* Shop column */}
-                            <div className="w-72 border-l pl-4">
+                            <div className="w-80 border-l pl-4">
                                 <h3 className="font-semibold mb-3">Available Items</h3>
                                 {showShop ? (
                                     <div className="space-y-4">
