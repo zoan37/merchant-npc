@@ -94,7 +94,22 @@ const Scene = () => {
                 z: Math.PI / 8 + -2 * Math.PI / 16
             },
             scale: 1.0
-        }
+        },
+        {
+            id: 'megaphone',
+            name: 'Doginal Megaphone',
+            price: '3 DOGE',
+            model: './weapons/doginal_megaphone_compression_3.glb',
+            animation: './animations/Pistol Idle.fbx',
+            weaponType: 'pistol',
+            position: { x: 0.05, y: -0.03, z: 0 },
+            rotation: { 
+                x: -Math.PI / 2,
+                y: Math.PI / 2 + Math.PI / 16,
+                z: 0
+            },
+            scale: 1.0
+        },
     ];
 
     useEffect(() => {
@@ -848,15 +863,18 @@ const Scene = () => {
     // Add these constants near the top of the file with other constants
     const MARKETPLACE_LINKS = {
         sword: {
-            niftyIsland: 'https://niftyisland.com/marketplace/item/123', // Replace with actual link
-            opensea: 'https://opensea.io/assets/ethereum/123' // Replace with actual link
+            niftyIsland: 'https://niftyisland.com/marketplace/item/123',
+            opensea: 'https://opensea.io/assets/ethereum/123'
         },
         pistol: {
-            niftyIsland: 'https://niftyisland.com/marketplace/item/456', // Replace with actual link
-            opensea: 'https://opensea.io/assets/ethereum/456' // Replace with actual link
+            niftyIsland: 'https://niftyisland.com/marketplace/item/456',
+            opensea: 'https://opensea.io/assets/ethereum/456'
         },
         bat: {
-            doggyMarket: 'https://doggy.market/marketplace/item/789' // Replace with actual link
+            doggyMarket: 'https://doggy.market/nfts/doginalbat'
+        },
+        megaphone: {
+            doggyMarket: 'https://doggy.market/nfts/doginalmegaphone'
         }
     };
 
@@ -1097,9 +1115,9 @@ const Scene = () => {
                                                     </Button>
                                                 </div>
                                                 <div className="flex gap-2 mt-2 justify-end">
-                                                    {weapon.id === 'bat' ? (
+                                                    {weapon.id === 'bat' || weapon.id === 'megaphone' ? (
                                                         <a 
-                                                            href={MARKETPLACE_LINKS.bat.doggyMarket}
+                                                            href={MARKETPLACE_LINKS[weapon.id].doggyMarket}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="inline-flex items-center px-3 py-1.5 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-sm"
