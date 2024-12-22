@@ -36,7 +36,7 @@ const Scene = () => {
     const [isChatting, setIsChatting] = useState(false);
     const [chatMessages, setChatMessages] = useState([]);
     const [currentMessage, setCurrentMessage] = useState('');
-    const NPC_NAME = "Zoan";
+    const NPC_NAME = "Agent Zoan";
 
     const keyStates = useRef({
         w: false,
@@ -667,7 +667,7 @@ const Scene = () => {
             return sprite;
         }
 
-        const MERCHANT_VRM_URL = 'https://content.niftyisland.com/nftables/a3d3dc20-1852-42c0-91a7-5a121fbc5022/v/1/source.vrm';
+        const MERCHANT_VRM_URL = './avatars/Agent.vrm';
 
         // Modify the NPC loader section
         loader.load(
