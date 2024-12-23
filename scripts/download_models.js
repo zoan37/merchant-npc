@@ -7,20 +7,33 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 // TODO: surface errors downloading files to the user (e.g. for error: Request failed with status code 403)
 
+const getUpdatedUrl = (originalUrl) => {
+    const urlMappings = {
+        'https://content.niftyisland.com/nftables/258f9f9a-74de-4ba5-a145-5c3740d5c5ef/v/1/source.fbx':
+            'https://content.niftyisland.com/nftables/258f9f9a-74de-4ba5-a145-5c3740d5c5ef/v/2/source.fbx',
+        'https://content.niftyisland.com/nftables/1ccfd6ea-bf46-4b7b-a5da-4ae9ff40ab76/v/1/source.fbx':
+            'https://content.niftyisland.com/nftables/1ccfd6ea-bf46-4b7b-a5da-4ae9ff40ab76/v/3/source.fbx'
+    };
+    
+    return urlMappings[originalUrl] || originalUrl;
+};
+
 const downloadFile = async (url, outputPath) => {
     try {
+        // Apply URL mapping before download
+        const updatedUrl = getUpdatedUrl(url);
         const response = await axios({
             method: 'GET',
-            url: url,
+            url: updatedUrl,
             responseType: 'arraybuffer'
         });
 
         await fs.writeFile(outputPath, response.data);
         console.log(`Successfully downloaded: ${outputPath}`);
-        return true; // Return true for successful download
+        return true;
     } catch (error) {
         console.error(`Error downloading ${url}: ${error.message}`);
-        return false; // Return false for failed download
+        return false;
     }
 };
 
@@ -102,8 +115,8 @@ const processNFTData = async (nftData) => {
                         file_type: file.file_type
                     });
 
-                    // Add 3 second delay between downloads
-                    console.log('Waiting 3 seconds before next download...');
+                    // Add 1 second delay between downloads
+                    console.log('Waiting 1 second before next download...');
                     await sleep(1000);
                 }
             }
