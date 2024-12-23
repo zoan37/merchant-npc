@@ -26,6 +26,7 @@ function processGLBMetadata(metadata) {
         assetName: file.asset_name,
         // localPath: file.local_path,
         nftTokenId: nft.tokenId,
+        nftTotalSupply: parseInt(nft._totalSupply),
         // nftName: nft.metadata.name,
         nftDescription: nft.metadata.description,
         aiSummary: summary
