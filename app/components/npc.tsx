@@ -478,7 +478,7 @@ const Scene = () => {
     }
 
     const sceneRef = useRef(null);
-    const [selectedAvatar, setSelectedAvatar] = useState('Default_M.vrm');
+    const [selectedAvatar, setSelectedAvatar] = useState('sheriff_agent_7.3.vrm');
     const [showSettings, setShowSettings] = useState(false);
     
     const changeAvatar = async (avatarFile) => {
@@ -587,6 +587,8 @@ const Scene = () => {
         controls.enableZoom = true;
         controls.minDistance = 2;
         controls.maxDistance = 10;
+
+        // TODO: modify target based on avatar height
         controls.target.set(0, 1, 0);
         controls.enableKeys = false;
         controls.enablePan = false;
@@ -667,7 +669,7 @@ const Scene = () => {
             return sprite;
         }
 
-        const MERCHANT_VRM_URL = './avatars/Agent.vrm';
+        const MERCHANT_VRM_URL = './avatars/sheriff_agent_7.3.vrm';
 
         // Modify the NPC loader section
         loader.load(
