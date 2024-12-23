@@ -478,7 +478,7 @@ const Scene = () => {
     }
 
     const sceneRef = useRef(null);
-    const [selectedAvatar, setSelectedAvatar] = useState('sheriff_agent_7.3.vrm');
+    const [selectedAvatar, setSelectedAvatar] = useState('VRoid_Sample_B.vrm');
     const [showSettings, setShowSettings] = useState(false);
     
     const changeAvatar = async (avatarFile) => {
