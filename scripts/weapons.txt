@@ -166,3 +166,8 @@ https://www.niftyisland.com/item/polygon/0xeab56d0bfd7fcf84c606db521e81c41e38fb9
 Gravity Pistol:
 https://www.niftyisland.com/item/polygon/0xeab56d0bfd7fcf84c606db521e81c41e38fb9022/30
 
+Doginal Bat (Mirror):
+https://www.niftyisland.com/item/base/0xc1374b803dfb1a9c87eab9e76929222dba3a8c39/88700490005035943529316798097329512194005047219896219087210145710713390236068
+
+Doginal Megaphone (Mirror):
+https://www.niftyisland.com/item/base/0xc1374b803dfb1a9c87eab9e76929222dba3a8c39/88700490005035943529316798097329512194005047219839797533161627624870695142713

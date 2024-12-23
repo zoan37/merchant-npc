@@ -5,6 +5,8 @@ const axios = require('axios');
 // Sleep utility function
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+// TODO: surface errors downloading files to the user (e.g. for error: Request failed with status code 403)
+
 const downloadFile = async (url, outputPath) => {
     try {
         const response = await axios({
@@ -15,8 +17,10 @@ const downloadFile = async (url, outputPath) => {
 
         await fs.writeFile(outputPath, response.data);
         console.log(`Successfully downloaded: ${outputPath}`);
+        return true; // Return true for successful download
     } catch (error) {
         console.error(`Error downloading ${url}: ${error.message}`);
+        return false; // Return false for failed download
     }
 };
 
@@ -31,6 +35,12 @@ const createUniqueFileName = (nft, asset, fileExtension) => {
 };
 
 const processNFTData = async (nftData) => {
+    // Add download statistics
+    const stats = {
+        successful: 0,
+        failed: [],
+    };
+
     // Create weapons_models directory if it doesn't exist
     const outputDir = 'weapon_models';
     try {
@@ -71,7 +81,18 @@ const processNFTData = async (nftData) => {
                     const relativePath = path.join('weapon_models', fileName);
 
                     console.log(`Downloading ${nftName} - ${asset.name}...`);
-                    await downloadFile(file.url, outputPath);
+                    const success = await downloadFile(file.url, outputPath);
+                    
+                    // Track download status
+                    if (success) {
+                        stats.successful++;
+                    } else {
+                        stats.failed.push({
+                            name: nftName,
+                            asset: asset.name,
+                            url: file.url
+                        });
+                    }
 
                     // Add local file information
                     nft._local_files.push({
@@ -83,7 +104,7 @@ const processNFTData = async (nftData) => {
 
                     // Add 3 second delay between downloads
                     console.log('Waiting 3 seconds before next download...');
-                    await sleep(3000);
+                    await sleep(1000);
                 }
             }
         }
@@ -97,6 +118,17 @@ const processNFTData = async (nftData) => {
         'utf8'
     );
     console.log(`Saved enhanced metadata to ${metadataOutputPath}`);
+
+    // Print download statistics
+    console.log('\n=== Download Statistics ===');
+    console.log(`Successfully downloaded: ${stats.successful} files`);
+    console.log(`Failed downloads: ${stats.failed.length} files`);
+    if (stats.failed.length > 0) {
+        console.log('\nFailed downloads details:');
+        stats.failed.forEach(failure => {
+            console.log(`- ${failure.name} (${failure.asset}): ${failure.url}`);
+        });
+    }
 
     return enhancedNFTData;
 };

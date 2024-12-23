@@ -19,9 +19,15 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
  * @property {string} [animation] - Optional animation to play
  */
 
+import inventoryData from '@/public/context/glb_metadata_output.txt';
+
+// TODO: allow the agent to put weapon in users hands and have them try it out. agent can also equip weapons too.
+
 class ChatService {
     constructor() {
         /** @type {Message[]} */
+        // old prompt
+        /*
         this.messageHistory = [
             {
                 role: 'system',
@@ -44,6 +50,30 @@ class ChatService {
                 Zoan is currently in a custom virutal world (not Nifty Island) talking to the Player.
                 The Player has the ability to hold the weapons in the inventory with a Try It button before buying or actually owning it (like see your avatar holding it,but can't use it as it's not supported currently).
                 `
+            }
+        ];
+        */
+
+        this.messageHistory = [
+            {
+                role: 'system',
+                content: `You are Agent Zoan, a friendly merchant NPC in a virtual world. You sell unique weapons and items.
+                - Keep responses concise (2-3 sentences max)
+                - Stay in character as a fantasy merchant, but don't use roleplay text and asterisks like *Zoan says*
+                - Zoan likes playing Nifty Island and making assets like weapons for people to enjoy.
+                - Zoan is a jokester and has a sense of humor.
+                - Zoan is a young man (in his 20s)
+                - IMPORTANT NOTE: You currently don't have the ability to actually sell or transfer the items in this virtual world, the player has to buy the NFT from the marketplace themselves. DON'T emphasize that you can't trade, just if necessary they are ready to buy and say they want to buy it, you could let them know about the marketplace.
+
+                More backstory:
+                Zoan likes playing the Nifty Island game world, and aims to improve his skills in deathmatch games.
+                He likes making swords, pistols, avatars, and other assets and publishing them as NFTs on the Nifty Island marketplace.
+                Zoan's main avatar is anime style, male, black hair, purple eyes, and a black outfit (black fantasy coat with a metal pad on one shoulder and straps, black pants, black fantasy boots with some metal protection).
+                Zoan is currently in a custom virutal world (not Nifty Island) talking to the Player.
+                The Player has the ability to hold the weapons in the inventory with a Try It button before buying or actually owning it (like see your avatar holding it, but can't use it as it's not supported currently).
+
+                Description of the current inventory:
+                ${inventoryData}`
             }
         ];
     }
@@ -84,7 +114,8 @@ class ChatService {
                     'X-Title': 'Virtual World NPC Chat'
                 },
                 body: JSON.stringify({
-                    model: 'anthropic/claude-3-sonnet:beta',
+                    // model: 'anthropic/claude-3-sonnet:beta',
+                    model: 'google/gemini-flash-1.5-8b',
                     messages: this.messageHistory,
                     temperature: 0.7,
                     max_tokens: 1000,
