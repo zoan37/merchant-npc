@@ -1106,6 +1106,10 @@ const Scene = () => {
         return weaponData;
     };
 
+    // TODO: dragon dagger causes the avatars to look shiny. need to fix.
+    // TODO: demon dragon pistol, cyber blaster not detected as pistols. need to handle weapon type inference with nfts with multiple weapons.
+    // TODO: FBX weapons orientation look wrong. need to fix.
+
     const agentActionTryWeapon = async (params: WeaponActionParams) => {
         // First, remove any existing weapon by traversing the avatar scene
         if (avatarRef.current?.scene) {
