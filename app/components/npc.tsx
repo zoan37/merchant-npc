@@ -60,6 +60,44 @@ const Scene = () => {
     const [equippedWeapon, setEquippedWeapon] = useState(null);
     const equippedWeaponRef = useRef(null);
 
+    // Add this helper function near the top of the file
+    const inferWeaponType = (metadata: any): 'sword' | 'pistol' => {
+        const name = metadata?.name?.toLowerCase() || '';
+        const description = metadata?.description?.toLowerCase() || '';
+        const summary = metadata?._summaries?.[0]?.summary?.toLowerCase() || '';
+
+        // Keywords that indicate weapon types
+        const swordKeywords = ['sword', 'blade', 'dagger', 'bat'];
+        const pistolKeywords = ['pistol', 'gun', 'megaphone'];
+
+        // Check name first (most reliable)
+        for (const keyword of swordKeywords) {
+            if (name.includes(keyword)) return 'sword';
+        }
+        for (const keyword of pistolKeywords) {
+            if (name.includes(keyword)) return 'pistol';
+        }
+
+        // Check description next
+        for (const keyword of swordKeywords) {
+            if (description.includes(keyword)) return 'sword';
+        }
+        for (const keyword of pistolKeywords) {
+            if (description.includes(keyword)) return 'pistol';
+        }
+
+        // Check summary last
+        for (const keyword of swordKeywords) {
+            if (summary.includes(keyword)) return 'sword';
+        }
+        for (const keyword of pistolKeywords) {
+            if (summary.includes(keyword)) return 'pistol';
+        }
+
+        // Default to sword if we can't determine
+        return 'sword';
+    };
+
     const weapons = [
         {
             id: 'sword',
@@ -69,7 +107,7 @@ const Scene = () => {
             animation: './animations/Great Sword Idle.fbx',
             weaponType: 'sword',
             position: { x: 0.05, y: -0.025, z: 0.0 },
-            rotation: { 
+            rotation: {
                 x: -Math.PI / 2 - 0 * Math.PI / 16,
                 y: Math.PI / 2 + 2 * Math.PI / 16,
                 z: Math.PI / 8 + -2 * Math.PI / 16
@@ -84,7 +122,7 @@ const Scene = () => {
             animation: './animations/Pistol Idle.fbx',
             weaponType: 'pistol',
             position: { x: 0.05, y: -0.03, z: 0 },
-            rotation: { 
+            rotation: {
                 x: -Math.PI / 2,
                 y: Math.PI / 2 + Math.PI / 16,
                 z: 0
@@ -99,7 +137,7 @@ const Scene = () => {
             animation: './animations/Great Sword Idle.fbx',
             weaponType: 'sword',
             position: { x: 0.05, y: -0.025, z: 0.0 },
-            rotation: { 
+            rotation: {
                 x: -Math.PI / 2 - 0 * Math.PI / 16,
                 y: Math.PI / 2 + 2 * Math.PI / 16,
                 z: Math.PI / 8 + -2 * Math.PI / 16
@@ -114,7 +152,7 @@ const Scene = () => {
             animation: './animations/Pistol Idle.fbx',
             weaponType: 'pistol',
             position: { x: 0.05, y: -0.03, z: 0 },
-            rotation: { 
+            rotation: {
                 x: -Math.PI / 2,
                 y: Math.PI / 2 + Math.PI / 16,
                 z: 0
@@ -176,7 +214,7 @@ const Scene = () => {
         if ((isTransitioningRef.current || isChatting) && ['w', 'a', 's', 'd'].includes(event.key.toLowerCase())) {
             return;
         }
-        
+
         if (['w', 'a', 's', 'd'].includes(event.key.toLowerCase())) {
             event.preventDefault();
             keyStates.current[event.key.toLowerCase()] = true;
@@ -271,7 +309,7 @@ const Scene = () => {
         // Calculate camera position behind and to the side of the avatar
         const targetCameraPosition = new THREE.Vector3();
         const avatarToNPCAngle = Math.atan2(avatarToNPC.z, avatarToNPC.x);
-        
+
         // Position camera behind avatar at the calculated angle
         targetCameraPosition.x = avatar.position.x - Math.cos(avatarToNPCAngle - angle) * targetDistance;
         targetCameraPosition.z = avatar.position.z - Math.sin(avatarToNPCAngle - angle) * targetDistance;
@@ -353,10 +391,10 @@ const Scene = () => {
             sender: 'Player',
             message: userMessage
         }]);
-        
+
         // Scroll after player message
         setTimeout(scrollToBottom, 100);
-        
+
         setChatMessages(prev => [...prev, {
             sender: NPC_NAME,
             message: '',
@@ -491,18 +529,18 @@ const Scene = () => {
     const sceneRef = useRef(null);
     const [selectedAvatar, setSelectedAvatar] = useState('VRoid_Sample_B.vrm');
     const [showSettings, setShowSettings] = useState(false);
-    
+
     const changeAvatar = async (avatarFile) => {
         if (!sceneRef.current || !avatarRef.current) return;
-        
+
         setSelectedAvatar(avatarFile);
-        
+
         // Store current avatar properties
         const currentAvatar = avatarRef.current;
         const currentPosition = currentAvatar.scene.position.clone();
         const currentRotation = currentAvatar.scene.rotation.clone();
         const currentScale = currentAvatar.scene.scale.clone();
-        
+
         const loader = new GLTFLoader();
         loader.crossOrigin = 'anonymous';
         loader.register((parser) => {
@@ -517,10 +555,10 @@ const Scene = () => {
             `./avatars/${avatarFile}`,
             async (gltf) => {
                 const vrm = gltf.userData.vrm;
-                
+
                 // Apply VRM rotation first
                 VRMUtils.rotateVRM0(vrm);
-                
+
                 // Then add to scene
                 sceneRef.current.add(vrm.scene);
                 avatarRef.current = vrm;
@@ -641,37 +679,37 @@ const Scene = () => {
             if (context) {
                 context.imageSmoothingEnabled = false;
                 context.textBaseline = 'middle';
-                
+
                 context.clearRect(0, 0, canvas.width, canvas.height);
-                
+
                 context.font = 'Bold 42px Arial';
                 context.textAlign = 'center';
-                
+
                 // Create outline by drawing the text multiple times with small offsets
                 context.fillStyle = 'black';
                 for (let i = -3; i <= 3; i++) {
                     for (let j = -3; j <= 3; j++) {
-                        context.fillText(text, canvas.width/2 + i, canvas.height/2 + j);
+                        context.fillText(text, canvas.width / 2 + i, canvas.height / 2 + j);
                     }
                 }
-                
+
                 // Draw the main text
                 context.fillStyle = 'white';
-                context.fillText(text, canvas.width/2, canvas.height/2);
+                context.fillText(text, canvas.width / 2, canvas.height / 2);
             }
 
             const texture = new THREE.CanvasTexture(canvas);
             texture.minFilter = THREE.LinearFilter;
             texture.magFilter = THREE.LinearFilter;
-            
-            const spriteMaterial = new THREE.SpriteMaterial({ 
+
+            const spriteMaterial = new THREE.SpriteMaterial({
                 map: texture,
                 transparent: true,
                 depthTest: false,
                 depthWrite: false,
             });
             const sprite = new THREE.Sprite(spriteMaterial);
-            
+
             sprite.scale.set(1 * 1.5, 0.25 * 1.5, 1);
             sprite.position.y = 1.95;
             sprite.renderOrder = 999;
@@ -831,7 +869,7 @@ const Scene = () => {
                 avatar.scene.traverse((child) => {
                     if (child.name.includes('J_Bip_R_Hand')) {
                         child.add(weaponModel);
-                        
+
                         weaponModel.position.set(
                             weapon.position.x,
                             weapon.position.y,
@@ -905,16 +943,16 @@ const Scene = () => {
         const checkMobile = () => {
             const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             setIsMobile(isMobileDevice);
-            
+
             // Adjust rotate speed if controls exist
             if (controlsRef.current) {
                 controlsRef.current.rotateSpeed = isMobileDevice ? ROTATE_SPEED.MOBILE : ROTATE_SPEED.DESKTOP;
             }
         };
-        
+
         checkMobile();
         window.addEventListener('resize', checkMobile);
-        
+
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
@@ -1032,18 +1070,18 @@ const Scene = () => {
             'https://content.niftyisland.com/nftables/1ccfd6ea-bf46-4b7b-a5da-4ae9ff40ab76/v/1/source.fbx':
                 'https://content.niftyisland.com/nftables/1ccfd6ea-bf46-4b7b-a5da-4ae9ff40ab76/v/3/source.fbx'
         };
-        
+
         return urlMappings[originalUrl] || originalUrl;
     };
 
     // Add this helper function
     const findWeaponInMetadata = (params: WeaponActionParams) => {
         // First try exact match with contract address
-        const exactMatch = summaryMetadata.find(item => 
+        const exactMatch = summaryMetadata.find(item =>
             item.contractAddress.toLowerCase() === params.contractAddress.toLowerCase() &&
             item.tokenId === params.tokenId
         );
-        
+
         if (exactMatch) return exactMatch;
 
         // If no exact match, do fuzzy search by name
@@ -1058,7 +1096,7 @@ const Scene = () => {
     // Update wherever you're currently searching for weapons
     const handleWeaponAction = (params: WeaponActionParams) => {
         const weaponData = findWeaponInMetadata(params);
-        
+
         if (!weaponData) {
             console.warn(`No metadata found for weapon: ${params.weaponName}`);
             return null;
@@ -1088,15 +1126,14 @@ const Scene = () => {
             return;
         }
 
+        // Infer the weapon type from metadata
+        const inferredWeaponType = inferWeaponType(metadata.metadata);
+        console.log('Inferred weapon type:', inferredWeaponType);
+
         // Modified weapon name matching logic
         const weaponAsset = metadata.metadata.raw.metadata.assets.find(asset => {
-            // Normalize both names by removing spaces and converting to lowercase
             const normalizedAssetName = asset.name.toLowerCase().replace(/\s+/g, '');
             const normalizedWeaponName = params.weaponName.toLowerCase().replace(/\s+/g, '');
-            
-            // Log for debugging
-            console.log('Comparing:', normalizedAssetName, 'with:', normalizedWeaponName);
-            
             return normalizedAssetName === normalizedWeaponName;
         });
 
@@ -1107,15 +1144,14 @@ const Scene = () => {
 
         const weaponFile = weaponAsset.files[0];
         const originalUrl = weaponFile.url;
-        const weaponUrl = getUpdatedUrl(originalUrl); // Apply URL mapping here
+        const weaponUrl = getUpdatedUrl(originalUrl);
         const fileType = weaponFile.file_type;
-        const weaponType = params.weaponType.toLowerCase();
 
-        // Default weapon configurations
+        // Use inferred weapon type for configuration
         const weaponConfig = {
             sword: {
                 position: { x: 0.05, y: -0.025, z: 0.0 },
-                rotation: { 
+                rotation: {
                     x: -Math.PI / 2,
                     y: Math.PI / 2 + 2 * Math.PI / 16,
                     z: Math.PI / 8
@@ -1125,7 +1161,7 @@ const Scene = () => {
             },
             pistol: {
                 position: { x: 0.05, y: -0.03, z: 0 },
-                rotation: { 
+                rotation: {
                     x: -Math.PI / 2,
                     y: Math.PI / 2 + Math.PI / 16,
                     z: 0
@@ -1135,7 +1171,7 @@ const Scene = () => {
             }
         };
 
-        const config = weaponConfig[weaponType] || weaponConfig.sword;
+        const config = weaponConfig[inferredWeaponType] || weaponConfig.sword;
 
         try {
             let weaponModel;
@@ -1150,17 +1186,6 @@ const Scene = () => {
                 const gltfModel = await gltfLoader.loadAsync(weaponUrl);
                 weaponModel = gltfModel.scene;
             }
-
-            /*
-            // Fix materials for the entire scene
-            sceneRef.current.traverse((child) => {
-                if (child.isMesh && child.material) {
-                    child.material.shininess = 0;
-                    child.material.envMapIntensity = 0;
-                    child.material.needsUpdate = true;
-                }
-            });
-            */
 
             // Apply weapon-specific transformations
             weaponModel.position.set(
@@ -1187,16 +1212,12 @@ const Scene = () => {
             setEquippedWeapon({
                 id: params.weaponName,
                 name: params.weaponName,
-                weaponType: params.weaponType,
+                weaponType: inferredWeaponType,
                 ...config
             });
 
-            // Play the appropriate animation
-            if (weaponType === 'sword') {
-                playAnimation('Great Sword Idle');
-            } else if (weaponType === 'pistol') {
-                playAnimation('Pistol Idle');
-            }
+            // Play the appropriate animation based on inferred type
+            playAnimation(inferredWeaponType === 'sword' ? 'Great Sword Idle' : 'Pistol Idle');
 
             setShowShop(false);
 
@@ -1209,7 +1230,7 @@ const Scene = () => {
     const renderChatMessage = (message, index) => {
         // Parse message for action tags
         const { cleanMessage, tags } = parseMessageTags(message.message);
-        
+
         return (
             <div key={index} className="mb-4">
                 <div className="font-bold">{message.sender}</div>
@@ -1239,8 +1260,8 @@ const Scene = () => {
 
             {/* Add joystick container for mobile */}
             {isMobile && (
-                <div 
-                    id="joystick-zone" 
+                <div
+                    id="joystick-zone"
                     className="fixed bottom-20 left-20 w-[150px] h-[150px] z-20"
                 />
             )}
@@ -1270,7 +1291,7 @@ const Scene = () => {
                                 ✕
                             </Button>
                         </div>
-                        
+
                         <div className="space-y-6">
                             {/* Avatar Section */}
                             <div>
@@ -1337,9 +1358,9 @@ const Scene = () => {
                     <CardContent className="p-4">
                         <div className="flex justify-between items-center mb-3">
                             <span className="text-sm text-gray-700">Chatting with {NPC_NAME}</span>
-                            <Button 
-                                variant="ghost" 
-                                size="sm" 
+                            <Button
+                                variant="ghost"
+                                size="sm"
                                 onClick={endChat}
                                 className="text-gray-700 hover:text-gray-900"
                             >
@@ -1351,25 +1372,24 @@ const Scene = () => {
                         <div className="flex gap-4 h-[375px]">
                             {/* Chat column */}
                             <div className="flex-1 flex flex-col">
-                                <div 
+                                <div
                                     ref={chatContainerRef}
                                     className="flex-1 overflow-y-auto mb-4 space-y-2"
                                 >
                                     {chatMessages.map((msg, index) => {
                                         if (msg.sender === 'Player' || msg.message || !msg.isStreaming) {
                                             // Parse message and tags if it's an NPC message
-                                            const { cleanMessage, tags } = msg.sender === NPC_NAME 
+                                            const { cleanMessage, tags } = msg.sender === NPC_NAME
                                                 ? parseMessageTags(msg.message)
                                                 : { cleanMessage: msg.message, tags: [] };
 
                                             return (
                                                 <div
                                                     key={index}
-                                                    className={`p-3 rounded ${
-                                                        msg.sender === 'Player'
+                                                    className={`p-3 rounded ${msg.sender === 'Player'
                                                             ? 'bg-blue-100/95 ml-8'
                                                             : 'bg-gray-100/95 mr-8'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     <strong className="text-gray-700">{msg.sender}:</strong>{' '}
                                                     <span className="text-gray-800">
@@ -1445,43 +1465,43 @@ const Scene = () => {
                                                 </div>
                                                 <div className="flex gap-2 mt-2 justify-end">
                                                     {weapon.id === 'bat' || weapon.id === 'megaphone' ? (
-                                                        <a 
+                                                        <a
                                                             href={MARKETPLACE_LINKS[weapon.id].doggyMarket}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="inline-flex items-center px-3 py-1.5 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-sm"
                                                         >
-                                                            <img 
-                                                                src="/images/logos/Doggy Market.png" 
-                                                                alt="Doggy Market" 
+                                                            <img
+                                                                src="/images/logos/Doggy Market.png"
+                                                                alt="Doggy Market"
                                                                 className="w-4 h-4 mr-1"
                                                             />
                                                             Doggy Market
                                                         </a>
                                                     ) : (
                                                         <>
-                                                            <a 
+                                                            <a
                                                                 href={MARKETPLACE_LINKS[weapon.id].niftyIsland}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
                                                                 className="inline-flex items-center px-3 py-1.5 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm"
                                                             >
-                                                                <img 
-                                                                    src="/images/logos/Icon - Color - Nifty Island.svg" 
-                                                                    alt="Nifty Island" 
+                                                                <img
+                                                                    src="/images/logos/Icon - Color - Nifty Island.svg"
+                                                                    alt="Nifty Island"
                                                                     className="w-4 h-4 mr-1"
                                                                 />
                                                                 Nifty Island
                                                             </a>
-                                                            <a 
+                                                            <a
                                                                 href={MARKETPLACE_LINKS[weapon.id].opensea}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
                                                                 className="inline-flex items-center px-3 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
                                                             >
-                                                                <img 
-                                                                    src="/images/logos/OpenSea Logomark-Blue.svg" 
-                                                                    alt="OpenSea" 
+                                                                <img
+                                                                    src="/images/logos/OpenSea Logomark-Blue.svg"
+                                                                    alt="OpenSea"
                                                                     className="w-4 h-4 mr-1"
                                                                 />
                                                                 OpenSea
