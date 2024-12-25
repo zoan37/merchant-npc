@@ -1025,6 +1025,17 @@ const Scene = () => {
         // This will be implemented later to actually equip the weapon
     };
 
+    const getUpdatedUrl = (originalUrl) => {
+        const urlMappings = {
+            'https://content.niftyisland.com/nftables/258f9f9a-74de-4ba5-a145-5c3740d5c5ef/v/1/source.fbx':
+                'https://content.niftyisland.com/nftables/258f9f9a-74de-4ba5-a145-5c3740d5c5ef/v/2/source.fbx',
+            'https://content.niftyisland.com/nftables/1ccfd6ea-bf46-4b7b-a5da-4ae9ff40ab76/v/1/source.fbx':
+                'https://content.niftyisland.com/nftables/1ccfd6ea-bf46-4b7b-a5da-4ae9ff40ab76/v/3/source.fbx'
+        };
+        
+        return urlMappings[originalUrl] || originalUrl;
+    };
+
     const agentActionTryWeapon = async (params: WeaponActionParams) => {
         // First, remove any existing weapon by traversing the avatar scene
         if (avatarRef.current?.scene) {
@@ -1066,7 +1077,8 @@ const Scene = () => {
         }
 
         const weaponFile = weaponAsset.files[0];
-        const weaponUrl = weaponFile.url;
+        const originalUrl = weaponFile.url;
+        const weaponUrl = getUpdatedUrl(originalUrl); // Apply URL mapping here
         const fileType = weaponFile.file_type;
         const weaponType = params.weaponType.toLowerCase();
 
