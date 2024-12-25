@@ -949,26 +949,61 @@ const Scene = () => {
 
     // Add this helper function near the top of the Scene component
     const parseMessageTags = (message) => {
-        const tagPattern = /<<([^>>]*)>>/g;
         const tags = [];
-        const cleanMessage = message.replace(tagPattern, (match, content) => {
-            // Parse the tag content and store it
-            if (content.startsWith('try_weapon')) {
-                // Extract parameters from the try_weapon command
-                const params = content.match(/"([^"]*)"/g).map(p => p.replace(/"/g, ''));
-                tags.push({
-                    type: 'try_weapon',
-                    params: {
-                        target: params[0],
-                        weaponName: params[1],
-                        weaponType: params[2],
-                        contractAddress: params[3],
-                        tokenId: params[4]
-                    }
-                });
+        let cleanMessage = '';
+        let potentialTag = '';
+        let inTag = false;
+
+        // Process message character by character
+        for (let i = 0; i < message.length; i++) {
+            const char = message[i];
+            const nextChar = message[i + 1];
+
+            if (char === '<' && nextChar === '<') {
+                inTag = true;
+                potentialTag = '<<';
+                i++; // Skip next '<'
+                continue;
             }
-            return ''; // Remove the tag from the message
-        });
+
+            if (inTag) {
+                potentialTag += char;
+                if (char === '>' && message[i - 1] === '>') {
+                    // We found a complete tag, try to parse it
+                    const tagContent = potentialTag.slice(2, -2); // Remove << and >>
+                    if (tagContent.startsWith('try_weapon')) {
+                        try {
+                            const params = tagContent.match(/"([^"]*)"/g).map(p => p.replace(/"/g, ''));
+                            tags.push({
+                                type: 'try_weapon',
+                                params: {
+                                    target: params[0],
+                                    weaponName: params[1],
+                                    weaponType: params[2],
+                                    contractAddress: params[3],
+                                    tokenId: params[4]
+                                }
+                            });
+                        } catch (error) {
+                            // If parsing fails, treat it as regular text
+                            cleanMessage += potentialTag;
+                        }
+                    } else {
+                        // Not a valid tag, treat as regular text
+                        cleanMessage += potentialTag;
+                    }
+                    inTag = false;
+                    potentialTag = '';
+                }
+            } else {
+                cleanMessage += char;
+            }
+        }
+
+        // If we end with an incomplete tag, append it to the message
+        if (potentialTag) {
+            cleanMessage += potentialTag;
+        }
 
         return { cleanMessage, tags };
     };
@@ -1120,7 +1155,22 @@ const Scene = () => {
                                                 >
                                                     <strong className="text-gray-700">{msg.sender}:</strong>{' '}
                                                     <span className="text-gray-800">
-                                                        {cleanMessage}
+                                                        {cleanMessage.split(/(?=<<)/).map((part, i) => {
+                                                            // If this part starts with <<
+                                                            if (part.startsWith('<<')) {
+                                                                // If we're streaming and this is the last part
+                                                                if (msg.isStreaming && i === cleanMessage.split(/(?=<<)/).length - 1) {
+                                                                    return null; // Hide incomplete tag
+                                                                }
+                                                                // If it's a complete tag (has >>)
+                                                                if (part.includes('>>')) {
+                                                                    return null; // Hide complete tag
+                                                                }
+                                                                // If it's not a complete tag and we're not streaming
+                                                                return part; // Show it as normal text
+                                                            }
+                                                            return part; // Show normal text
+                                                        })}
                                                     </span>
                                                     {tags.length > 0 && (
                                                         <div className="flex flex-wrap gap-2 mt-2">
