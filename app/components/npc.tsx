@@ -1130,12 +1130,18 @@ const Scene = () => {
         const inferredWeaponType = inferWeaponType(metadata.metadata);
         console.log('Inferred weapon type:', inferredWeaponType);
 
-        // Modified weapon name matching logic
+        // Split the weapon name into parts and search for each part
+        const searchTerms = params.weaponName.toLowerCase().split('-').map(term => term.trim());
+        
+        // Modified weapon name matching logic - match all parts
         const weaponAsset = metadata.metadata.raw.metadata.assets.find(asset => {
-            const normalizedAssetName = asset.name.toLowerCase().replace(/\s+/g, '');
-            const normalizedWeaponName = params.weaponName.toLowerCase().replace(/\s+/g, '');
-            return normalizedAssetName === normalizedWeaponName;
+            const assetName = asset.name.toLowerCase();
+            return searchTerms.every(term => assetName.includes(term));
         });
+
+        console.log('Search terms:', searchTerms);
+        console.log('Available assets:', metadata.metadata.raw.metadata.assets.map(a => a.name));
+        console.log('Found asset:', weaponAsset);
 
         if (!weaponAsset?.files?.[0]) {
             console.error('No matching weapon asset or files found:', params.weaponName);
