@@ -947,6 +947,38 @@ const Scene = () => {
         };
     }, [isMobile]);
 
+    // Add this helper function near the top of the Scene component
+    const parseMessageTags = (message) => {
+        const tagPattern = /<<([^>>]*)>>/g;
+        const tags = [];
+        const cleanMessage = message.replace(tagPattern, (match, content) => {
+            // Parse the tag content and store it
+            if (content.startsWith('try_weapon')) {
+                // Extract parameters from the try_weapon command
+                const params = content.match(/"([^"]*)"/g).map(p => p.replace(/"/g, ''));
+                tags.push({
+                    type: 'try_weapon',
+                    params: {
+                        target: params[0],
+                        weaponName: params[1],
+                        weaponType: params[2],
+                        contractAddress: params[3],
+                        tokenId: params[4]
+                    }
+                });
+            }
+            return ''; // Remove the tag from the message
+        });
+
+        return { cleanMessage, tags };
+    };
+
+    // Add this dummy function that will be implemented later
+    const handleTryWeapon = (params) => {
+        console.log('Trying weapon with params:', params);
+        // This will be implemented later to actually equip the weapon
+    };
+
     // Modify the return statement to add the avatar selector UI
     return (
         <div className="relative w-full h-full">
@@ -1070,23 +1102,50 @@ const Scene = () => {
                                     ref={chatContainerRef}
                                     className="flex-1 overflow-y-auto mb-4 space-y-2"
                                 >
-                                    {chatMessages.map((msg, index) => (
-                                        msg.sender === 'Player' || msg.message || !msg.isStreaming ? (
-                                            <div
-                                                key={index}
-                                                className={`p-3 rounded ${
-                                                    msg.sender === 'Player'
-                                                        ? 'bg-blue-100/95 ml-8'
-                                                        : 'bg-gray-100/95 mr-8'
-                                                }`}
-                                            >
-                                                <strong className="text-gray-700">{msg.sender}:</strong>{' '}
-                                                <span className="text-gray-800">
-                                                    {msg.message}
-                                                </span>
-                                            </div>
-                                        ) : null
-                                    ))}
+                                    {chatMessages.map((msg, index) => {
+                                        if (msg.sender === 'Player' || msg.message || !msg.isStreaming) {
+                                            // Parse message and tags if it's an NPC message
+                                            const { cleanMessage, tags } = msg.sender === NPC_NAME 
+                                                ? parseMessageTags(msg.message)
+                                                : { cleanMessage: msg.message, tags: [] };
+
+                                            return (
+                                                <div
+                                                    key={index}
+                                                    className={`p-3 rounded ${
+                                                        msg.sender === 'Player'
+                                                            ? 'bg-blue-100/95 ml-8'
+                                                            : 'bg-gray-100/95 mr-8'
+                                                    }`}
+                                                >
+                                                    <strong className="text-gray-700">{msg.sender}:</strong>{' '}
+                                                    <span className="text-gray-800">
+                                                        {cleanMessage}
+                                                    </span>
+                                                    {tags.length > 0 && (
+                                                        <div className="flex flex-wrap gap-2 mt-2">
+                                                            {tags.map((tag, tagIndex) => {
+                                                                if (tag.type === 'try_weapon') {
+                                                                    return (
+                                                                        <Button
+                                                                            key={tagIndex}
+                                                                            onClick={() => handleTryWeapon(tag.params)}
+                                                                            size="sm"
+                                                                            variant="outline"
+                                                                        >
+                                                                            Try {tag.params.weaponName}
+                                                                        </Button>
+                                                                    );
+                                                                }
+                                                                return null;
+                                                            })}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        }
+                                        return null;
+                                    })}
                                 </div>
                                 <form onSubmit={handleChatSubmit} className="flex gap-2">
                                     <Input
