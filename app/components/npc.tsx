@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { loadMixamoAnimation } from './loadMixamoAnimation.js';
 import { Card, CardContent } from '@/components/ui/card';
@@ -13,6 +14,16 @@ import { Button } from '@/components/ui/button';
 import TWEEN from '@tweenjs/tween.js';
 import chatService from './chat_service';
 import nipplejs from 'nipplejs';
+import summaryMetadata from '@/public/context/summary_metadata_with_supply.json';
+
+// Add this type near other types/interfaces
+type WeaponActionParams = {
+    target: string;
+    weaponName: string;
+    weaponType: string;
+    contractAddress: string;
+    tokenId: string;
+};
 
 const Scene = () => {
     const containerRef = useRef(null);
@@ -1014,6 +1025,164 @@ const Scene = () => {
         // This will be implemented later to actually equip the weapon
     };
 
+    const agentActionTryWeapon = async (params: WeaponActionParams) => {
+        // Find the matching metadata entry
+        const metadata = summaryMetadata.find(item => 
+            item.contractAddress.toLowerCase() === params.contractAddress.toLowerCase() &&
+            item.tokenId === params.tokenId
+        );
+
+        if (!metadata?.metadata?.raw?.metadata?.assets) {
+            console.error('No matching metadata or assets found for weapon:', params);
+            return;
+        }
+
+        // Find the correct asset by matching weapon name
+        const weaponAsset = metadata.metadata.raw.metadata.assets.find(asset => {
+            const assetName = asset.name.toLowerCase();
+            const weaponName = params.weaponName.toLowerCase();
+            return assetName.includes(weaponName) || weaponName.includes(assetName);
+        });
+
+        if (!weaponAsset?.files?.[0]) {
+            console.error('No matching weapon asset or files found:', params.weaponName);
+            return;
+        }
+
+        const weaponFile = weaponAsset.files[0];
+        const weaponUrl = weaponFile.url;
+        const fileType = weaponFile.file_type;
+        const weaponType = params.weaponType.toLowerCase();
+
+        // Default weapon configurations
+        const weaponConfig = {
+            sword: {
+                position: { x: 0.05, y: -0.025, z: 0.0 },
+                rotation: { 
+                    x: -Math.PI / 2,
+                    y: Math.PI / 2 + 2 * Math.PI / 16,
+                    z: Math.PI / 8
+                },
+                scale: 1,
+                animation: './animations/Great Sword Idle.fbx'
+            },
+            pistol: {
+                position: { x: 0.05, y: -0.03, z: 0 },
+                rotation: { 
+                    x: -Math.PI / 2,
+                    y: Math.PI / 2 + Math.PI / 16,
+                    z: 0
+                },
+                scale: 1,
+                animation: './animations/Pistol Idle.fbx'
+            }
+        };
+
+        const config = weaponConfig[weaponType] || weaponConfig.sword;
+
+        // Remove any existing weapon
+        if (equippedWeaponRef.current) {
+            const parent = equippedWeaponRef.current.parent;
+            if (parent) {
+                parent.remove(equippedWeaponRef.current);
+            }
+        }
+
+        try {
+            let weaponModel;
+
+            // Load the weapon model based on file type
+            if (fileType === 'model/fbx') {
+                const fbxLoader = new FBXLoader();
+                const fbxModel = await fbxLoader.loadAsync(weaponUrl);
+                weaponModel = fbxModel;
+            } else {
+                const gltfLoader = new GLTFLoader();
+                const gltfModel = await gltfLoader.loadAsync(weaponUrl);
+                weaponModel = gltfModel.scene;
+            }
+
+            /*
+            // Fix materials for the entire scene
+            sceneRef.current.traverse((child) => {
+                if (child.isMesh && child.material) {
+                    child.material.shininess = 0;
+                    child.material.envMapIntensity = 0;
+                    child.material.needsUpdate = true;
+                }
+            });
+            */
+
+            // Apply weapon-specific transformations
+            weaponModel.position.set(
+                config.position.x,
+                config.position.y,
+                config.position.z
+            );
+            weaponModel.rotation.set(
+                config.rotation.x,
+                config.rotation.y,
+                config.rotation.z
+            );
+            weaponModel.scale.setScalar(config.scale);
+            weaponModel.name = 'weapon';
+
+            // Find the right hand bone and attach weapon
+            avatarRef.current?.scene.traverse((child) => {
+                if (child.name.includes('J_Bip_R_Hand')) {
+                    child.add(weaponModel);
+                }
+            });
+
+            equippedWeaponRef.current = weaponModel;
+            setEquippedWeapon({
+                id: params.weaponName,
+                name: params.weaponName,
+                weaponType: params.weaponType,
+                ...config
+            });
+
+            // Play the appropriate animation
+            if (weaponType === 'sword') {
+                playAnimation('Great Sword Idle');
+            } else if (weaponType === 'pistol') {
+                playAnimation('Pistol Idle');
+            }
+
+            setShowShop(false);
+
+        } catch (error) {
+            console.error('Error loading weapon:', error);
+        }
+    };
+
+    // Modify the chat message rendering to include action buttons
+    const renderChatMessage = (message, index) => {
+        // Parse message for action tags
+        const { cleanMessage, tags } = parseMessageTags(message.message);
+        
+        return (
+            <div key={index} className="mb-4">
+                <div className="font-bold">{message.sender}</div>
+                <div className="mt-1">{cleanMessage}</div>
+                {tags.map((tag, tagIndex) => {
+                    if (tag.type === 'try_weapon') {
+                        return (
+                            <Button
+                                key={tagIndex}
+                                onClick={() => agentActionTryWeapon(tag.params)}
+                                className="mt-2 mr-2"
+                            >
+                                Try {tag.params.weaponName}
+                            </Button>
+                        );
+                    }
+                    return null;
+                })}
+            </div>
+        );
+    };
+
     // Modify the return statement to add the avatar selector UI
     return (
         <div className="relative w-full h-full">
@@ -1179,7 +1348,7 @@ const Scene = () => {
                                                                     return (
                                                                         <Button
                                                                             key={tagIndex}
-                                                                            onClick={() => handleTryWeapon(tag.params)}
+                                                                            onClick={() => agentActionTryWeapon(tag.params)}
                                                                             size="sm"
                                                                             variant="outline"
                                                                         >
