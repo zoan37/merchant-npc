@@ -1026,6 +1026,17 @@ const Scene = () => {
     };
 
     const agentActionTryWeapon = async (params: WeaponActionParams) => {
+        // First, remove any existing weapon by traversing the avatar scene
+        if (avatarRef.current?.scene) {
+            avatarRef.current.scene.traverse((child) => {
+                if (child.name === 'weapon') {
+                    if (child.parent) {
+                        child.parent.remove(child);
+                    }
+                }
+            });
+        }
+
         // Find the matching metadata entry
         const metadata = summaryMetadata.find(item => 
             item.contractAddress.toLowerCase() === params.contractAddress.toLowerCase() &&
@@ -1037,11 +1048,16 @@ const Scene = () => {
             return;
         }
 
-        // Find the correct asset by matching weapon name
+        // Modified weapon name matching logic
         const weaponAsset = metadata.metadata.raw.metadata.assets.find(asset => {
-            const assetName = asset.name.toLowerCase();
-            const weaponName = params.weaponName.toLowerCase();
-            return assetName.includes(weaponName) || weaponName.includes(assetName);
+            // Normalize both names by removing spaces and converting to lowercase
+            const normalizedAssetName = asset.name.toLowerCase().replace(/\s+/g, '');
+            const normalizedWeaponName = params.weaponName.toLowerCase().replace(/\s+/g, '');
+            
+            // Log for debugging
+            console.log('Comparing:', normalizedAssetName, 'with:', normalizedWeaponName);
+            
+            return normalizedAssetName === normalizedWeaponName;
         });
 
         if (!weaponAsset?.files?.[0]) {
@@ -1079,14 +1095,6 @@ const Scene = () => {
         };
 
         const config = weaponConfig[weaponType] || weaponConfig.sword;
-
-        // Remove any existing weapon
-        if (equippedWeaponRef.current) {
-            const parent = equippedWeaponRef.current.parent;
-            if (parent) {
-                parent.remove(equippedWeaponRef.current);
-            }
-        }
 
         try {
             let weaponModel;
