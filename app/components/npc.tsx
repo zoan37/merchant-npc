@@ -1036,6 +1036,38 @@ const Scene = () => {
         return urlMappings[originalUrl] || originalUrl;
     };
 
+    // Add this helper function
+    const findWeaponInMetadata = (params: WeaponActionParams) => {
+        // First try exact match with contract address
+        const exactMatch = summaryMetadata.find(item => 
+            item.contractAddress.toLowerCase() === params.contractAddress.toLowerCase() &&
+            item.tokenId === params.tokenId
+        );
+        
+        if (exactMatch) return exactMatch;
+
+        // If no exact match, do fuzzy search by name
+        const fuzzyMatch = summaryMetadata.find(item => {
+            const metadata = item.metadata;
+            return metadata.name.toLowerCase().includes(params.weaponName.toLowerCase());
+        });
+
+        return fuzzyMatch;
+    };
+
+    // Update wherever you're currently searching for weapons
+    const handleWeaponAction = (params: WeaponActionParams) => {
+        const weaponData = findWeaponInMetadata(params);
+        
+        if (!weaponData) {
+            console.warn(`No metadata found for weapon: ${params.weaponName}`);
+            return null;
+        }
+
+        // Continue with existing weapon handling logic...
+        return weaponData;
+    };
+
     const agentActionTryWeapon = async (params: WeaponActionParams) => {
         // First, remove any existing weapon by traversing the avatar scene
         if (avatarRef.current?.scene) {
@@ -1049,10 +1081,7 @@ const Scene = () => {
         }
 
         // Find the matching metadata entry
-        const metadata = summaryMetadata.find(item => 
-            item.contractAddress.toLowerCase() === params.contractAddress.toLowerCase() &&
-            item.tokenId === params.tokenId
-        );
+        const metadata = handleWeaponAction(params);
 
         if (!metadata?.metadata?.raw?.metadata?.assets) {
             console.error('No matching metadata or assets found for weapon:', params);
