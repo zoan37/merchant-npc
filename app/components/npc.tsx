@@ -1283,6 +1283,8 @@ const Scene = () => {
         );
     };
 
+    // TODO: click weapon with mouse to view in details / try out
+
     // Add near the top of the Scene component
     const loadWeapons = async () => {
         const loader = new GLTFLoader();
@@ -1291,31 +1293,62 @@ const Scene = () => {
 
         for (const item of summaryMetadata) {
             const metadata = item.metadata;
-            // Find the first 3D model asset
-            const modelAsset = metadata.raw.metadata.assets?.find(asset => 
-                asset.files?.[0]?.file_type?.startsWith('model/')
-            );
-
-            if (!modelAsset?.files?.[0]) continue;
-
-            const modelFile = modelAsset.files[0];
-            const localPath = getLocalModelPath(modelFile.url, item);
-
-            try {
-                const gltf = await loader.loadAsync(localPath);
-                const weaponModel = gltf.scene;
-
-                // Position weapon in a row
-                weaponModel.position.set(xPosition, 1, -4); // y=1 to float above ground, z=-4 to place in front of camera
-                // weaponModel.scale.setScalar(0.5); // Adjust scale as needed
+            
+            // Get all weapon assets (excluding avatars)
+            const weaponAssets = metadata.raw.metadata.assets?.filter(asset => {
+                // Skip VRM files (avatars)
+                if (asset.files?.[0]?.file_type === 'model/vrm') {
+                    return false;
+                }
                 
-                // Add to scene
-                sceneRef.current.add(weaponModel);
+                // assume all other assets are weapons
+                // TODO: add a check for weapon type
+                return true;
+            });
 
-                // Move to next position
-                xPosition += spacing;
-            } catch (error) {
-                console.error(`Error loading weapon ${metadata.name}:`, error);
+            if (!weaponAssets?.length) continue;
+
+            // Load each weapon from the NFT
+            for (const weaponAsset of weaponAssets) {
+                const modelFile = weaponAsset.files?.[0];
+                if (!modelFile) continue;
+
+                // Find matching local file
+                const localFile = item._local_files?.find(file => 
+                    file.original_url === modelFile.url && 
+                    file.asset_name === weaponAsset.name
+                );
+
+                if (!localFile) {
+                    console.warn(`No local file found for weapon: ${weaponAsset.name}`);
+                    continue;
+                }
+
+                try {
+                    const localPath = `/${localFile.local_path}`;
+                    const gltf = await loader.loadAsync(localPath);
+                    const weaponModel = gltf.scene;
+
+                    // Position weapon in a row
+                    weaponModel.position.set(xPosition, 1, -4); // y=1 to float above ground, z=-4 to place in front of camera
+                    
+                    // Add metadata to the model for reference
+                    weaponModel.userData = {
+                        name: weaponAsset.name,
+                        contractAddress: item.contractAddress,
+                        tokenId: item.tokenId,
+                        // Find matching summary if available
+                        summary: item._summaries?.find(s => s.model_path === localFile.local_path)?.summary
+                    };
+                    
+                    // Add to scene
+                    sceneRef.current.add(weaponModel);
+
+                    // Move to next position
+                    xPosition += spacing;
+                } catch (error) {
+                    console.error(`Error loading weapon ${weaponAsset.name}:`, error);
+                }
             }
         }
     };
