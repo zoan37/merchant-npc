@@ -123,8 +123,8 @@ class ChatService {
                     // model: 'anthropic/claude-3-sonnet:beta',
                     model: 'google/gemini-flash-1.5-8b',
                     messages: this.messageHistory,
-                    temperature: 0.7,
-                    max_tokens: 1000,
+                    // temperature: 0.7,
+                    max_tokens: 3000,
                     stream: true
                 })
             });
