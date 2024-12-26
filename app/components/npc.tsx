@@ -603,8 +603,15 @@ const Scene = () => {
         const pmremGenerator = new THREE.PMREMGenerator(renderer);
         sceneRef.current.environment = pmremGenerator.fromScene(new RoomEnvironment(renderer), 0.04).texture;
 
+        /*
         var ambientLight = new THREE.AmbientLight(0x404040);
         sceneRef.current.add(ambientLight);
+        */
+
+        // light
+        const light = new THREE.DirectionalLight( 0xffffff, Math.PI );
+        light.position.set( 1.0, 1.0, 1.0 ).normalize();
+        scene.add( light );
 
         /*
         const light = new THREE.DirectionalLight(0xffffff);
