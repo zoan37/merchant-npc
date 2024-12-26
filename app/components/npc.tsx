@@ -1283,6 +1283,50 @@ const Scene = () => {
         );
     };
 
+    // Add near the top of the Scene component
+    const loadWeapons = async () => {
+        const loader = new GLTFLoader();
+        const spacing = .5; // Space between weapons
+        let xPosition = 0; // Starting X position
+
+        for (const item of summaryMetadata) {
+            const metadata = item.metadata;
+            // Find the first 3D model asset
+            const modelAsset = metadata.raw.metadata.assets?.find(asset => 
+                asset.files?.[0]?.file_type?.startsWith('model/')
+            );
+
+            if (!modelAsset?.files?.[0]) continue;
+
+            const modelFile = modelAsset.files[0];
+            const localPath = getLocalModelPath(modelFile.url, item);
+
+            try {
+                const gltf = await loader.loadAsync(localPath);
+                const weaponModel = gltf.scene;
+
+                // Position weapon in a row
+                weaponModel.position.set(xPosition, 1, -4); // y=1 to float above ground, z=-4 to place in front of camera
+                // weaponModel.scale.setScalar(0.5); // Adjust scale as needed
+                
+                // Add to scene
+                sceneRef.current.add(weaponModel);
+
+                // Move to next position
+                xPosition += spacing;
+            } catch (error) {
+                console.error(`Error loading weapon ${metadata.name}:`, error);
+            }
+        }
+    };
+
+    // Add to init() function, after scene setup
+    useEffect(() => {
+        if (sceneRef.current) {
+            loadWeapons();
+        }
+    }, []);
+
     // Modify the return statement to add the avatar selector UI
     return (
         <div className="relative w-full h-full">
