@@ -606,6 +606,7 @@ const Scene = () => {
         var ambientLight = new THREE.AmbientLight(0x404040);
         sceneRef.current.add(ambientLight);
 
+        /*
         const light = new THREE.DirectionalLight(0xffffff);
         light.position.set(1.0, 1.0, 1.0).normalize();
         sceneRef.current.add(light);
@@ -617,6 +618,7 @@ const Scene = () => {
         const dirLight = new THREE.DirectionalLight(0xffffff, 1);
         dirLight.position.set(0, 20, 10);
         sceneRef.current.add(dirLight);
+        */
 
         const mesh = new THREE.Mesh(
             new THREE.PlaneGeometry(2000, 2000),
@@ -1106,6 +1108,16 @@ const Scene = () => {
         return weaponData;
     };
 
+    const getLocalModelPath = (originalUrl: string, metadata: any) => {
+        // Find the matching local file info in the metadata
+        const localFile = metadata._local_files?.find(file => 
+            file.original_url === originalUrl
+        );
+    
+        // If found, return the local path, otherwise return the original URL
+        return localFile ? `/${localFile.local_path}` : originalUrl;
+    };
+
     // TODO: dragon dagger causes the avatars to look shiny. need to fix.
     // TODO: demon dragon pistol, cyber blaster not detected as pistols. need to handle weapon type inference with nfts with multiple weapons.
     // TODO: FBX weapons orientation look wrong. need to fix.
@@ -1154,7 +1166,8 @@ const Scene = () => {
 
         const weaponFile = weaponAsset.files[0];
         const originalUrl = weaponFile.url;
-        const weaponUrl = getUpdatedUrl(originalUrl);
+        // const weaponUrl = getUpdatedUrl(originalUrl);
+        const weaponUrl = getLocalModelPath(originalUrl, metadata);
         const fileType = weaponFile.file_type;
 
         // Use inferred weapon type for configuration
@@ -1187,7 +1200,7 @@ const Scene = () => {
             let weaponModel;
 
             // Load the weapon model based on file type
-            if (fileType === 'model/fbx') {
+            if (false && fileType === 'model/fbx') {
                 const fbxLoader = new FBXLoader();
                 const fbxModel = await fbxLoader.loadAsync(weaponUrl);
                 weaponModel = fbxModel;
