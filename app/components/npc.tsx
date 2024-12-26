@@ -60,6 +60,9 @@ const Scene = () => {
     const [equippedWeapon, setEquippedWeapon] = useState(null);
     const equippedWeaponRef = useRef(null);
 
+    // Add this ref near other refs
+    const weaponsLoadedRef = useRef(false);
+
     // Add this helper function near the top of the file
     const inferWeaponType = (metadata: any): 'sword' | 'pistol' => {
         const name = metadata?.name?.toLowerCase() || '';
@@ -587,8 +590,8 @@ const Scene = () => {
     function init() {
         const scene = new THREE.Scene();
         sceneRef.current = scene;
-        scene.background = new THREE.Color(0xe0e0e0);
-        scene.fog = new THREE.Fog(0xe0e0e0, 20, 100);
+        // scene.background = new THREE.Color(0xe0e0e0);
+        // scene.fog = new THREE.Fog(0xe0e0e0, 20, 100);
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 3, 3);
@@ -600,8 +603,8 @@ const Scene = () => {
         containerRef.current.appendChild(renderer.domElement);
         rendererRef.current = renderer;
 
-        const pmremGenerator = new THREE.PMREMGenerator(renderer);
-        sceneRef.current.environment = pmremGenerator.fromScene(new RoomEnvironment(renderer), 0.04).texture;
+        // const pmremGenerator = new THREE.PMREMGenerator(renderer);
+        // sceneRef.current.environment = pmremGenerator.fromScene(new RoomEnvironment(renderer), 0.04).texture;
 
         /*
         var ambientLight = new THREE.AmbientLight(0x404040);
@@ -609,9 +612,9 @@ const Scene = () => {
         */
 
         // light
-        const light = new THREE.DirectionalLight( 0xffffff, Math.PI );
-        light.position.set( 1.0, 1.0, 1.0 ).normalize();
-        scene.add( light );
+        // const light = new THREE.DirectionalLight( 0xffffff, Math.PI );
+        // light.position.set( 1.0, 1.0, 1.0 ).normalize();
+        // scene.add( light );
 
         /*
         const light = new THREE.DirectionalLight(0xffffff);
@@ -1353,10 +1356,11 @@ const Scene = () => {
         }
     };
 
-    // Add to init() function, after scene setup
+    // Modify the useEffect that calls loadWeapons
     useEffect(() => {
-        if (sceneRef.current) {
+        if (sceneRef.current && !weaponsLoadedRef.current) {
             loadWeapons();
+            weaponsLoadedRef.current = true;
         }
     }, []);
 
