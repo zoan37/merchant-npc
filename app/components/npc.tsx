@@ -590,8 +590,8 @@ const Scene = () => {
     function init() {
         const scene = new THREE.Scene();
         sceneRef.current = scene;
-        // scene.background = new THREE.Color(0xe0e0e0);
-        // scene.fog = new THREE.Fog(0xe0e0e0, 20, 100);
+        scene.background = new THREE.Color(0xe0e0e0);
+        scene.fog = new THREE.Fog(0xe0e0e0, 20, 100);
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 3, 3);
@@ -603,8 +603,8 @@ const Scene = () => {
         containerRef.current.appendChild(renderer.domElement);
         rendererRef.current = renderer;
 
-        // const pmremGenerator = new THREE.PMREMGenerator(renderer);
-        // sceneRef.current.environment = pmremGenerator.fromScene(new RoomEnvironment(renderer), 0.04).texture;
+        const pmremGenerator = new THREE.PMREMGenerator(renderer);
+        sceneRef.current.environment = pmremGenerator.fromScene(new RoomEnvironment(renderer), 0.04).texture;
 
         /*
         var ambientLight = new THREE.AmbientLight(0x404040);
@@ -612,9 +612,9 @@ const Scene = () => {
         */
 
         // light
-        // const light = new THREE.DirectionalLight( 0xffffff, Math.PI );
-        // light.position.set( 1.0, 1.0, 1.0 ).normalize();
-        // scene.add( light );
+        const light = new THREE.DirectionalLight( 0xffffff, Math.PI );
+        light.position.set( 1.0, 1.0, 1.0 ).normalize();
+        scene.add( light );
 
         /*
         const light = new THREE.DirectionalLight(0xffffff);
@@ -635,12 +635,12 @@ const Scene = () => {
             new THREE.MeshBasicMaterial({ color: 'rgb(220, 220, 220)', depthWrite: false })
         );
         mesh.rotation.x = -Math.PI / 2;
-        // sceneRef.current.add(mesh);
+        sceneRef.current.add(mesh);
 
         const grid = new THREE.GridHelper(200, 200, 0x000000, 0x000000);
         grid.material.opacity = 0.2;
         grid.material.transparent = true;
-        // sceneRef.current.add(grid);
+        sceneRef.current.add(grid);
 
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
@@ -1296,6 +1296,7 @@ const Scene = () => {
     };
 
     // TODO: click weapon with mouse to view in details / try out
+    // TODO: try to find a way to still load .fbx, but orient / scale it right to match the corresponding .glb
 
     // Add near the top of the Scene component
     const loadWeapons = async () => {
