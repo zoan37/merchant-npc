@@ -761,7 +761,7 @@ const Scene = () => {
         const clock = new THREE.Clock();
         const moveSpeed = 0.05;
         const rotationSpeed = 0.15;
-        const INTERACTION_DISTANCE = 2;
+        const INTERACTION_DISTANCE = 2.5;
 
         function animate() {
             requestAnimationFrame(animate);
