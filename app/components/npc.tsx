@@ -1120,14 +1120,14 @@ const Scene = () => {
 
     const getLocalModelPath = (originalUrl: string, metadata: any) => {
         // Find the matching local file info in the metadata
-        const localFile = metadata._local_files?.find(file => 
+        const localFile = metadata._local_files?.find(file =>
             file.original_url === originalUrl
         );
-    
+
         // If found, return the local path, otherwise return the original URL
         return localFile ? `/${localFile.local_path}` : originalUrl;
     };
-    
+
     // TODO: dragon dagger causes the avatars to look shiny. need to fix.
     // TODO: demon dragon pistol, cyber blaster not detected as pistols. need to handle weapon type inference with nfts with multiple weapons.
     // TODO: FBX weapons orientation look wrong. need to fix.
@@ -1158,7 +1158,7 @@ const Scene = () => {
 
         // Split the weapon name into parts and search for each part
         const searchTerms = params.weaponName.toLowerCase().split('-').map(term => term.trim());
-        
+
         // Modified weapon name matching logic - match all parts
         const weaponAsset = metadata.metadata.raw.metadata.assets.find(asset => {
             const assetName = asset.name.toLowerCase();
@@ -1220,7 +1220,16 @@ const Scene = () => {
                 weaponModel = gltfModel.scene;
             }
 
-            // Apply weapon-specific transformations
+            // Remove all lights from the loaded weapon model
+            weaponModel.traverse((node) => {
+                if (node.isLight) {
+                    // log change
+                    console.log('removing light:', node.name);
+                    node.intensity = 0;  // or node.parent.remove(node);
+                }
+            });
+
+            // Position weapon in a row
             weaponModel.position.set(
                 config.position.x,
                 config.position.y,
@@ -1296,14 +1305,14 @@ const Scene = () => {
 
         for (const item of summaryMetadata) {
             const metadata = item.metadata;
-            
+
             // Get all weapon assets (excluding avatars)
             const weaponAssets = metadata.raw.metadata.assets?.filter(asset => {
                 // Skip VRM files (avatars)
                 if (asset.files?.[0]?.file_type === 'model/vrm') {
                     return false;
                 }
-                
+
                 // assume all other assets are weapons
                 // TODO: add a check for weapon type
                 return true;
@@ -1317,8 +1326,8 @@ const Scene = () => {
                 if (!modelFile) continue;
 
                 // Find matching local file
-                const localFile = item._local_files?.find(file => 
-                    file.original_url === modelFile.url && 
+                const localFile = item._local_files?.find(file =>
+                    file.original_url === modelFile.url &&
                     file.asset_name === weaponAsset.name
                 );
 
@@ -1332,18 +1341,26 @@ const Scene = () => {
                     const gltf = await loader.loadAsync(localPath);
                     const weaponModel = gltf.scene;
 
+                    // Remove all lights from the loaded weapon model
+                    weaponModel.traverse((node) => {
+                        if (node.isLight) {
+                            // log change
+                            console.log('removing light:', node.name);
+                            node.intensity = 0;  // or node.parent.remove(node);
+                        }
+                    });
+
                     // Position weapon in a row
-                    weaponModel.position.set(xPosition, 1, -4); // y=1 to float above ground, z=-4 to place in front of camera
-                    
+                    weaponModel.position.set(xPosition, 1, -4);
+
                     // Add metadata to the model for reference
                     weaponModel.userData = {
                         name: weaponAsset.name,
                         contractAddress: item.contractAddress,
                         tokenId: item.tokenId,
-                        // Find matching summary if available
                         summary: item._summaries?.find(s => s.model_path === localFile.local_path)?.summary
                     };
-                    
+
                     // Add to scene
                     sceneRef.current.add(weaponModel);
 
@@ -1358,11 +1375,12 @@ const Scene = () => {
 
     // Modify the useEffect that calls loadWeapons
     useEffect(() => {
-        if (sceneRef.current && !weaponsLoadedRef.current) {
+        if (sceneRef.current && !weaponsLoadedRef.current && rendererRef.current) {
+            console.log('Loading weapons...');
             loadWeapons();
             weaponsLoadedRef.current = true;
         }
-    }, []);
+    }, [sceneRef.current, rendererRef.current]);
 
     // Modify the return statement to add the avatar selector UI
     return (
@@ -1498,8 +1516,8 @@ const Scene = () => {
                                                 <div
                                                     key={index}
                                                     className={`p-3 rounded ${msg.sender === 'Player'
-                                                            ? 'bg-blue-100/95 ml-8'
-                                                            : 'bg-gray-100/95 mr-8'
+                                                        ? 'bg-blue-100/95 ml-8'
+                                                        : 'bg-gray-100/95 mr-8'
                                                         }`}
                                                 >
                                                     <strong className="text-gray-700">{msg.sender}:</strong>{' '}
