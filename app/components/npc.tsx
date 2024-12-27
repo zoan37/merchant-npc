@@ -612,9 +612,9 @@ const Scene = () => {
         */
 
         // light
-        const light = new THREE.DirectionalLight( 0xffffff, Math.PI );
-        light.position.set( 1.0, 1.0, 1.0 ).normalize();
-        scene.add( light );
+        const light = new THREE.DirectionalLight(0xffffff, Math.PI);
+        light.position.set(1.0, 1.0, 1.0).normalize();
+        scene.add(light);
 
         /*
         const light = new THREE.DirectionalLight(0xffffff);
@@ -1302,7 +1302,7 @@ const Scene = () => {
     const loadWeapons = async () => {
         const loader = new GLTFLoader();
         const spacing = 0.5; // Space between weapons
-        
+
         // First, count total number of weapons to calculate total width
         let totalWeapons = 0;
         for (const item of summaryMetadata) {
@@ -1350,8 +1350,23 @@ const Scene = () => {
 
                 try {
                     const localPath = `/${localFile.local_path}`;
+                    // const publicPath = getUpdatedUrl(localFile.original_url);
+
                     const gltf = await loader.loadAsync(localPath);
                     const weaponModel = gltf.scene;
+
+                    /*
+                    let weaponModel;
+                    // Check file extension for loader type
+                    if (publicPath.toLowerCase().endsWith('.fbx')) {
+                        const fbxLoader = new FBXLoader();
+                        weaponModel = await fbxLoader.loadAsync(publicPath);
+                    } else {
+                        const gltfLoader = new GLTFLoader();
+                        const gltf = await gltfLoader.loadAsync(publicPath);
+                        weaponModel = gltf.scene;
+                    }
+                    */
 
                     // Remove all lights from the loaded weapon model
                     weaponModel.traverse((node) => {
