@@ -1301,8 +1301,21 @@ const Scene = () => {
     // Add near the top of the Scene component
     const loadWeapons = async () => {
         const loader = new GLTFLoader();
-        const spacing = .5; // Space between weapons
-        let xPosition = 0; // Starting X position
+        const spacing = 0.5; // Space between weapons
+        
+        // First, count total number of weapons to calculate total width
+        let totalWeapons = 0;
+        for (const item of summaryMetadata) {
+            const weaponAssets = item.metadata.raw.metadata.assets?.filter(asset => {
+                return asset.files?.[0]?.file_type !== 'model/vrm';
+            });
+            totalWeapons += weaponAssets?.length || 0;
+        }
+
+        // Calculate total width and starting position
+        const totalWidth = (totalWeapons - 1) * spacing;
+        let xPosition = -totalWidth / 2; // Start from the left side of the center
+        let zPosition = -10;
 
         for (const item of summaryMetadata) {
             const metadata = item.metadata;
@@ -1313,9 +1326,7 @@ const Scene = () => {
                 if (asset.files?.[0]?.file_type === 'model/vrm') {
                     return false;
                 }
-
                 // assume all other assets are weapons
-                // TODO: add a check for weapon type
                 return true;
             });
 
@@ -1352,7 +1363,7 @@ const Scene = () => {
                     });
 
                     // Position weapon in a row
-                    weaponModel.position.set(xPosition, 1, -4);
+                    weaponModel.position.set(xPosition, 1, zPosition);
 
                     // Add metadata to the model for reference
                     weaponModel.userData = {
