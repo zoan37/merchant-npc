@@ -635,12 +635,12 @@ const Scene = () => {
             new THREE.MeshBasicMaterial({ color: 'rgb(220, 220, 220)', depthWrite: false })
         );
         mesh.rotation.x = -Math.PI / 2;
-        sceneRef.current.add(mesh);
+        // sceneRef.current.add(mesh);
 
         const grid = new THREE.GridHelper(200, 200, 0x000000, 0x000000);
         grid.material.opacity = 0.2;
         grid.material.transparent = true;
-        sceneRef.current.add(grid);
+        // sceneRef.current.add(grid);
 
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
@@ -1127,7 +1127,7 @@ const Scene = () => {
         // If found, return the local path, otherwise return the original URL
         return localFile ? `/${localFile.local_path}` : originalUrl;
     };
-
+    
     // TODO: dragon dagger causes the avatars to look shiny. need to fix.
     // TODO: demon dragon pistol, cyber blaster not detected as pistols. need to handle weapon type inference with nfts with multiple weapons.
     // TODO: FBX weapons orientation look wrong. need to fix.
