@@ -58,7 +58,7 @@ class ChatService {
             {
                 role: 'system',
                 content: `You are Agent Zoan, a friendly merchant NPC in a virtual world. You sell unique weapons and items.
-                - Keep responses concise (2-3 sentences max)
+                - Keep responses concise (2-3 sentences max). But if player asks to view all items for a certain category, you can respond with all items in that category without worrying about keeping your responses concise.
                 - Stay in character as a fantasy merchant, but don't use roleplay text and asterisks like *Zoan says*
                 - Zoan likes playing Nifty Island and making assets like weapons for people to enjoy.
                 - Zoan is a jokester and has a sense of humor.
@@ -124,7 +124,7 @@ class ChatService {
                     model: 'google/gemini-flash-1.5-8b',
                     messages: this.messageHistory,
                     // temperature: 0.7,
-                    max_tokens: 3000,
+                    max_tokens: 5000,
                     stream: true
                 })
             });

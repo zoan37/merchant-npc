@@ -1332,6 +1332,9 @@ const Scene = () => {
                 id: params.weaponName,
                 name: params.weaponName,
                 weaponType: inferredWeaponType,
+                chain: weaponMetadata.chain,
+                contractAddress: weaponMetadata.contractAddress,
+                tokenId: weaponMetadata.tokenId,
                 ...config
             });
 
@@ -1866,9 +1869,26 @@ const Scene = () => {
                                 ) : (
                                     <div className="text-center p-4 bg-gray-100/95 rounded">
                                         <p className="mb-4">Currently trying: {equippedWeapon?.name}</p>
-                                        <Button onClick={returnToShop}>
-                                            Return to Shop
-                                        </Button>
+                                        <div className="flex flex-col gap-2">
+                                            {equippedWeapon?.contractAddress && equippedWeapon?.tokenId && equippedWeapon?.chain && (
+                                                <a
+                                                    href={getNiftyIslandUrl(equippedWeapon.chain, equippedWeapon.contractAddress, equippedWeapon.tokenId)}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center justify-center px-3 py-1.5 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm"
+                                                >
+                                                    <img
+                                                        src="/images/logos/Icon - Color - Nifty Island.svg"
+                                                        alt="Nifty Island"
+                                                        className="w-4 h-4 mr-1"
+                                                    />
+                                                    View on Nifty Island
+                                                </a>
+                                            )}
+                                            <Button onClick={returnToShop}>
+                                                Return to Shop
+                                            </Button>
+                                        </div>
                                     </div>
                                 )}
                             </div>
