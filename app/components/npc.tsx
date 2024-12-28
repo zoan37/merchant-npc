@@ -1928,8 +1928,14 @@ const Scene = () => {
             </Button>
 
             {showWeaponDetails && selectedWeaponDetails && (
-                <Card className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] bg-white/95 backdrop-blur-sm z-20">
-                    <CardContent className="p-6">
+                <Card 
+                    className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] bg-white/95 backdrop-blur-sm z-20"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <CardContent 
+                        className="p-6"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <div className="flex justify-between items-start mb-4">
                             <h2 className="text-xl font-bold">{selectedWeaponDetails.name}</h2>
                             <Button
