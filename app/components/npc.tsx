@@ -67,9 +67,10 @@ const Scene = () => {
     const raycasterRef = useRef(new THREE.Raycaster());
     const mouseRef = useRef(new THREE.Vector2());
     const hoveredWeaponRef = useRef(null);
-    const outlineMaterialRef = useRef(new THREE.MeshBasicMaterial({
+    const highlightMaterialRef = useRef(new THREE.MeshStandardMaterial({
         color: 0x4444ff,
-        side: THREE.BackSide,
+        metalness: 0.5,
+        roughness: 0.5,
     }));
 
     // Add this helper function near the top of the file
@@ -1409,7 +1410,7 @@ const Scene = () => {
                     weaponModel.traverse((node) => {
                         if (node.isMesh) {
                             // Store the original material for reference
-                            node.userData.originalMaterial = node.material;
+                            node.userData.originalMaterial = node.material.clone(); // Clone the material
                         }
                     });
                 } catch (error) {
@@ -1446,14 +1447,15 @@ const Scene = () => {
         // Calculate objects intersecting the picking ray
         const intersects = raycasterRef.current.intersectObjects(weaponObjects, true);
 
-        // If we were hovering a weapon previously, remove its outline
+        // If we were hovering a weapon previously, restore original materials
         if (hoveredWeaponRef.current) {
             hoveredWeaponRef.current.traverse((child) => {
-                if (child.isOutline) {
-                    child.removeFromParent(); // Use removeFromParent instead of parent.remove
+                if (child.isMesh && child.userData.originalMaterial) {
+                    child.material = child.userData.originalMaterial;
                 }
             });
             hoveredWeaponRef.current = null;
+            rendererRef.current.domElement.style.cursor = 'default';
         }
 
         // If we found a new weapon to hover
@@ -1466,18 +1468,19 @@ const Scene = () => {
             if (weaponObject !== hoveredWeaponRef.current) {
                 hoveredWeaponRef.current = weaponObject;
                 
-                // Create outline for each mesh in the weapon
+                // Change material for each mesh in the weapon
                 weaponObject.traverse((child) => {
-                    if (child.isMesh && !child.isOutline) { // Add check for isOutline
-                        const outlineMesh = new THREE.Mesh(
-                            child.geometry,
-                            outlineMaterialRef.current
-                        );
-                        outlineMesh.isOutline = true;
-                        outlineMesh.scale.multiplyScalar(1.05);
-                        child.add(outlineMesh);
+                    if (child.isMesh) {
+                        // Store original material if not already stored
+                        if (!child.userData.originalMaterial) {
+                            child.userData.originalMaterial = child.material.clone(); // Clone the material
+                        }
+                        child.material = highlightMaterialRef.current;
                     }
                 });
+
+                // Change cursor to pointer
+                rendererRef.current.domElement.style.cursor = 'pointer';
             }
         }
     };
