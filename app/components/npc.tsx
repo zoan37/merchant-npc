@@ -1167,6 +1167,7 @@ const Scene = () => {
     // TODO: dragon dagger causes the avatars to look shiny. need to fix.
     // TODO: demon dragon pistol, cyber blaster not detected as pistols. need to handle weapon type inference with nfts with multiple weapons.
     // TODO: FBX weapons orientation look wrong. need to fix.
+    // TODO: Three Sword Style - Demon Dragon Pistol is interpreted as a sword instead of pistol, for animation. need to fix.
 
     const agentActionTryWeapon = async (params: WeaponActionParams) => {
         // First, remove any existing weapon by traversing the avatar scene
@@ -1446,6 +1447,7 @@ const Scene = () => {
                             item.contractAddress,
                             item.tokenId
                         ),
+                        imageUrl: metadata.image.originalUrl
                     };
 
                     // log the user data set
@@ -1910,6 +1912,20 @@ const Scene = () => {
                         </div>
                         
                         <div className="space-y-4">
+                            {/* Add image section */}
+                            {selectedWeaponDetails.imageUrl && (
+                                <div className="relative w-full aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                                    <video
+                                        src={selectedWeaponDetails.imageUrl}
+                                        autoPlay
+                                        loop
+                                        muted
+                                        playsInline
+                                        className="object-contain w-full h-full"
+                                    />
+                                </div>
+                            )}
+
                             {selectedWeaponDetails.description && (
                                 <div>
                                     <h3 className="font-semibold mb-2">Description</h3>
