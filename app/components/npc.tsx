@@ -63,6 +63,15 @@ const Scene = () => {
     // Add this ref near other refs
     const weaponsLoadedRef = useRef(false);
 
+    // Add these new refs near other refs
+    const raycasterRef = useRef(new THREE.Raycaster());
+    const mouseRef = useRef(new THREE.Vector2());
+    const hoveredWeaponRef = useRef(null);
+    const outlineMaterialRef = useRef(new THREE.MeshBasicMaterial({
+        color: 0x4444ff,
+        side: THREE.BackSide,
+    }));
+
     // Add this helper function near the top of the file
     const inferWeaponType = (metadata: any): 'sword' | 'pistol' => {
         const name = metadata?.name?.toLowerCase() || '';
@@ -176,10 +185,12 @@ const Scene = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
+        window.addEventListener('mousemove', handleWeaponHover);
 
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
+            window.removeEventListener('mousemove', handleWeaponHover);
         };
     }, [isNearNPC, isChatting]);
 
@@ -1393,6 +1404,14 @@ const Scene = () => {
 
                     // Move to next position
                     xPosition += spacing;
+
+                    // Inside the weapon loading loop, after creating the weapon model:
+                    weaponModel.traverse((node) => {
+                        if (node.isMesh) {
+                            // Store the original material for reference
+                            node.userData.originalMaterial = node.material;
+                        }
+                    });
                 } catch (error) {
                     console.error(`Error loading weapon ${weaponAsset.name}:`, error);
                 }
@@ -1408,6 +1427,60 @@ const Scene = () => {
             weaponsLoadedRef.current = true;
         }
     }, [sceneRef.current, rendererRef.current]);
+
+    // Add this new function near other utility functions
+    const handleWeaponHover = (event) => {
+        if (!sceneRef.current || !cameraRef.current) return;
+
+        // Calculate mouse position in normalized device coordinates (-1 to +1)
+        const rect = rendererRef.current.domElement.getBoundingClientRect();
+        mouseRef.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        mouseRef.current.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+        // Update the picking ray with the camera and mouse position
+        raycasterRef.current.setFromCamera(mouseRef.current, cameraRef.current);
+
+        // Get only the top-level weapon objects for intersection testing
+        const weaponObjects = sceneRef.current.children.filter(obj => obj.userData?.name);
+        
+        // Calculate objects intersecting the picking ray
+        const intersects = raycasterRef.current.intersectObjects(weaponObjects, true);
+
+        // If we were hovering a weapon previously, remove its outline
+        if (hoveredWeaponRef.current) {
+            hoveredWeaponRef.current.traverse((child) => {
+                if (child.isOutline) {
+                    child.removeFromParent(); // Use removeFromParent instead of parent.remove
+                }
+            });
+            hoveredWeaponRef.current = null;
+        }
+
+        // If we found a new weapon to hover
+        if (intersects.length > 0) {
+            let weaponObject = intersects[0].object;
+            while (weaponObject.parent && !weaponObject.userData?.name) {
+                weaponObject = weaponObject.parent;
+            }
+
+            if (weaponObject !== hoveredWeaponRef.current) {
+                hoveredWeaponRef.current = weaponObject;
+                
+                // Create outline for each mesh in the weapon
+                weaponObject.traverse((child) => {
+                    if (child.isMesh && !child.isOutline) { // Add check for isOutline
+                        const outlineMesh = new THREE.Mesh(
+                            child.geometry,
+                            outlineMaterialRef.current
+                        );
+                        outlineMesh.isOutline = true;
+                        outlineMesh.scale.multiplyScalar(1.05);
+                        child.add(outlineMesh);
+                    }
+                });
+            }
+        }
+    };
 
     // Modify the return statement to add the avatar selector UI
     return (
