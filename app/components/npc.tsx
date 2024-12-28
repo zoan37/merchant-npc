@@ -25,6 +25,11 @@ type WeaponActionParams = {
     tokenId: string;
 };
 
+// Add this helper function near the top of the file
+const getNiftyIslandUrl = (chain: string, contractAddress: string, tokenId: string) => {
+    return `https://niftyisland.com/item/${chain}/${contractAddress}/${tokenId}`;
+};
+
 const Scene = () => {
     const containerRef = useRef(null);
     const rendererRef = useRef(null);
@@ -1434,7 +1439,13 @@ const Scene = () => {
                         contractAddress: item.contractAddress,
                         tokenId: item.tokenId,
                         metadata: metadata,
-                        summary: item._summaries?.find(s => s.model_path === localFile.local_path)?.summary
+                        summary: item._summaries?.find(s => s.model_path === localFile.local_path)?.summary,
+                        description: metadata.description,
+                        niftyIslandLink: getNiftyIslandUrl(
+                            item.chain,
+                            item.contractAddress,
+                            item.tokenId
+                        ),
                     };
 
                     // log the user data set
@@ -1899,29 +1910,27 @@ const Scene = () => {
                         </div>
                         
                         <div className="space-y-4">
-                            {selectedWeaponDetails.summary && (
+                            {selectedWeaponDetails.description && (
                                 <div>
                                     <h3 className="font-semibold mb-2">Description</h3>
-                                    <p className="text-gray-700">{selectedWeaponDetails.summary}</p>
+                                    <p className="text-gray-700">{selectedWeaponDetails.description}</p>
                                 </div>
                             )}
-                            
-                            <div className="flex gap-4">
-                                <div>
-                                    <h3 className="font-semibold mb-2">Contract</h3>
-                                    <p className="text-sm text-gray-600 break-all">
-                                        {selectedWeaponDetails.contractAddress}
-                                    </p>
-                                </div>
-                                <div>
-                                    <h3 className="font-semibold mb-2">Token ID</h3>
-                                    <p className="text-sm text-gray-600">
-                                        {selectedWeaponDetails.tokenId}
-                                    </p>
-                                </div>
-                            </div>
 
-                            <div className="flex justify-end gap-2 mt-6">
+                            <div className="flex justify-between items-center gap-2 mt-6">
+                                <a
+                                    href={selectedWeaponDetails.niftyIslandLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center px-3 py-1.5 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm"
+                                >
+                                    <img
+                                        src="/images/logos/Icon - Color - Nifty Island.svg"
+                                        alt="Nifty Island"
+                                        className="w-4 h-4 mr-1"
+                                    />
+                                    View on Nifty Island
+                                </a>
                                 <Button
                                     onClick={() => {
                                         agentActionTryWeapon({
