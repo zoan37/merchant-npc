@@ -167,37 +167,7 @@ const Scene = () => {
                 z: 0
             },
             scale: 1.0
-        },
-        {
-            id: 'bat',
-            name: 'Doginal Bat',
-            price: '6.9 DOGE',
-            model: './weapons/doginal_bat_super_finalizing__for_nifty.glb',
-            animation: './animations/Great Sword Idle.fbx',
-            weaponType: 'sword',
-            position: { x: 0.05, y: -0.025, z: 0.0 },
-            rotation: {
-                x: -Math.PI / 2 - 0 * Math.PI / 16,
-                y: Math.PI / 2 + 2 * Math.PI / 16,
-                z: Math.PI / 8 + -2 * Math.PI / 16
-            },
-            scale: 1.0
-        },
-        {
-            id: 'megaphone',
-            name: 'Doginal Megaphone',
-            price: '3 DOGE',
-            model: './weapons/doginal_megaphone_compression_3.glb',
-            animation: './animations/Pistol Idle.fbx',
-            weaponType: 'pistol',
-            position: { x: 0.05, y: -0.03, z: 0 },
-            rotation: {
-                x: -Math.PI / 2,
-                y: Math.PI / 2 + Math.PI / 16,
-                z: 0
-            },
-            scale: 1.0
-        },
+        }
     ];
 
     useEffect(() => {
@@ -1199,25 +1169,25 @@ const Scene = () => {
         }
 
         // Find the matching metadata entry
-        const metadata = handleWeaponAction(params);
+        let weaponMetadata = handleWeaponAction(params);
 
-        if (!metadata?.metadata?.raw?.metadata?.assets) {
+        if (!weaponMetadata?.metadata?.raw?.metadata?.assets) {
             console.error('No matching metadata or assets found for weapon:', params);
             return;
         }
         
         console.log('Searching for weapon:', params.weaponName);
-        console.log('Available assets:', metadata.metadata.raw.metadata.assets);
+        console.log('Available assets:', weaponMetadata.metadata.raw.metadata.assets);
 
         // Infer the weapon type from metadata
-        const inferredWeaponType = inferWeaponType(params, metadata.metadata);
+        const inferredWeaponType = inferWeaponType(params, weaponMetadata.metadata);
         console.log('Inferred weapon type:', inferredWeaponType);
 
         // Split the weapon name into parts and search for each part
         const searchTerms = params.weaponName.toLowerCase().split('-').map(term => term.trim());
 
         // Modified weapon name matching logic - case insensitive with string normalization
-        const weaponAsset = metadata.metadata.raw.metadata.assets.find(asset => {
+        let weaponAsset = weaponMetadata.metadata.raw.metadata.assets.find(asset => {
             // Normalize strings: trim whitespace, convert to lowercase, and remove extra spaces
             const normalizedAssetName = asset.name.trim().toLowerCase().replace(/\s+/g, ' ');
             const normalizedWeaponName = params.weaponName.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -1251,19 +1221,41 @@ const Scene = () => {
         });
 
         console.log('Search terms:', searchTerms);
-        console.log('Available assets:', metadata.metadata.raw.metadata.assets.map(a => a.name));
+        console.log('Available assets:', weaponMetadata.metadata.raw.metadata.assets.map(a => a.name));
         console.log('Found asset:', weaponAsset);
 
         if (!weaponAsset?.files?.[0]) {
-            console.error('No matching weapon asset or files found:', params.weaponName);
-            return;
+            console.log('No matching weapon asset or files found, trying fallback name search...');
+            
+            // Try searching across all metadata entries by name only
+            for (const item of summaryMetadata) {
+                const assets = item.metadata?.raw?.metadata?.assets || [];
+                const matchingAsset = assets.find(asset => {
+                    const normalizedAssetName = asset.name.trim().toLowerCase().replace(/\s+/g, ' ');
+                    const normalizedWeaponName = params.weaponName.trim().toLowerCase().replace(/\s+/g, ' ');
+                    
+                    return normalizedAssetName.includes(normalizedWeaponName) ||
+                           normalizedWeaponName.includes(normalizedAssetName);
+                });
+
+                if (matchingAsset?.files?.[0]) {
+                    console.log('Found weapon via fallback name search:', matchingAsset.name);
+                    weaponMetadata = item;
+                    weaponAsset = matchingAsset;
+                    break;
+                }
+            }
+
+            // If still no match found, then error out
+            if (!weaponAsset?.files?.[0]) {
+                console.error('No matching weapon asset found, even after fallback search:', params.weaponName);
+                return;
+            }
         }
 
-        const weaponFile = weaponAsset.files[0];
-        const originalUrl = weaponFile.url;
-        // const weaponUrl = getUpdatedUrl(originalUrl);
-        const weaponUrl = getLocalModelPath(originalUrl, metadata);
-        const fileType = weaponFile.file_type;
+        const originalUrl = weaponAsset.files[0].url;
+        const weaponUrl = getLocalModelPath(originalUrl, weaponMetadata);
+        const fileType = weaponAsset.files[0].file_type;
 
         // Use inferred weapon type for configuration
         const weaponConfig = {
@@ -1821,7 +1813,7 @@ const Scene = () => {
 
                             {/* Shop column */}
                             <div className="w-80 border-l pl-4 overflow-y-auto">
-                                <h3 className="font-semibold mb-3">Available Items</h3>
+                                <h3 className="font-semibold mb-3">New Items</h3>
                                 {showShop ? (
                                     <div className="space-y-4">
                                         {weapons.map((weapon) => (
@@ -1863,20 +1855,7 @@ const Scene = () => {
                                                                     alt="Nifty Island"
                                                                     className="w-4 h-4 mr-1"
                                                                 />
-                                                                Nifty Island
-                                                            </a>
-                                                            <a
-                                                                href={MARKETPLACE_LINKS[weapon.id].opensea}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="inline-flex items-center px-3 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-                                                            >
-                                                                <img
-                                                                    src="/images/logos/OpenSea Logomark-Blue.svg"
-                                                                    alt="OpenSea"
-                                                                    className="w-4 h-4 mr-1"
-                                                                />
-                                                                OpenSea
+                                                                Buy on Nifty Island
                                                             </a>
                                                         </>
                                                     )}
