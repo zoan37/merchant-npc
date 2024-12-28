@@ -1845,7 +1845,9 @@ const Scene = () => {
 
                             {/* Shop column */}
                             <div className="w-80 border-l pl-4 overflow-y-auto">
-                                <h3 className="font-semibold mb-3">New Items</h3>
+                                <h3 className="font-semibold mb-3">
+                                    {showShop ? 'New Items' : 'Equipped Weapon'}
+                                </h3>
                                 {showShop ? (
                                     <div className="space-y-4">
                                         {weapons.length > 0 ? (
@@ -1903,7 +1905,7 @@ const Scene = () => {
                                     </div>
                                 ) : (
                                     <div className="text-center p-4 bg-gray-100/95 rounded">
-                                        <p className="mb-4">Currently trying: {equippedWeapon?.name}</p>
+                                        <p className="mb-4">{equippedWeapon?.name}</p>
                                         <div className="flex flex-col gap-2">
                                             {equippedWeapon?.contractAddress && equippedWeapon?.tokenId && equippedWeapon?.chain && (
                                                 <a
