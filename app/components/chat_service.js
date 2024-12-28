@@ -117,21 +117,13 @@ class ChatService {
         this.addMessage('user', userMessage);
 
         try {
-            const response = await fetch(OPENROUTER_URL, {
+            const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-                    'HTTP-Referer': window.location.origin,
-                    'X-Title': 'Virtual World NPC Chat'
                 },
                 body: JSON.stringify({
-                    // model: 'anthropic/claude-3-sonnet:beta',
-                    model: 'google/gemini-flash-1.5-8b',
-                    messages: this.messageHistory,
-                    // temperature: 0.7,
-                    max_tokens: 5000,
-                    stream: true
+                    messages: this.messageHistory
                 })
             });
 
