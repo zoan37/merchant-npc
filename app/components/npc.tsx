@@ -1433,8 +1433,12 @@ const Scene = () => {
                         name: weaponAsset.name,
                         contractAddress: item.contractAddress,
                         tokenId: item.tokenId,
+                        metadata: metadata,
                         summary: item._summaries?.find(s => s.model_path === localFile.local_path)?.summary
                     };
+
+                    // log the user data set
+                    console.log('weaponModel.userData', weaponModel.userData);
 
                     // Add a unique modelId to all parts of this weapon
                     const modelId = `weapon_${modelIdCounter++}`;
@@ -1540,12 +1544,36 @@ const Scene = () => {
         }
     };
 
-    // Add this new click handler function near other handlers
+    // Add this helper function to traverse up the object hierarchy
+    const findModelRoot = (object) => {
+        let current = object;
+        while (current) {
+            // Check if this object has the metadata we're looking for
+            if (current.userData?.contractAddress) {
+                return current;
+            }
+            current = current.parent;
+        }
+        return null;
+    };
+
+    // Modify the handleWeaponClick function
     const handleWeaponClick = (event) => {
         if (!hoveredWeaponRef.current) return;
 
-        // Get the weapon data from userData
-        const weaponData = hoveredWeaponRef.current.userData;
+        // Find the root object that contains our metadata
+        const modelRoot = findModelRoot(hoveredWeaponRef.current);
+        
+        if (!modelRoot) {
+            console.error('Could not find model root with metadata');
+            return;
+        }
+
+        // Get the weapon data from the root object's userData
+        const weaponData = modelRoot.userData;
+        
+        console.log('weaponData', weaponData);
+        
         setSelectedWeaponDetails(weaponData);
         setShowWeaponDetails(true);
     };
