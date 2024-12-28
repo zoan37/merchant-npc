@@ -835,6 +835,12 @@ const Scene = () => {
 
                         controls.target.copy(avatar.position).add(new THREE.Vector3(0, 1, 0));
                         camera.position.copy(controls.target).add(cameraOffset);
+
+                        // After moving the avatar, update weapon highlighting
+                        handleWeaponHover({ 
+                            clientX: mouseRef.current.x * window.innerWidth / 2 + window.innerWidth / 2,
+                            clientY: -mouseRef.current.y * window.innerHeight / 2 + window.innerHeight / 2
+                        });
                     } else {
                         const currentWeapon = equippedWeaponRef.current;
                         if (currentWeapon) {
