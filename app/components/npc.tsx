@@ -1329,6 +1329,8 @@ const Scene = () => {
         let xPosition = -totalWidth / 2; // Start from the left side of the center
         let zPosition = -10;
 
+        let modelIdCounter = 0;
+
         for (const item of summaryMetadata) {
             const metadata = item.metadata;
 
@@ -1400,6 +1402,15 @@ const Scene = () => {
                         summary: item._summaries?.find(s => s.model_path === localFile.local_path)?.summary
                     };
 
+                    // Add a unique modelId to all parts of this weapon
+                    const modelId = `weapon_${modelIdCounter++}`;
+                    weaponModel.traverse(node => {
+                        node.userData.modelId = modelId;
+                        if (node.isMesh) {
+                            node.userData.originalMaterial = node.material;
+                        }
+                    });
+
                     // Add to scene
                     sceneRef.current.add(weaponModel);
 
@@ -1447,39 +1458,49 @@ const Scene = () => {
         // Calculate objects intersecting the picking ray
         const intersects = raycasterRef.current.intersectObjects(weaponObjects, true);
 
-        // If we were hovering a weapon previously, restore original materials
+        // If we were hovering a weapon previously
         if (hoveredWeaponRef.current) {
-            hoveredWeaponRef.current.traverse((child) => {
-                if (child.isMesh && child.userData.originalMaterial) {
-                    child.material = child.userData.originalMaterial;
+            // Get all meshes in the weapon model
+            const meshes = [];
+            hoveredWeaponRef.current.parent.children.forEach(child => {
+                if (child.userData.modelId === hoveredWeaponRef.current.userData.modelId) {
+                    child.traverse(subChild => {
+                        if (subChild.isMesh && subChild.userData.originalMaterial) {
+                            subChild.material = subChild.userData.originalMaterial;
+                        }
+                    });
                 }
             });
+
             hoveredWeaponRef.current = null;
             rendererRef.current.domElement.style.cursor = 'default';
         }
 
         // If we found a new weapon to hover
         if (intersects.length > 0) {
-            let weaponObject = intersects[0].object;
-            while (weaponObject.parent && !weaponObject.userData?.name) {
-                weaponObject = weaponObject.parent;
+            const intersectedObject = intersects[0].object;
+            let modelRoot = intersectedObject;
+            while (modelRoot.parent && !modelRoot.userData?.name) {
+                modelRoot = modelRoot.parent;
             }
 
-            if (weaponObject !== hoveredWeaponRef.current) {
-                hoveredWeaponRef.current = weaponObject;
-                
-                // Change material for each mesh in the weapon
-                weaponObject.traverse((child) => {
-                    if (child.isMesh) {
-                        // Store original material if not already stored
-                        if (!child.userData.originalMaterial) {
-                            child.userData.originalMaterial = child.material.clone(); // Clone the material
-                        }
-                        child.material = highlightMaterialRef.current;
+            if (modelRoot !== hoveredWeaponRef.current) {
+                hoveredWeaponRef.current = modelRoot;
+
+                // Apply highlight to all meshes that share the same model ID
+                modelRoot.parent.children.forEach(child => {
+                    if (child.userData.modelId === modelRoot.userData.modelId) {
+                        child.traverse(subChild => {
+                            if (subChild.isMesh) {
+                                if (!subChild.userData.originalMaterial) {
+                                    subChild.userData.originalMaterial = subChild.material;
+                                }
+                                subChild.material = highlightMaterialRef.current;
+                            }
+                        });
                     }
                 });
 
-                // Change cursor to pointer
                 rendererRef.current.domElement.style.cursor = 'pointer';
             }
         }
