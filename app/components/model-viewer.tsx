@@ -29,6 +29,8 @@ declare global {
           'camera-target'?: string;
           'animation-name'?: string;
           'animation-crossfade-duration'?: string;
+          'auto-rotate-delay'?: number;
+          'interpolation-decay'?: number;
           style?: React.CSSProperties;
         },
         HTMLElement
@@ -63,6 +65,8 @@ interface ModelViewerProps {
   style?: React.CSSProperties;
   onLoad?: () => void;
   onError?: (error: ErrorEvent) => void;
+  autoRotateDelay?: number;
+  interpolationDecay?: number;
 }
 
 const ModelViewer: React.FC<ModelViewerProps> = ({
@@ -91,6 +95,8 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
   style = {},
   onLoad,
   onError,
+  autoRotateDelay,
+  interpolationDecay,
 }) => {
   const modelViewerRef = useRef<HTMLElement>(null);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
@@ -155,6 +161,8 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
           backgroundColor: 'transparent',
           ...style,
         }}
+        auto-rotate-delay={autoRotateDelay}
+        interpolation-decay={interpolationDecay}
       />
     </>
   );

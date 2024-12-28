@@ -1959,6 +1959,9 @@ const Scene = () => {
                                     alt={selectedWeaponDetails.name}
                                     cameraControls
                                     autoRotate
+                                    autoRotateDelay={0}
+                                    rotationPerSecond="60deg"
+                                    interpolationDecay={200}
                                     environmentImage="neutral"
                                     shadowIntensity={1}
                                     exposure={1}
