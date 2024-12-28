@@ -1758,8 +1758,14 @@ const Scene = () => {
                                                         : 'bg-gray-100/95 mr-8'
                                                         }`}
                                                 >
-                                                    <strong className="text-gray-700">{msg.sender}:</strong>{' '}
-                                                    <span className="text-gray-800">
+                                                    <span className={`inline-block px-2 py-0.5 rounded text-sm ${
+                                                        msg.sender === 'Player'
+                                                            ? 'bg-blue-200 text-blue-800'
+                                                            : 'bg-purple-200 text-purple-800'
+                                                    } mb-1`}>
+                                                        {msg.sender}
+                                                    </span>
+                                                    <span className="text-gray-800 block mt-1">
                                                         <ReactMarkdown>
                                                             {cleanMessage.split(/(?=<<)/).map((part, i) => {
                                                                 // If this part starts with <<
