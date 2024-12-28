@@ -442,6 +442,9 @@ const Scene = () => {
         try {
             const response = await chatService.getNPCResponse(userMessage, streamHandler);
 
+            // Log the complete message
+            console.log('Complete NPC response:', response.message);
+
             setChatMessages(prev => {
                 const newMessages = [...prev];
                 const lastMessage = newMessages[newMessages.length - 1];
@@ -1118,7 +1121,11 @@ const Scene = () => {
             item.tokenId === params.tokenId
         );
 
+        console.log('Exact match:', exactMatch);
+
         if (exactMatch) return exactMatch;
+
+        console.log('Exact match not found, doing fuzzy search');
 
         // If no exact match, do fuzzy search by name
         const fuzzyMatch = summaryMetadata.find(item => {
@@ -1175,6 +1182,9 @@ const Scene = () => {
             console.error('No matching metadata or assets found for weapon:', params);
             return;
         }
+        
+        console.log('Searching for weapon:', params.weaponName);
+        console.log('Available assets:', metadata.metadata.raw.metadata.assets);
 
         // Infer the weapon type from metadata
         const inferredWeaponType = inferWeaponType(metadata.metadata);
@@ -1850,7 +1860,10 @@ const Scene = () => {
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setShowWeaponDetails(false)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setShowWeaponDetails(false);
+                                }}
                                 className="text-gray-500 hover:text-gray-700"
                             >
                                 ✕

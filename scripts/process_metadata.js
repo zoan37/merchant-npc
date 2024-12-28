@@ -25,6 +25,8 @@ function processGLBMetadata(metadata) {
       const glbData = {
         assetName: file.asset_name,
         // localPath: file.local_path,
+        nftChain: nft.chain,
+        nftContractAddress: nft.contractAddress,
         nftTokenId: nft.tokenId,
         nftTotalSupply: parseInt(nft._totalSupply),
         // nftName: nft.metadata.name,
