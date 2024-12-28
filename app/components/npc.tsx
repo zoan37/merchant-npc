@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import TWEEN from '@tweenjs/tween.js';
 import chatService from './chat_service';
 import nipplejs from 'nipplejs';
-import summaryMetadata from '@/public/context/summary_metadata_with_supply.json';
+import summaryMetadata from '@/public/context/summary_metadata_with_vercel_urls.json';
 import ModelViewer from './model-viewer';
 import ReactMarkdown from 'react-markdown';
 
@@ -30,6 +30,27 @@ type WeaponActionParams = {
 // Add this helper function near the top of the file
 const getNiftyIslandUrl = (chain: string, contractAddress: string, tokenId: string) => {
     return `https://niftyisland.com/item/${chain}/${contractAddress}/${tokenId}`;
+};
+
+// Add this helper function near other utility functions
+const getVercelUrlFromLocalPath = (localPath: string): string | null => {
+    // Remove leading slash if present
+    const normalizedPath = localPath.startsWith('/') ? localPath.slice(1) : localPath;
+
+    // Search through all items in summary metadata
+    for (const item of summaryMetadata) {
+        // Look through _local_files array of each item
+        const matchingFile = item._local_files?.find(file => 
+            file.local_path === normalizedPath
+        );
+
+        if (matchingFile?.vercel_url) {
+            return matchingFile.vercel_url;
+        }
+    }
+
+    console.warn(`No Vercel URL found for local path: ${localPath}`);
+    return null;
 };
 
 const Scene = () => {
@@ -1255,6 +1276,7 @@ const Scene = () => {
 
         const originalUrl = weaponAsset.files[0].url;
         const weaponUrl = getLocalModelPath(originalUrl, weaponMetadata);
+        const vercelUrl = getVercelUrlFromLocalPath(weaponUrl);
         const fileType = weaponAsset.files[0].file_type;
 
         // Use inferred weapon type for configuration
@@ -1289,11 +1311,11 @@ const Scene = () => {
             // Load the weapon model based on file type
             if (false && fileType === 'model/fbx') {
                 const fbxLoader = new FBXLoader();
-                const fbxModel = await fbxLoader.loadAsync(weaponUrl);
+                const fbxModel = await fbxLoader.loadAsync(vercelUrl);
                 weaponModel = fbxModel;
             } else {
                 const gltfLoader = new GLTFLoader();
-                const gltfModel = await gltfLoader.loadAsync(weaponUrl);
+                const gltfModel = await gltfLoader.loadAsync(vercelUrl);
                 weaponModel = gltfModel.scene;
             }
 
@@ -1434,7 +1456,8 @@ const Scene = () => {
                     const localPath = `/${localFile.local_path}`;
                     // const publicPath = getUpdatedUrl(localFile.original_url);
 
-                    const gltf = await loader.loadAsync(localPath);
+                    let vercelUrl = getVercelUrlFromLocalPath(localPath);
+                    const gltf = await loader.loadAsync(vercelUrl);
                     const weaponModel = gltf.scene;
 
                     /*
@@ -1476,7 +1499,8 @@ const Scene = () => {
                             item.tokenId
                         ),
                         imageUrl: metadata.image.originalUrl,
-                        localPath: localPath
+                        localPath: localPath,
+                        vercelUrl: vercelUrl
                     };
 
                     // log the user data set
@@ -1958,7 +1982,7 @@ const Scene = () => {
                             {/* Updated model viewer section */}
                             <div className="relative w-full aspect-square bg-gray-100 rounded-lg overflow-hidden">
                                 <ModelViewer
-                                    src={selectedWeaponDetails.localPath}
+                                    src={selectedWeaponDetails.vercelUrl}
                                     alt={selectedWeaponDetails.name}
                                     cameraControls
                                     autoRotate
