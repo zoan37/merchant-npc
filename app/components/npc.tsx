@@ -83,22 +83,32 @@ const Scene = () => {
     const [showWeaponDetails, setShowWeaponDetails] = useState(false);
 
     // Add this helper function near the top of the file
-    const inferWeaponType = (metadata: any): 'sword' | 'pistol' => {
+    const inferWeaponType = (params: WeaponActionParams, metadata: any): 'sword' | 'pistol' => {
+        // log params
+        console.log('inferWeaponType input params', params);
+        // log metadata
+        console.log('inferWeaponType input metadata', metadata);
+
         const description = metadata?.description?.toLowerCase() || '';
-        const assetName = metadata?.asset_name?.toLowerCase() || '';  // Check individual asset name
+        // const assetName = metadata?.asset_name?.toLowerCase() || '';  // Check individual asset name
         const name = metadata?.name?.toLowerCase() || '';
         const summary = metadata?._summaries?.[0]?.summary?.toLowerCase() || '';
+
+        const weaponName = params.weaponName.toLowerCase();
 
         // First priority: Check asset name for weapon type
         const pistolKeywords = ['pistol', 'gun', 'megaphone', 'revolver', 'blaster'];
         const swordKeywords = ['sword', 'blade', 'dagger', 'bat'];
+        
+        // log weaponName
+        console.log('inferWeaponType input weaponName', weaponName);
 
-        // Check asset name first
+        // Check weapon name first
         for (const keyword of pistolKeywords) {
-            if (assetName.includes(keyword)) return 'pistol';
+            if (weaponName.includes(keyword)) return 'pistol';
         }
         for (const keyword of swordKeywords) {
-            if (assetName.includes(keyword)) return 'sword';
+            if (weaponName.includes(keyword)) return 'sword';
         }
 
         // Second priority: Check for explicit creation text in description
@@ -1198,7 +1208,7 @@ const Scene = () => {
         console.log('Available assets:', metadata.metadata.raw.metadata.assets);
 
         // Infer the weapon type from metadata
-        const inferredWeaponType = inferWeaponType(metadata.metadata);
+        const inferredWeaponType = inferWeaponType(params, metadata.metadata);
         console.log('Inferred weapon type:', inferredWeaponType);
 
         // Split the weapon name into parts and search for each part
@@ -1218,8 +1228,24 @@ const Scene = () => {
                 originalWeaponName: params.weaponName
             });
             
-            // Do exact match with normalized strings
-            return normalizedAssetName === normalizedWeaponName;
+            // First try exact match
+            if (normalizedAssetName === normalizedWeaponName) {
+                return true;
+            }
+
+            // If no exact match, check if weapon name is contained within asset name
+            // Split asset name by common separators and check each part
+            const assetParts = normalizedAssetName.split(/[-:]/);
+            for (const part of assetParts) {
+                const trimmedPart = part.trim();
+                if (trimmedPart === normalizedWeaponName) {
+                    return true;
+                }
+            }
+
+            // Finally, check if weapon name is a substring of asset name
+            // This helps with cases like "Demon Dragon Sword" in "Three Sword Style - Demon Dragon Sword"
+            return normalizedAssetName.includes(normalizedWeaponName);
         });
 
         console.log('Search terms:', searchTerms);
@@ -1957,7 +1983,13 @@ const Scene = () => {
                                         agentActionTryWeapon({
                                             target: "player",
                                             weaponName: selectedWeaponDetails.name,
-                                            weaponType: inferWeaponType(selectedWeaponDetails),
+                                            weaponType: inferWeaponType({ 
+                                                target: "player",
+                                                weaponName: selectedWeaponDetails.name,
+                                                weaponType: "",
+                                                contractAddress: selectedWeaponDetails.contractAddress,
+                                                tokenId: selectedWeaponDetails.tokenId
+                                            }, selectedWeaponDetails.metadata),
                                             contractAddress: selectedWeaponDetails.contractAddress,
                                             tokenId: selectedWeaponDetails.tokenId
                                         });
