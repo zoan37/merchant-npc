@@ -84,36 +84,41 @@ const Scene = () => {
 
     // Add this helper function near the top of the file
     const inferWeaponType = (metadata: any): 'sword' | 'pistol' => {
-        const name = metadata?.name?.toLowerCase() || '';
         const description = metadata?.description?.toLowerCase() || '';
+        const assetName = metadata?.asset_name?.toLowerCase() || '';  // Check individual asset name
+        const name = metadata?.name?.toLowerCase() || '';
         const summary = metadata?._summaries?.[0]?.summary?.toLowerCase() || '';
 
-        // Keywords that indicate weapon types
+        // First priority: Check asset name for weapon type
+        const pistolKeywords = ['pistol', 'gun', 'megaphone', 'revolver', 'blaster'];
         const swordKeywords = ['sword', 'blade', 'dagger', 'bat'];
-        const pistolKeywords = ['pistol', 'gun', 'megaphone'];
 
-        // Check name first (most reliable)
-        for (const keyword of swordKeywords) {
-            if (name.includes(keyword)) return 'sword';
+        // Check asset name first
+        for (const keyword of pistolKeywords) {
+            if (assetName.includes(keyword)) return 'pistol';
         }
+        for (const keyword of swordKeywords) {
+            if (assetName.includes(keyword)) return 'sword';
+        }
+
+        // Second priority: Check for explicit creation text in description
+        if (description.includes('pistol was created')) return 'pistol';
+        if (description.includes('sword was created')) return 'sword';
+
+        // Fallback to checking other metadata
         for (const keyword of pistolKeywords) {
             if (name.includes(keyword)) return 'pistol';
         }
-
-        // Check description next
         for (const keyword of swordKeywords) {
-            if (description.includes(keyword)) return 'sword';
-        }
-        for (const keyword of pistolKeywords) {
-            if (description.includes(keyword)) return 'pistol';
+            if (name.includes(keyword)) return 'sword';
         }
 
         // Check summary last
-        for (const keyword of swordKeywords) {
-            if (summary.includes(keyword)) return 'sword';
-        }
         for (const keyword of pistolKeywords) {
             if (summary.includes(keyword)) return 'pistol';
+        }
+        for (const keyword of swordKeywords) {
+            if (summary.includes(keyword)) return 'sword';
         }
 
         // Default to sword if we can't determine
