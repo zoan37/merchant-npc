@@ -158,6 +158,7 @@ const Scene = () => {
         return 'sword';
     };
 
+    /*
     const weapons = [
         {
             id: 'sword',
@@ -190,6 +191,9 @@ const Scene = () => {
             scale: 1.0
         }
     ];
+    */
+
+    const weapons = [];
 
     useEffect(() => {
         equippedWeaponRef.current = equippedWeapon;
@@ -1844,52 +1848,58 @@ const Scene = () => {
                                 <h3 className="font-semibold mb-3">New Items</h3>
                                 {showShop ? (
                                     <div className="space-y-4">
-                                        {weapons.map((weapon) => (
-                                            <div key={weapon.id} className="p-2 bg-gray-100/95 rounded">
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <div>
-                                                        <h3 className="font-semibold">{weapon.name}</h3>
-                                                        <p className="text-sm text-gray-600">{weapon.price}</p>
+                                        {weapons.length > 0 ? (
+                                            weapons.map((weapon) => (
+                                                <div key={weapon.id} className="p-2 bg-gray-100/95 rounded">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <div>
+                                                            <h3 className="font-semibold">{weapon.name}</h3>
+                                                            <p className="text-sm text-gray-600">{weapon.price}</p>
+                                                        </div>
+                                                        <Button onClick={() => tryWeapon(weapon)}>
+                                                            Try It
+                                                        </Button>
                                                     </div>
-                                                    <Button onClick={() => tryWeapon(weapon)}>
-                                                        Try It
-                                                    </Button>
-                                                </div>
-                                                <div className="flex gap-2 mt-2 justify-end">
-                                                    {weapon.id === 'bat' || weapon.id === 'megaphone' ? (
-                                                        <a
-                                                            href={MARKETPLACE_LINKS[weapon.id].doggyMarket}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="inline-flex items-center px-3 py-1.5 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-sm"
-                                                        >
-                                                            <img
-                                                                src="/images/logos/Doggy Market.png"
-                                                                alt="Doggy Market"
-                                                                className="w-4 h-4 mr-1"
-                                                            />
-                                                            Doggy Market
-                                                        </a>
-                                                    ) : (
-                                                        <>
+                                                    <div className="flex gap-2 mt-2 justify-end">
+                                                        {weapon.id === 'bat' || weapon.id === 'megaphone' ? (
                                                             <a
-                                                                href={MARKETPLACE_LINKS[weapon.id].niftyIsland}
+                                                                href={MARKETPLACE_LINKS[weapon.id].doggyMarket}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="inline-flex items-center px-3 py-1.5 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm"
+                                                                className="inline-flex items-center px-3 py-1.5 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-sm"
                                                             >
                                                                 <img
-                                                                    src="/images/logos/Icon - Color - Nifty Island.svg"
-                                                                    alt="Nifty Island"
+                                                                    src="/images/logos/Doggy Market.png"
+                                                                    alt="Doggy Market"
                                                                     className="w-4 h-4 mr-1"
                                                                 />
-                                                                Buy on Nifty Island
+                                                                Doggy Market
                                                             </a>
-                                                        </>
-                                                    )}
+                                                        ) : (
+                                                            <>
+                                                                <a
+                                                                    href={MARKETPLACE_LINKS[weapon.id].niftyIsland}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="inline-flex items-center px-3 py-1.5 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm"
+                                                                >
+                                                                    <img
+                                                                        src="/images/logos/Icon - Color - Nifty Island.svg"
+                                                                        alt="Nifty Island"
+                                                                        className="w-4 h-4 mr-1"
+                                                                    />
+                                                                    Buy on Nifty Island
+                                                                </a>
+                                                            </>
+                                                        )}
+                                                    </div>
                                                 </div>
+                                            ))
+                                        ) : (
+                                            <div className="p-4 text-center bg-gray-100/95 rounded">
+                                                <p className="text-gray-600">In the works!</p>
                                             </div>
-                                        ))}
+                                        )}
                                     </div>
                                 ) : (
                                     <div className="text-center p-4 bg-gray-100/95 rounded">
