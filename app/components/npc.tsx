@@ -1977,7 +1977,7 @@ const Scene = () => {
                                 </div>
                             )}
 
-                            <div className="flex justify-between items-center gap-2 mt-6">
+                            <div className="flex justify-center gap-2 mt-6">
                                 <a
                                     href={selectedWeaponDetails.niftyIslandLink}
                                     target="_blank"
@@ -2009,7 +2009,7 @@ const Scene = () => {
                                         setShowWeaponDetails(false);
                                     }}
                                 >
-                                    Try Weapon
+                                    Try It
                                 </Button>
                             </div>
                         </div>
