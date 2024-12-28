@@ -16,6 +16,7 @@ import chatService from './chat_service';
 import nipplejs from 'nipplejs';
 import summaryMetadata from '@/public/context/summary_metadata_with_supply.json';
 import ExampleUsage from './example-usage';
+import ModelViewer from './model-viewer';
 
 // Add this type near other types/interfaces
 type WeaponActionParams = {
@@ -1479,7 +1480,8 @@ const Scene = () => {
                             item.contractAddress,
                             item.tokenId
                         ),
-                        imageUrl: metadata.image.originalUrl
+                        imageUrl: metadata.image.originalUrl,
+                        localPath: localPath
                     };
 
                     // log the user data set
@@ -1627,8 +1629,6 @@ const Scene = () => {
     return (
         <div className="relative w-full h-full">
             <div ref={containerRef} className="w-full h-full" />
-
-            <ExampleUsage />
 
             {/* Add joystick container for mobile */}
             {isMobile && (
@@ -1946,19 +1946,19 @@ const Scene = () => {
                         </div>
                         
                         <div className="space-y-4">
-                            {/* Add image section */}
-                            {selectedWeaponDetails.imageUrl && (
-                                <div className="relative w-full aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                                    <video
-                                        src={selectedWeaponDetails.imageUrl}
-                                        autoPlay
-                                        loop
-                                        muted
-                                        playsInline
-                                        className="object-contain w-full h-full"
-                                    />
-                                </div>
-                            )}
+                            {/* Updated model viewer section */}
+                            <div className="relative w-full aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                                <ModelViewer
+                                    src={selectedWeaponDetails.localPath}
+                                    alt={selectedWeaponDetails.name}
+                                    cameraControls
+                                    autoRotate
+                                    environmentImage="neutral"
+                                    shadowIntensity={1}
+                                    exposure={1}
+                                    style={{ width: '100%', height: '100%' }}
+                                />
+                            </div>
 
                             {selectedWeaponDetails.description && (
                                 <div>
