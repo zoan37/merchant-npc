@@ -1183,10 +1183,22 @@ const Scene = () => {
         // Split the weapon name into parts and search for each part
         const searchTerms = params.weaponName.toLowerCase().split('-').map(term => term.trim());
 
-        // Modified weapon name matching logic - match all parts
+        // Modified weapon name matching logic - case insensitive with string normalization
         const weaponAsset = metadata.metadata.raw.metadata.assets.find(asset => {
-            const assetName = asset.name.toLowerCase();
-            return searchTerms.every(term => assetName.includes(term));
+            // Normalize strings: trim whitespace, convert to lowercase, and remove extra spaces
+            const normalizedAssetName = asset.name.trim().toLowerCase().replace(/\s+/g, ' ');
+            const normalizedWeaponName = params.weaponName.trim().toLowerCase().replace(/\s+/g, ' ');
+            
+            // Log for debugging
+            console.log('Comparing:', {
+                normalizedWeaponName,
+                normalizedAssetName,
+                originalAssetName: asset.name,
+                originalWeaponName: params.weaponName
+            });
+            
+            // Do exact match with normalized strings
+            return normalizedAssetName === normalizedWeaponName;
         });
 
         console.log('Search terms:', searchTerms);
