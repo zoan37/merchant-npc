@@ -31,6 +31,7 @@ declare global {
           'animation-crossfade-duration'?: string;
           'auto-rotate-delay'?: number;
           'interpolation-decay'?: number;
+          'interaction-prompt'?: 'auto' | 'none';
           style?: React.CSSProperties;
         },
         HTMLElement
@@ -67,6 +68,7 @@ interface ModelViewerProps {
   onError?: (error: ErrorEvent) => void;
   autoRotateDelay?: number;
   interpolationDecay?: number;
+  interactionPrompt?: 'auto' | 'none';
 }
 
 const ModelViewer: React.FC<ModelViewerProps> = ({
@@ -97,6 +99,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
   onError,
   autoRotateDelay,
   interpolationDecay,
+  interactionPrompt = 'auto',
 }) => {
   const modelViewerRef = useRef<HTMLElement>(null);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
@@ -163,6 +166,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
         }}
         auto-rotate-delay={autoRotateDelay}
         interpolation-decay={interpolationDecay}
+        interaction-prompt={interactionPrompt}
       />
     </>
   );

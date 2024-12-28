@@ -1960,11 +1960,12 @@ const Scene = () => {
                                     cameraControls
                                     autoRotate
                                     autoRotateDelay={0}
-                                    rotationPerSecond="60deg"
-                                    interpolationDecay={200}
+                                    rotationPerSecond="-60deg"
                                     environmentImage="neutral"
                                     shadowIntensity={1}
                                     exposure={1}
+                                    interactionPrompt="none"
+                                    cameraOrbit="0deg 90deg auto"
                                     style={{ width: '100%', height: '100%' }}
                                 />
                             </div>
