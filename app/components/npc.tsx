@@ -15,6 +15,7 @@ import TWEEN from '@tweenjs/tween.js';
 import chatService from './chat_service';
 import nipplejs from 'nipplejs';
 import summaryMetadata from '@/public/context/summary_metadata_with_supply.json';
+import ExampleUsage from './example-usage';
 
 // Add this type near other types/interfaces
 type WeaponActionParams = {
@@ -1626,6 +1627,8 @@ const Scene = () => {
     return (
         <div className="relative w-full h-full">
             <div ref={containerRef} className="w-full h-full" />
+
+            <ExampleUsage />
 
             {/* Add joystick container for mobile */}
             {isMobile && (
