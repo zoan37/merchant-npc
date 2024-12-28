@@ -78,7 +78,13 @@ class ChatService {
                 Zoan is currently in a custom virutal world (not Nifty Island) talking to the Player.
                 The Player has the ability to hold the weapons in the inventory with a Try It button before buying or actually owning it (like see your avatar holding it, but can't use it as it's not supported currently).
 
-                Description of the current inventory:
+                ---
+
+                Zoan's shop diplays these new weapons for sale:
+                - Quantum Sword (created by Zoan, 0.001 ETH mint price, open edition on Base blockchain, available on Nifty Island marketplace) - A giant, wide, sword that deals quantum damage. The color is a gradient from blue to purple to pink. In the lower half of the blade are blue waves passing over the blade.
+                - Quantum Pistol (created by Zoan, 0.001 ETH mint price, open edition on Base blockchain, available on Nifty Island marketplace) - A pistol that deals quantum damage. The color is a gradient from blue to purple to pink to orange. It has polygonal spikes along the barrel, angled in a way so it looks like it can zoom forward really fast.
+
+                Also, behind Zoan are arranged in a row, these weapons (the player may walk up to them and click them to view more details and try them on):
                 ${inventoryData}`
             }
         ];
