@@ -15,8 +15,8 @@ import TWEEN from '@tweenjs/tween.js';
 import chatService from './chat_service';
 import nipplejs from 'nipplejs';
 import summaryMetadata from '@/public/context/summary_metadata_with_supply.json';
-import ExampleUsage from './example-usage';
 import ModelViewer from './model-viewer';
+import ReactMarkdown from 'react-markdown';
 
 // Add this type near other types/interfaces
 type WeaponActionParams = {
@@ -101,7 +101,7 @@ const Scene = () => {
         // First priority: Check asset name for weapon type
         const pistolKeywords = ['pistol', 'gun', 'megaphone', 'revolver', 'blaster'];
         const swordKeywords = ['sword', 'blade', 'dagger', 'bat'];
-        
+
         // log weaponName
         console.log('inferWeaponType input weaponName', weaponName);
 
@@ -838,7 +838,7 @@ const Scene = () => {
                         camera.position.copy(controls.target).add(cameraOffset);
 
                         // After moving the avatar, update weapon highlighting
-                        handleWeaponHover({ 
+                        handleWeaponHover({
                             clientX: mouseRef.current.x * window.innerWidth / 2 + window.innerWidth / 2,
                             clientY: -mouseRef.current.y * window.innerHeight / 2 + window.innerHeight / 2
                         });
@@ -1175,7 +1175,7 @@ const Scene = () => {
             console.error('No matching metadata or assets found for weapon:', params);
             return;
         }
-        
+
         console.log('Searching for weapon:', params.weaponName);
         console.log('Available assets:', weaponMetadata.metadata.raw.metadata.assets);
 
@@ -1191,7 +1191,7 @@ const Scene = () => {
             // Normalize strings: trim whitespace, convert to lowercase, and remove extra spaces
             const normalizedAssetName = asset.name.trim().toLowerCase().replace(/\s+/g, ' ');
             const normalizedWeaponName = params.weaponName.trim().toLowerCase().replace(/\s+/g, ' ');
-            
+
             // Log for debugging
             console.log('Comparing:', {
                 normalizedWeaponName,
@@ -1199,7 +1199,7 @@ const Scene = () => {
                 originalAssetName: asset.name,
                 originalWeaponName: params.weaponName
             });
-            
+
             // First try exact match
             if (normalizedAssetName === normalizedWeaponName) {
                 return true;
@@ -1226,16 +1226,16 @@ const Scene = () => {
 
         if (!weaponAsset?.files?.[0]) {
             console.log('No matching weapon asset or files found, trying fallback name search...');
-            
+
             // Try searching across all metadata entries by name only
             for (const item of summaryMetadata) {
                 const assets = item.metadata?.raw?.metadata?.assets || [];
                 const matchingAsset = assets.find(asset => {
                     const normalizedAssetName = asset.name.trim().toLowerCase().replace(/\s+/g, ' ');
                     const normalizedWeaponName = params.weaponName.trim().toLowerCase().replace(/\s+/g, ' ');
-                    
+
                     return normalizedAssetName.includes(normalizedWeaponName) ||
-                           normalizedWeaponName.includes(normalizedAssetName);
+                        normalizedWeaponName.includes(normalizedAssetName);
                 });
 
                 if (matchingAsset?.files?.[0]) {
@@ -1534,7 +1534,7 @@ const Scene = () => {
 
         // Get only the top-level weapon objects for intersection testing
         const weaponObjects = sceneRef.current.children.filter(obj => obj.userData?.name);
-        
+
         // Calculate objects intersecting the picking ray
         const intersects = raycasterRef.current.intersectObjects(weaponObjects, true);
 
@@ -1605,7 +1605,7 @@ const Scene = () => {
 
         // Find the root object that contains our metadata
         const modelRoot = findModelRoot(hoveredWeaponRef.current);
-        
+
         if (!modelRoot) {
             console.error('Could not find model root with metadata');
             return;
@@ -1613,9 +1613,9 @@ const Scene = () => {
 
         // Get the weapon data from the root object's userData
         const weaponData = modelRoot.userData;
-        
+
         console.log('weaponData', weaponData);
-        
+
         setSelectedWeaponDetails(weaponData);
         setShowWeaponDetails(true);
     };
@@ -1760,22 +1760,24 @@ const Scene = () => {
                                                 >
                                                     <strong className="text-gray-700">{msg.sender}:</strong>{' '}
                                                     <span className="text-gray-800">
-                                                        {cleanMessage.split(/(?=<<)/).map((part, i) => {
-                                                            // If this part starts with <<
-                                                            if (part.startsWith('<<')) {
-                                                                // If we're streaming and this is the last part
-                                                                if (msg.isStreaming && i === cleanMessage.split(/(?=<<)/).length - 1) {
-                                                                    return null; // Hide incomplete tag
+                                                        <ReactMarkdown>
+                                                            {cleanMessage.split(/(?=<<)/).map((part, i) => {
+                                                                // If this part starts with <<
+                                                                if (part.startsWith('<<')) {
+                                                                    // If we're streaming and this is the last part
+                                                                    if (msg.isStreaming && i === cleanMessage.split(/(?=<<)/).length - 1) {
+                                                                        return ''; // Hide incomplete tag
+                                                                    }
+                                                                    // If it's a complete tag (has >>)
+                                                                    if (part.includes('>>')) {
+                                                                        return ''; // Hide complete tag
+                                                                    }
+                                                                    // If it's not a complete tag and we're not streaming
+                                                                    return part; // Show it as normal text
                                                                 }
-                                                                // If it's a complete tag (has >>)
-                                                                if (part.includes('>>')) {
-                                                                    return null; // Hide complete tag
-                                                                }
-                                                                // If it's not a complete tag and we're not streaming
-                                                                return part; // Show it as normal text
-                                                            }
-                                                            return part; // Show normal text
-                                                        })}
+                                                                return part; // Show normal text
+                                                            }).join('')}
+                                                        </ReactMarkdown>
                                                     </span>
                                                     {tags.length > 0 && (
                                                         <div className="flex flex-wrap gap-2 mt-2">
@@ -1927,11 +1929,11 @@ const Scene = () => {
             </Button>
 
             {showWeaponDetails && selectedWeaponDetails && (
-                <Card 
+                <Card
                     className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] bg-white/95 backdrop-blur-sm z-20"
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <CardContent 
+                    <CardContent
                         className="p-6"
                         onClick={(e) => e.stopPropagation()}
                     >
@@ -1949,7 +1951,7 @@ const Scene = () => {
                                 ✕
                             </Button>
                         </div>
-                        
+
                         <div className="space-y-4">
                             {/* Updated model viewer section */}
                             <div className="relative w-full aspect-square bg-gray-100 rounded-lg overflow-hidden">
@@ -1995,7 +1997,7 @@ const Scene = () => {
                                         agentActionTryWeapon({
                                             target: "player",
                                             weaponName: selectedWeaponDetails.name,
-                                            weaponType: inferWeaponType({ 
+                                            weaponType: inferWeaponType({
                                                 target: "player",
                                                 weaponName: selectedWeaponDetails.name,
                                                 weaponType: "",
