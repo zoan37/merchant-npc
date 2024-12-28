@@ -73,6 +73,10 @@ const Scene = () => {
         roughness: 0.5,
     }));
 
+    // Add these new state variables near other state declarations
+    const [selectedWeaponDetails, setSelectedWeaponDetails] = useState(null);
+    const [showWeaponDetails, setShowWeaponDetails] = useState(false);
+
     // Add this helper function near the top of the file
     const inferWeaponType = (metadata: any): 'sword' | 'pistol' => {
         const name = metadata?.name?.toLowerCase() || '';
@@ -187,11 +191,13 @@ const Scene = () => {
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
         window.addEventListener('mousemove', handleWeaponHover);
+        window.addEventListener('click', handleWeaponClick);
 
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
             window.removeEventListener('mousemove', handleWeaponHover);
+            window.removeEventListener('click', handleWeaponClick);
         };
     }, [isNearNPC, isChatting]);
 
@@ -1512,6 +1518,16 @@ const Scene = () => {
         }
     };
 
+    // Add this new click handler function near other handlers
+    const handleWeaponClick = (event) => {
+        if (!hoveredWeaponRef.current) return;
+
+        // Get the weapon data from userData
+        const weaponData = hoveredWeaponRef.current.userData;
+        setSelectedWeaponDetails(weaponData);
+        setShowWeaponDetails(true);
+    };
+
     // Modify the return statement to add the avatar selector UI
     return (
         <div className="relative w-full h-full">
@@ -1813,6 +1829,65 @@ const Scene = () => {
                     />
                 </svg>
             </Button>
+
+            {showWeaponDetails && selectedWeaponDetails && (
+                <Card className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] bg-white/95 backdrop-blur-sm z-20">
+                    <CardContent className="p-6">
+                        <div className="flex justify-between items-start mb-4">
+                            <h2 className="text-xl font-bold">{selectedWeaponDetails.name}</h2>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setShowWeaponDetails(false)}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                ✕
+                            </Button>
+                        </div>
+                        
+                        <div className="space-y-4">
+                            {selectedWeaponDetails.summary && (
+                                <div>
+                                    <h3 className="font-semibold mb-2">Description</h3>
+                                    <p className="text-gray-700">{selectedWeaponDetails.summary}</p>
+                                </div>
+                            )}
+                            
+                            <div className="flex gap-4">
+                                <div>
+                                    <h3 className="font-semibold mb-2">Contract</h3>
+                                    <p className="text-sm text-gray-600 break-all">
+                                        {selectedWeaponDetails.contractAddress}
+                                    </p>
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold mb-2">Token ID</h3>
+                                    <p className="text-sm text-gray-600">
+                                        {selectedWeaponDetails.tokenId}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end gap-2 mt-6">
+                                <Button
+                                    onClick={() => {
+                                        agentActionTryWeapon({
+                                            target: "player",
+                                            weaponName: selectedWeaponDetails.name,
+                                            weaponType: inferWeaponType(selectedWeaponDetails),
+                                            contractAddress: selectedWeaponDetails.contractAddress,
+                                            tokenId: selectedWeaponDetails.tokenId
+                                        });
+                                        setShowWeaponDetails(false);
+                                    }}
+                                >
+                                    Try Weapon
+                                </Button>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
         </div>
     );
 };
