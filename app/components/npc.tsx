@@ -1758,11 +1758,7 @@ const Scene = () => {
                                                         : 'bg-gray-100/95 mr-8'
                                                         }`}
                                                 >
-                                                    <span className={`inline-block px-2 py-0.5 rounded text-sm ${
-                                                        msg.sender === 'Player'
-                                                            ? 'bg-blue-200 text-blue-800'
-                                                            : 'bg-purple-200 text-purple-800'
-                                                    } mb-1`}>
+                                                    <span className="text-gray-600 text-sm mb-1">
                                                         {msg.sender}
                                                     </span>
                                                     <span className="text-gray-800 block mt-1">
