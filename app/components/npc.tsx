@@ -89,11 +89,16 @@ const Scene = () => {
     const [currentMessage, setCurrentMessage] = useState('');
     const NPC_NAME = "Agent Zoan";
 
+    // Update keyStates ref to include arrow keys
     const keyStates = useRef({
         w: false,
         a: false,
         s: false,
-        d: false
+        d: false,
+        ArrowUp: false,
+        ArrowLeft: false,
+        ArrowDown: false,
+        ArrowRight: false
     });
 
     const [showShop, setShowShop] = useState(true);
@@ -257,17 +262,22 @@ const Scene = () => {
     }, []);
     */
 
+    // Update handleKeyDown to handle arrow keys
     const handleKeyDown = (event) => {
         console.log('Key pressed:', event.key);
 
         // Ignore movement keys if transitioning or chatting
-        if ((isTransitioningRef.current || isChatting) && ['w', 'a', 's', 'd'].includes(event.key.toLowerCase())) {
+        if ((isTransitioningRef.current || isChatting) && 
+            ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(event.key)) {
             return;
         }
 
         if (['w', 'a', 's', 'd'].includes(event.key.toLowerCase())) {
             event.preventDefault();
             keyStates.current[event.key.toLowerCase()] = true;
+        } else if (['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(event.key)) {
+            event.preventDefault();
+            keyStates.current[event.key] = true;
         }
 
         if (event.key.toLowerCase() === 'f' && isNearNPC && !isChatting) {
@@ -280,9 +290,12 @@ const Scene = () => {
         }
     };
 
+    // Update handleKeyUp to handle arrow keys
     const handleKeyUp = (event) => {
         if (['w', 'a', 's', 'd'].includes(event.key.toLowerCase())) {
             keyStates.current[event.key.toLowerCase()] = false;
+        } else if (['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(event.key)) {
+            keyStates.current[event.key] = false;
         }
     };
 
@@ -856,10 +869,11 @@ const Scene = () => {
                     cameraRight.crossVectors(cameraForward, new THREE.Vector3(0, 1, 0));
                     cameraRight.normalize();
 
-                    if (keyStates.current.w) moveVector.add(cameraForward);
-                    if (keyStates.current.s) moveVector.sub(cameraForward);
-                    if (keyStates.current.a) moveVector.sub(cameraRight);
-                    if (keyStates.current.d) moveVector.add(cameraRight);
+                    // Check both WASD and arrow keys
+                    if (keyStates.current.w || keyStates.current.ArrowUp) moveVector.add(cameraForward);
+                    if (keyStates.current.s || keyStates.current.ArrowDown) moveVector.sub(cameraForward);
+                    if (keyStates.current.a || keyStates.current.ArrowLeft) moveVector.sub(cameraRight);
+                    if (keyStates.current.d || keyStates.current.ArrowRight) moveVector.add(cameraRight);
 
                     if (moveVector.length() > 0) {
                         playAnimation(ANIMATION_WALKING);
@@ -1752,6 +1766,7 @@ const Scene = () => {
                                 <div className="space-y-2 text-sm">
                                     <div className="flex items-center gap-2">
                                         <kbd className="px-2 py-1 bg-gray-700 rounded">WASD</kbd>
+                                        <kbd className="px-2 py-1 bg-gray-700 rounded">↑←↓→</kbd>
                                         <span>Move</span>
                                     </div>
                                     <div className="flex items-center gap-2">

@@ -23,7 +23,11 @@ const Scene = () => {
     w: false,
     a: false,
     s: false,
-    d: false
+    d: false,
+    ArrowUp: false,
+    ArrowLeft: false,
+    ArrowDown: false,
+    ArrowRight: false
   });
 
   useEffect(() => {
@@ -38,15 +42,15 @@ const Scene = () => {
   }, []);
 
   const handleKeyDown = (event) => {
-    if (['w', 'a', 's', 'd'].includes(event.key.toLowerCase())) {
+    if (['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(event.key)) {
       event.preventDefault();
-      keyStates.current[event.key.toLowerCase()] = true;
+      keyStates.current[event.key] = true;
     }
   };
 
   const handleKeyUp = (event) => {
-    if (['w', 'a', 's', 'd'].includes(event.key.toLowerCase())) {
-      keyStates.current[event.key.toLowerCase()] = false;
+    if (['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(event.key)) {
+      keyStates.current[event.key] = false;
     }
   };
 
@@ -221,10 +225,10 @@ const Scene = () => {
         cameraRight.normalize();
 
         // Calculate movement direction
-        if (keyStates.current.w) moveVector.add(cameraForward);
-        if (keyStates.current.s) moveVector.sub(cameraForward);
-        if (keyStates.current.a) moveVector.sub(cameraRight);
-        if (keyStates.current.d) moveVector.add(cameraRight);
+        if (keyStates.current.w || keyStates.current.ArrowUp) moveVector.add(cameraForward);
+        if (keyStates.current.s || keyStates.current.ArrowDown) moveVector.sub(cameraForward);
+        if (keyStates.current.a || keyStates.current.ArrowLeft) moveVector.sub(cameraRight);
+        if (keyStates.current.d || keyStates.current.ArrowRight) moveVector.add(cameraRight);
 
         // Check if moving and update animation accordingly
         if (moveVector.length() > 0) {
