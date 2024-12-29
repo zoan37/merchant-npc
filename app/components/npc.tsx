@@ -87,13 +87,19 @@ const Scene = () => {
     const [isChatting, setIsChatting] = useState(false);
     const [chatMessages, setChatMessages] = useState([]);
     const [currentMessage, setCurrentMessage] = useState('');
+    const [showMobileWarning, setShowMobileWarning] = useState(false);
     const NPC_NAME = "Agent Zoan";
 
+    // Update keyStates ref to include arrow keys
     const keyStates = useRef({
         w: false,
         a: false,
         s: false,
-        d: false
+        d: false,
+        ArrowUp: false,
+        ArrowLeft: false,
+        ArrowDown: false,
+        ArrowRight: false
     });
 
     const [showShop, setShowShop] = useState(true);
@@ -116,6 +122,9 @@ const Scene = () => {
     // Add these new state variables near other state declarations
     const [selectedWeaponDetails, setSelectedWeaponDetails] = useState(null);
     const [showWeaponDetails, setShowWeaponDetails] = useState(false);
+
+    // Add this state near other state declarations
+    const [hasChattedBefore, setHasChattedBefore] = useState(false);
 
     // Add this helper function near the top of the file
     const inferWeaponType = (params: WeaponActionParams, metadata: any): 'sword' | 'pistol' => {
@@ -246,6 +255,20 @@ const Scene = () => {
         console.log('Equipped weapon changed:', equippedWeapon);
     }, [equippedWeapon]);
 
+    // Update the mobile detection useEffect
+    useEffect(() => {
+        const checkMobile = () => {
+            const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            setIsMobile(isMobileDevice);
+            setShowMobileWarning(isMobileDevice);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     /*
     useEffect(() => {
         // Hide controls after 10 seconds
@@ -257,17 +280,22 @@ const Scene = () => {
     }, []);
     */
 
+    // Update handleKeyDown to handle arrow keys
     const handleKeyDown = (event) => {
         console.log('Key pressed:', event.key);
 
         // Ignore movement keys if transitioning or chatting
-        if ((isTransitioningRef.current || isChatting) && ['w', 'a', 's', 'd'].includes(event.key.toLowerCase())) {
+        if ((isTransitioningRef.current || isChatting) && 
+            ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(event.key)) {
             return;
         }
 
         if (['w', 'a', 's', 'd'].includes(event.key.toLowerCase())) {
             event.preventDefault();
             keyStates.current[event.key.toLowerCase()] = true;
+        } else if (['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(event.key)) {
+            event.preventDefault();
+            keyStates.current[event.key] = true;
         }
 
         if (event.key.toLowerCase() === 'f' && isNearNPC && !isChatting) {
@@ -280,9 +308,12 @@ const Scene = () => {
         }
     };
 
+    // Update handleKeyUp to handle arrow keys
     const handleKeyUp = (event) => {
         if (['w', 'a', 's', 'd'].includes(event.key.toLowerCase())) {
             keyStates.current[event.key.toLowerCase()] = false;
+        } else if (['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(event.key)) {
+            keyStates.current[event.key] = false;
         }
     };
 
@@ -374,8 +405,13 @@ const Scene = () => {
             isStreaming: true
         }]);
 
+        // Modify the initial greeting based on whether we've chatted before
+        const initialMessage = hasChattedBefore 
+            ? "*Same player left, and now has returned and approaches*"
+            : "*Player approaches*";
+
         // Get initial greeting from chatService
-        chatService.getNPCResponse("*Player approaches*", (partialMessage) => {
+        chatService.getNPCResponse(initialMessage, (partialMessage) => {
             setChatMessages([{
                 sender: NPC_NAME,
                 message: partialMessage,
@@ -389,6 +425,11 @@ const Scene = () => {
 
             if (response.animation && npcAnimationActionsRef.current[response.animation]) {
                 playNpcAnimation(response.animation);
+            }
+
+            // Set hasChattedBefore to true after first chat
+            if (!hasChattedBefore) {
+                setHasChattedBefore(true);
             }
         });
 
@@ -785,8 +826,6 @@ const Scene = () => {
         }
 
         // TODO: don't show avatars until idle animation loaded (right now it flickers with t-pose)
-        // TODO: change settings icon to info icon, move to top right corner, show info about creator of this app
-        // TODO: allow arrow keys to move around
 
         // const MERCHANT_VRM_URL = './avatars/sheriff_agent_7.3.vrm';
         const MERCHANT_VRM_URL = 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/avatars/sheriff_agent_7.3-Nlpi0VmgY7hIcOaIDdomjRDE9Igtrn.vrm';
@@ -856,10 +895,11 @@ const Scene = () => {
                     cameraRight.crossVectors(cameraForward, new THREE.Vector3(0, 1, 0));
                     cameraRight.normalize();
 
-                    if (keyStates.current.w) moveVector.add(cameraForward);
-                    if (keyStates.current.s) moveVector.sub(cameraForward);
-                    if (keyStates.current.a) moveVector.sub(cameraRight);
-                    if (keyStates.current.d) moveVector.add(cameraRight);
+                    // Check both WASD and arrow keys
+                    if (keyStates.current.w || keyStates.current.ArrowUp) moveVector.add(cameraForward);
+                    if (keyStates.current.s || keyStates.current.ArrowDown) moveVector.sub(cameraForward);
+                    if (keyStates.current.a || keyStates.current.ArrowLeft) moveVector.sub(cameraRight);
+                    if (keyStates.current.d || keyStates.current.ArrowRight) moveVector.add(cameraRight);
 
                     if (moveVector.length() > 0) {
                         playAnimation(ANIMATION_WALKING);
@@ -1240,8 +1280,6 @@ const Scene = () => {
         return localFile ? `/${localFile.local_path}` : originalUrl;
     };
 
-    // TODO: on mobile, show UI that it's for desktop only
-
     const agentActionTryWeapon = async (params: WeaponActionParams) => {
         // First, remove any existing weapon by traversing the avatar scene
         if (avatarRef.current?.scene) {
@@ -1597,9 +1635,21 @@ const Scene = () => {
         }
     };
 
+    // Add this near other utility functions
+    const isMobileDevice = () => {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    };
+
     // Modify the useEffect that calls loadWeapons
     useEffect(() => {
         if (sceneRef.current && !weaponsLoadedRef.current && rendererRef.current) {
+            // Skip loading weapons on mobile devices
+            if (isMobileDevice()) {
+                console.log('Skipping weapon loading on mobile device');
+                weaponsLoadedRef.current = true; // Mark as loaded to prevent future attempts
+                return;
+            }
+
             console.log('Loading weapons...');
             loadWeapons();
             weaponsLoadedRef.current = true;
@@ -1711,6 +1761,19 @@ const Scene = () => {
         <div className="relative w-full h-full">
             <div ref={containerRef} className="w-full h-full" />
 
+            {showMobileWarning && (
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                    <Card className="w-full max-w-md bg-white">
+                        <CardContent className="p-6 text-center">
+                            <h2 className="text-xl font-bold mb-4">Desktop Only</h2>
+                            <p className="mb-6">
+                                Mobile is not supported. Please visit on a desktop computer for the best experience!
+                            </p>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
+
             {/* Add joystick container for mobile */}
             {isMobile && (
                 <div
@@ -1731,10 +1794,10 @@ const Scene = () => {
 
             {/* Settings Panel */}
             {showSettings && (
-                <Card className="fixed top-16 left-4 bg-black bg-opacity-75 text-white p-4 rounded-lg z-10 w-64">
+                <Card className="fixed top-16 right-4 bg-black bg-opacity-75 text-white p-4 rounded-lg z-10 w-64">
                     <CardContent>
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-semibold">Settings</h3>
+                            <h3 className="font-semibold">Info</h3>
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -1752,6 +1815,7 @@ const Scene = () => {
                                 <div className="space-y-2 text-sm">
                                     <div className="flex items-center gap-2">
                                         <kbd className="px-2 py-1 bg-gray-700 rounded">WASD</kbd>
+                                        <kbd className="px-2 py-1 bg-gray-700 rounded">↑←↓→</kbd>
                                         <span>Move</span>
                                     </div>
                                     <div className="flex items-center gap-2">
@@ -1767,10 +1831,26 @@ const Scene = () => {
                                         <span>Click + Drag to look</span>
                                     </div>
                                     <div className="flex items-center gap-2">
+                                        <div className="flex items-center">
+                                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 101.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z" clipRule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <span>Click certain objects to view details</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
                                         <kbd className="px-2 py-1 bg-gray-700 rounded">ESC</kbd>
                                         <span>Exit chat</span>
                                     </div>
                                 </div>
+                            </div>
+
+                            {/* Add About Section */}
+                            <div>
+                                <label className="block text-sm font-medium mb-2">About</label>
+                                <p className="text-sm">
+                                    Created by <a href="https://x.com/zoan37" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-300">@zoan37</a>
+                                </p>
                             </div>
                         </div>
                     </CardContent>
@@ -1974,31 +2054,25 @@ const Scene = () => {
                 </Card>
             )}
 
+            {/* Replace the settings button with info button in top right */}
             <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setShowSettings(!showSettings)}
-                className="fixed top-4 left-4 w-10 h-10 rounded-full bg-black bg-opacity-75 text-white hover:bg-opacity-90 z-10"
-                title="Settings & Help"
+                className="fixed top-4 right-4 w-10 h-10 rounded-full bg-black bg-opacity-75 text-white hover:bg-opacity-90 z-10"
+                title="Info & Controls"
             >
-                <svg
+                <svg 
                     className="w-6 h-6 scale-150"
-                    fill="none"
-                    stroke="currentColor"
+                    fill="none" 
+                    stroke="currentColor" 
                     viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
                 >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                    />
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                 </svg>
             </Button>

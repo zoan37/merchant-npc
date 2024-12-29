@@ -103,6 +103,7 @@ class ChatService {
     addMessage(role, content) {
         this.messageHistory.push({ role, content });
         
+        /*
         // Keep history from growing too large (last 10 messages + system prompt)
         if (this.messageHistory.length > 11) {
             this.messageHistory = [
@@ -110,6 +111,7 @@ class ChatService {
                 ...this.messageHistory.slice(-10)
             ];
         }
+        */
     }
 
     /**
@@ -122,6 +124,9 @@ class ChatService {
         this.addMessage('user', userMessage);
 
         try {
+            // log message history length
+            console.log('Message history length:', this.messageHistory.length);
+            
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {

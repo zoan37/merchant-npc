@@ -9,8 +9,6 @@ const METADATA_DIR = 'weapon_models_glb';
 const OUTPUT_DIR = 'weapon_models_summaries';
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
-// TODO: separate script to fetch count of an NFT, (e.g. 100 supply of a weapon), will be useful in LLM context
-
 async function fileToBase64(filePath) {
     const data = await fs.readFile(filePath);
     return `data:image/jpeg;base64,${data.toString('base64')}`;
