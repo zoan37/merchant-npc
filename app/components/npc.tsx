@@ -1731,10 +1731,10 @@ const Scene = () => {
 
             {/* Settings Panel */}
             {showSettings && (
-                <Card className="fixed top-16 left-4 bg-black bg-opacity-75 text-white p-4 rounded-lg z-10 w-64">
+                <Card className="fixed top-16 right-4 bg-black bg-opacity-75 text-white p-4 rounded-lg z-10 w-64">
                     <CardContent>
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-semibold">Settings</h3>
+                            <h3 className="font-semibold">Info</h3>
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -1771,6 +1771,14 @@ const Scene = () => {
                                         <span>Exit chat</span>
                                     </div>
                                 </div>
+                            </div>
+
+                            {/* Add About Section */}
+                            <div>
+                                <label className="block text-sm font-medium mb-2">About</label>
+                                <p className="text-sm">
+                                    Created by <a href="https://x.com/zoan37" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-300">@zoan37</a>
+                                </p>
                             </div>
                         </div>
                     </CardContent>
@@ -1974,31 +1982,25 @@ const Scene = () => {
                 </Card>
             )}
 
+            {/* Replace the settings button with info button in top right */}
             <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setShowSettings(!showSettings)}
-                className="fixed top-4 left-4 w-10 h-10 rounded-full bg-black bg-opacity-75 text-white hover:bg-opacity-90 z-10"
-                title="Settings & Help"
+                className="fixed top-4 right-4 w-10 h-10 rounded-full bg-black bg-opacity-75 text-white hover:bg-opacity-90 z-10"
+                title="Info & Controls"
             >
-                <svg
+                <svg 
                     className="w-6 h-6 scale-150"
-                    fill="none"
-                    stroke="currentColor"
+                    fill="none" 
+                    stroke="currentColor" 
                     viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
                 >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                    />
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                 </svg>
             </Button>
