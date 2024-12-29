@@ -286,7 +286,7 @@ const Scene = () => {
 
         // Ignore movement keys if transitioning or chatting
         if ((isTransitioningRef.current || isChatting) && 
-            ['w', 'a', 's', 'd', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(event.key)) {
+            ['w', 'a', 's', 'd', 'W', 'A', 'S', 'D', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(event.key)) {
             return;
         }
 
