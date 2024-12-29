@@ -71,6 +71,7 @@ class ChatService {
                   The 3D world to read the tag(s) and show a button for each tag in the chat UI that allows the player to try on the weapon.
                   Please DON'T put an extra period or extra spaces before or after the tag, as the 3D world will strip away the tag so the user doesn't see it in the chat UI.
                   Please DON'T mention anything about the tags to the player, it's for use by the 3D world only.
+                  IMPORTANT: What you write should make sense even when the tags are removed.
                 
                 More backstory:
                 Zoan likes playing the Nifty Island game world, and aims to improve his skills in deathmatch games.

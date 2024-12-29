@@ -1132,7 +1132,7 @@ const Scene = () => {
 
     // Add this helper function
     const findWeaponInMetadata = (params: WeaponActionParams) => {
-        // First try exact match with contract address
+        // First try exact match with contract address and token ID
         const exactMatch = summaryMetadata.find(item =>
             item.contractAddress.toLowerCase() === params.contractAddress.toLowerCase() &&
             item.tokenId === params.tokenId
@@ -1144,13 +1144,54 @@ const Scene = () => {
 
         console.log('Exact match not found, doing fuzzy search');
 
-        // If no exact match, do fuzzy search by name
-        const fuzzyMatch = summaryMetadata.find(item => {
+        // If no exact match, search through all metadata entries
+        for (const item of summaryMetadata) {
             const metadata = item.metadata;
-            return metadata.name.toLowerCase().includes(params.weaponName.toLowerCase());
-        });
+            
+            // Get all weapon assets (excluding avatars)
+            const weaponAssets = metadata.raw.metadata.assets?.filter(asset => {
+                // Skip VRM files (avatars)
+                if (asset.files?.[0]?.file_type === 'model/vrm') {
+                    return false;
+                }
+                // assume all other assets are weapons
+                return true;
+            });
 
-        return fuzzyMatch;
+            if (!weaponAssets?.length) continue;
+
+            // Search through each weapon asset
+            for (const weaponAsset of weaponAssets) {
+                // Normalize strings for comparison
+                const normalizedAssetName = weaponAsset.name.trim().toLowerCase().replace(/\s+/g, ' ');
+                const normalizedWeaponName = params.weaponName.trim().toLowerCase().replace(/\s+/g, ' ');
+
+                // First try exact match
+                if (normalizedAssetName === normalizedWeaponName) {
+                    return item;
+                }
+
+                // If no exact match, check if weapon name is contained within asset name
+                // Split asset name by common separators and check each part
+                const assetParts = normalizedAssetName.split(/[-:]/);
+                for (const part of assetParts) {
+                    const trimmedPart = part.trim();
+                    if (trimmedPart === normalizedWeaponName) {
+                        return item;
+                    }
+                }
+
+                // Finally, check if weapon name is a substring of asset name
+                if (normalizedAssetName.includes(normalizedWeaponName) ||
+                    normalizedWeaponName.includes(normalizedAssetName)) {
+                    return item;
+                }
+            }
+        }
+
+        // If no match found, return null
+        console.warn(`No matching weapon found for: ${params.weaponName}`);
+        return null;
     };
 
     // Update wherever you're currently searching for weapons
