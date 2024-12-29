@@ -566,9 +566,11 @@ const Scene = () => {
             playAnimation('Idle');
         }
     }
+    // const PLAYER_VRM_URL = './avatars/VRoid_Sample_B.vrm';
+    const PLAYER_VRM_URL = 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/VRoid_Sample_B-BgBlpJmNNxlr9NJ3C2WZB9uBub7r7T.vrm';
 
     const sceneRef = useRef(null);
-    const [selectedAvatar, setSelectedAvatar] = useState('VRoid_Sample_B.vrm');
+    const [selectedAvatar, setSelectedAvatar] = useState(PLAYER_VRM_URL);
     const [showSettings, setShowSettings] = useState(false);
 
     const changeAvatar = async (avatarFile) => {
@@ -702,7 +704,8 @@ const Scene = () => {
 
         // Load player avatar
         loader.load(
-            `./avatars/${selectedAvatar}`,
+            // `./avatars/${selectedAvatar}`,
+            selectedAvatar,
             async (gltf) => {
                 const vrm = gltf.userData.vrm;
                 sceneRef.current.add(vrm.scene);
@@ -768,7 +771,10 @@ const Scene = () => {
             return sprite;
         }
 
-        const MERCHANT_VRM_URL = './avatars/sheriff_agent_7.3.vrm';
+        // TODO: don't show avatars until idle animation loaded (right now it flickers with t-pose)
+
+        // const MERCHANT_VRM_URL = './avatars/sheriff_agent_7.3.vrm';
+        const MERCHANT_VRM_URL = 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/avatars/sheriff_agent_7.3-Nlpi0VmgY7hIcOaIDdomjRDE9Igtrn.vrm';
 
         // Modify the NPC loader section
         loader.load(
@@ -1726,27 +1732,6 @@ const Scene = () => {
                         </div>
 
                         <div className="space-y-6">
-                            {/* Avatar Section */}
-                            <div>
-                                <label className="block text-sm font-medium mb-2">Avatar</label>
-                                <div className="space-y-2">
-                                    <Button
-                                        variant={selectedAvatar === 'Default_M.vrm' ? 'secondary' : 'ghost'}
-                                        onClick={() => changeAvatar('Default_M.vrm')}
-                                        className="w-full justify-start"
-                                    >
-                                        Default M
-                                    </Button>
-                                    <Button
-                                        variant={selectedAvatar === 'Default_F.vrm' ? 'secondary' : 'ghost'}
-                                        onClick={() => changeAvatar('Default_F.vrm')}
-                                        className="w-full justify-start"
-                                    >
-                                        Default F
-                                    </Button>
-                                </div>
-                            </div>
-
                             {/* Controls Section */}
                             <div>
                                 <label className="block text-sm font-medium mb-2">Controls</label>
