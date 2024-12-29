@@ -69,6 +69,8 @@ class ChatService {
                 - You have the option to allow the player to try on a weapon. If you choose to do so, the way to do it is to write a tag like <<try_weapon("player", "[assetName]", "[chain]", "[contractAddress]", "[tokenId]")>> at the end of your message, where [assetName] is the name of the asset, [chain] is the chain of the NFT, [contractAddress] is the contract address of the NFT, and [tokenId] is the tokenId of the NFT.
                   Multiple tags are allowed at the end of your message. A tag can only be for one weapon, so if you want to show multiple weapons, you need to write multiple tags.
                   The 3D world to read the tag(s) and show a button for each tag in the chat UI that allows the player to try on the weapon.
+                  PLEASE put the tag(s) at the end of your message, not in the middle of your message.
+                  Please show tags for all the weapons it makes sense for the player to try on, given what you are saying or suggesting in your message.
                   Please DON'T put an extra period or extra spaces before or after the tag, as the 3D world will strip away the tag so the user doesn't see it in the chat UI.
                   Please DON'T mention anything about the tags to the player, it's for use by the 3D world only.
                   IMPORTANT: What you write should make sense even when the tags are removed.
