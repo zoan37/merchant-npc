@@ -87,6 +87,7 @@ const Scene = () => {
     const [isChatting, setIsChatting] = useState(false);
     const [chatMessages, setChatMessages] = useState([]);
     const [currentMessage, setCurrentMessage] = useState('');
+    const [showMobileWarning, setShowMobileWarning] = useState(false);
     const NPC_NAME = "Agent Zoan";
 
     // Update keyStates ref to include arrow keys
@@ -253,6 +254,20 @@ const Scene = () => {
     useEffect(() => {
         console.log('Equipped weapon changed:', equippedWeapon);
     }, [equippedWeapon]);
+
+    // Update the mobile detection useEffect
+    useEffect(() => {
+        const checkMobile = () => {
+            const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            setIsMobile(isMobileDevice);
+            setShowMobileWarning(isMobileDevice);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     /*
     useEffect(() => {
@@ -811,8 +826,6 @@ const Scene = () => {
         }
 
         // TODO: don't show avatars until idle animation loaded (right now it flickers with t-pose)
-        // TODO: change settings icon to info icon, move to top right corner, show info about creator of this app
-        // TODO: allow arrow keys to move around
 
         // const MERCHANT_VRM_URL = './avatars/sheriff_agent_7.3.vrm';
         const MERCHANT_VRM_URL = 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/avatars/sheriff_agent_7.3-Nlpi0VmgY7hIcOaIDdomjRDE9Igtrn.vrm';
@@ -1266,8 +1279,6 @@ const Scene = () => {
         // If found, return the local path, otherwise return the original URL
         return localFile ? `/${localFile.local_path}` : originalUrl;
     };
-
-    // TODO: on mobile, show UI that it's for desktop only
 
     const agentActionTryWeapon = async (params: WeaponActionParams) => {
         // First, remove any existing weapon by traversing the avatar scene
@@ -1749,6 +1760,19 @@ const Scene = () => {
     return (
         <div className="relative w-full h-full">
             <div ref={containerRef} className="w-full h-full" />
+
+            {showMobileWarning && (
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                    <Card className="w-full max-w-md bg-white">
+                        <CardContent className="p-6 text-center">
+                            <h2 className="text-xl font-bold mb-4">Desktop Only</h2>
+                            <p className="mb-6">
+                                Mobile is not supported. Please visit on a desktop computer for the best experience!
+                            </p>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
 
             {/* Add joystick container for mobile */}
             {isMobile && (
