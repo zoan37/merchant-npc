@@ -53,6 +53,18 @@ const getVercelUrlFromLocalPath = (localPath: string): string | null => {
     return null;
 };
 
+/*
+const ANIMATION_IDLE = './animations/Idle.fbx';
+const ANIMATION_WALKING = './animations/Walking.fbx';
+const ANIMATION_GREAT_SWORD_IDLE = './animations/Great Sword Idle.fbx';
+const ANIMATION_PISTOL_IDLE = './animations/Pistol Idle.fbx';
+*/
+
+const ANIMATION_IDLE = 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/animations/Idle-dG8ldlN0exams4VYcpKIhpPN6L2iu6.fbx';
+const ANIMATION_WALKING = 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/animations/Walking-TXPtML6DCMpX8XHsfjrAVcgRlnf5qE.fbx';
+const ANIMATION_GREAT_SWORD_IDLE = 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/animations/Great%20Sword%20Idle-08F04GwJaQuRTyoOJgMseiYBvFodbF.fbx';
+const ANIMATION_PISTOL_IDLE = 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/animations/Pistol%20Idle-UNnPpwZlfzGEk7bWquH5YabWhRDHYp.fbx';
+
 const Scene = () => {
     const containerRef = useRef(null);
     const rendererRef = useRef(null);
@@ -540,13 +552,14 @@ const Scene = () => {
             mixerRef.current = mixer;
         }
 
-        const animations = ['Idle', 'Walking', 'Great Sword Idle', 'Pistol Idle'];
+        const animations = [ANIMATION_IDLE, ANIMATION_WALKING, ANIMATION_GREAT_SWORD_IDLE, ANIMATION_PISTOL_IDLE];
         const actions = {};
 
         for (const animation of animations) {
             try {
                 console.log(`Loading animation: ${animation}`);
-                const url = `./animations/${animation}.fbx`;
+                // const url = `./animations/${animation}.fbx`;
+                const url = animation as string;
                 const clip = await loadMixamoAnimation(url, vrm);
                 console.log(`Creating action for: ${animation}`);
                 const action = mixer.clipAction(clip);
@@ -560,14 +573,14 @@ const Scene = () => {
 
         if (isNPC) {
             npcAnimationActionsRef.current = actions;
-            playNpcAnimation('Idle');
+            playNpcAnimation(ANIMATION_IDLE);
         } else {
             animationActionsRef.current = actions;
-            playAnimation('Idle');
+            playAnimation(ANIMATION_IDLE);
         }
     }
     // const PLAYER_VRM_URL = './avatars/VRoid_Sample_B.vrm';
-    const PLAYER_VRM_URL = 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/VRoid_Sample_B-BgBlpJmNNxlr9NJ3C2WZB9uBub7r7T.vrm';
+    const PLAYER_VRM_URL = 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/avatars/VRoid_Sample_B-D0UeF1RrEd5ItEeCiUZ3o8DxtxvFIK.vrm';
 
     const sceneRef = useRef(null);
     const [selectedAvatar, setSelectedAvatar] = useState(PLAYER_VRM_URL);
@@ -847,7 +860,7 @@ const Scene = () => {
                     if (keyStates.current.d) moveVector.add(cameraRight);
 
                     if (moveVector.length() > 0) {
-                        playAnimation('Walking');
+                        playAnimation(ANIMATION_WALKING);
 
                         moveVector.normalize();
 
@@ -877,11 +890,11 @@ const Scene = () => {
                         const currentWeapon = equippedWeaponRef.current;
                         if (currentWeapon) {
                             const animationName = currentWeapon.weaponType === 'sword'
-                                ? 'Great Sword Idle'
-                                : 'Pistol Idle';
+                                ? ANIMATION_GREAT_SWORD_IDLE
+                                : ANIMATION_PISTOL_IDLE;
                             playAnimation(animationName);
                         } else {
-                            playAnimation('Idle');
+                            playAnimation(ANIMATION_IDLE);
                         }
                     }
                 }
@@ -970,7 +983,7 @@ const Scene = () => {
         });
 
         // Return to Idle animation
-        playAnimation('Idle');
+        playAnimation(ANIMATION_IDLE);
     };
 
     // Add these constants near the top of the file with other constants
@@ -1337,7 +1350,7 @@ const Scene = () => {
                     z: Math.PI / 8
                 },
                 scale: 1,
-                animation: './animations/Great Sword Idle.fbx'
+                animation: ANIMATION_GREAT_SWORD_IDLE
             },
             pistol: {
                 position: { x: 0.05, y: -0.03, z: 0 },
@@ -1347,7 +1360,7 @@ const Scene = () => {
                     z: 0
                 },
                 scale: 1,
-                animation: './animations/Pistol Idle.fbx'
+                animation: ANIMATION_PISTOL_IDLE
             }
         };
 
@@ -1409,7 +1422,7 @@ const Scene = () => {
             });
 
             // Play the appropriate animation based on inferred type
-            playAnimation(inferredWeaponType === 'sword' ? 'Great Sword Idle' : 'Pistol Idle');
+            playAnimation(inferredWeaponType === 'sword' ? ANIMATION_GREAT_SWORD_IDLE : ANIMATION_PISTOL_IDLE);
 
             setShowShop(false);
 
@@ -1444,9 +1457,6 @@ const Scene = () => {
             </div>
         );
     };
-
-    // TODO: click weapon with mouse to view in details / try out
-    // TODO: try to find a way to still load .fbx, but orient / scale it right to match the corresponding .glb
 
     // Add near the top of the Scene component
     const loadWeapons = async () => {

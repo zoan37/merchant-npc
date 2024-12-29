@@ -13,7 +13,7 @@ export async function POST(request) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
         'HTTP-Referer': process.env.VERCEL_URL || 'http://localhost:3000',
-        'X-Title': 'Virtual World NPC Chat'
+        'X-Title': 'AI Merchant NPC'
       },
       body: JSON.stringify({
         model: 'google/gemini-flash-1.5-8b',
