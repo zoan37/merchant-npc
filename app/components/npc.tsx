@@ -140,6 +140,11 @@ const Scene = () => {
 
         const weaponName = params.weaponName.toLowerCase();
 
+        // temporary fix in case LLM hallucinates metadata
+        if (weaponName == 'galactic buster') {
+            return 'sword';
+        }
+
         // First priority: Check asset name for weapon type
         const pistolKeywords = ['pistol', 'gun', 'megaphone', 'revolver', 'blaster'];
         const swordKeywords = ['sword', 'blade', 'dagger', 'bat'];
