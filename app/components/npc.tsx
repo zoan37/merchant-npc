@@ -1,5 +1,4 @@
 // @ts-nocheck
-
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
@@ -15,7 +14,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import TWEEN from '@tweenjs/tween.js';
 import chatService from './chat_service';
-import nipplejs from 'nipplejs';
 import summaryMetadata from '@/public/context/summary_metadata_with_vercel_urls.json';
 import ModelViewer from './model-viewer';
 import ReactMarkdown from 'react-markdown';
@@ -1017,6 +1015,7 @@ const Scene = () => {
         DESKTOP: 1.0
     };
 
+    /*
     // Modify the mobile detection useEffect
     useEffect(() => {
         const checkMobile = () => {
@@ -1074,7 +1073,8 @@ const Scene = () => {
             }
         };
     }, [isMobile]);
-
+    */
+   
     // Add this helper function near the top of the Scene component
     const parseMessageTags = (message) => {
         const tags = [];
