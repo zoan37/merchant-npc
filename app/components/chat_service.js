@@ -127,8 +127,6 @@ class ChatService {
             // log message history length
             console.log('Message history length:', this.messageHistory.length);
             
-            // log message history
-            console.log('Message history:', this.messageHistory);
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {
