@@ -122,6 +122,9 @@ const Scene = () => {
     const [selectedWeaponDetails, setSelectedWeaponDetails] = useState(null);
     const [showWeaponDetails, setShowWeaponDetails] = useState(false);
 
+    // Add this state near other state declarations
+    const [hasChattedBefore, setHasChattedBefore] = useState(false);
+
     // Add this helper function near the top of the file
     const inferWeaponType = (params: WeaponActionParams, metadata: any): 'sword' | 'pistol' => {
         // log params
@@ -387,8 +390,13 @@ const Scene = () => {
             isStreaming: true
         }]);
 
+        // Modify the initial greeting based on whether we've chatted before
+        const initialMessage = hasChattedBefore 
+            ? "*Same player left, and now has returned and approaches*"
+            : "*Player approaches*";
+
         // Get initial greeting from chatService
-        chatService.getNPCResponse("*Player approaches*", (partialMessage) => {
+        chatService.getNPCResponse(initialMessage, (partialMessage) => {
             setChatMessages([{
                 sender: NPC_NAME,
                 message: partialMessage,
@@ -402,6 +410,11 @@ const Scene = () => {
 
             if (response.animation && npcAnimationActionsRef.current[response.animation]) {
                 playNpcAnimation(response.animation);
+            }
+
+            // Set hasChattedBefore to true after first chat
+            if (!hasChattedBefore) {
+                setHasChattedBefore(true);
             }
         });
 
