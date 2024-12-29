@@ -786,6 +786,7 @@ const Scene = () => {
 
         // TODO: don't show avatars until idle animation loaded (right now it flickers with t-pose)
         // TODO: change settings icon to info icon, move to top right corner, show info about creator of this app
+        // TODO: allow arrow keys to move around
 
         // const MERCHANT_VRM_URL = './avatars/sheriff_agent_7.3.vrm';
         const MERCHANT_VRM_URL = 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/avatars/sheriff_agent_7.3-Nlpi0VmgY7hIcOaIDdomjRDE9Igtrn.vrm';
