@@ -1624,9 +1624,21 @@ const Scene = () => {
         }
     };
 
+    // Add this near other utility functions
+    const isMobileDevice = () => {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    };
+
     // Modify the useEffect that calls loadWeapons
     useEffect(() => {
         if (sceneRef.current && !weaponsLoadedRef.current && rendererRef.current) {
+            // Skip loading weapons on mobile devices
+            if (isMobileDevice()) {
+                console.log('Skipping weapon loading on mobile device');
+                weaponsLoadedRef.current = true; // Mark as loaded to prevent future attempts
+                return;
+            }
+
             console.log('Loading weapons...');
             loadWeapons();
             weaponsLoadedRef.current = true;
