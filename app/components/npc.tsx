@@ -198,7 +198,11 @@ const Scene = () => {
                 y: Math.PI / 2 + 2 * Math.PI / 16,
                 z: Math.PI / 8 + -2 * Math.PI / 16
             },
-            scale: 1.0
+            scale: 1.0,
+            niftyIslandLink: 'https://www.niftyisland.com/item/base/0x44073ea066f39c21c3ec51ef324c280e0870d2c4/2',
+            chain: 'base',
+            contractAddress: '0x44073ea066f39c21c3ec51ef324c280e0870d2c4',
+            tokenId: '2'
         },
         {
             id: 'pistol',
@@ -213,7 +217,11 @@ const Scene = () => {
                 y: Math.PI / 2 + Math.PI / 16,
                 z: 0
             },
-            scale: 1.0
+            scale: 1.0,
+            niftyIslandLink: 'https://www.niftyisland.com/item/base/0x44073ea066f39c21c3ec51ef324c280e0870d2c4/3',
+            chain: 'base',
+            contractAddress: '0x44073ea066f39c21c3ec51ef324c280e0870d2c4',
+            tokenId: '3'
         }
     ];
 
