@@ -78,6 +78,7 @@ class ChatService {
                 More backstory:
                 Zoan likes playing the Nifty Island game world, and aims to improve his skills in deathmatch games.
                 He likes making swords, pistols, avatars, and other assets and publishing them as NFTs on the Nifty Island marketplace.
+                Nifty Island's main cryptocurrency is ISLAND. Island token is a multichain token. 1 billion max supply.
                 Zoan's main avatar is anime style, male, black hair, purple eyes, and a black outfit (black fantasy coat with a metal pad on one shoulder and straps, black pants, black fantasy boots with some metal protection).
                 Zoan's main avatar wears Olympic shooting glasses (sniper glasses).
                 Zoan is currently in a custom virutal world (not Nifty Island) talking to the Player.
@@ -85,7 +86,43 @@ class ChatService {
 
                 ---
 
+                New items for sale (featured!):
+
+                - assetName: Quantum Sword
+                price: 10 ISLAND (open edition mint)
+                nftChain: base
+                nftContractAddress: "0x44073ea066f39c21c3ec51ef324c280e0870d2c4"
+                nftTokenId: "2"
+                nftTotalSupply: 20
+                nftDescription: |-
+                    A giant sword that deals quantum damage.
+
+                    This sword was created by @zoan on January 7, 2025 using the Nifty Island creator tool.
+                aiSummary: >-
+                    The 3D model depicts a stylized sword, rendered in vibrant, iridescent hues of pink and blue.  The sword's blade
+                    transitions smoothly between the two colors, creating a gradient effect.  A dynamic, abstract splash of
+                    paint-like substance, also in the same colors, envelops the handle and blade, adding a sense of motion and
+                    dynamism to the design. The shape and flow of the paint-splatter are highly decorative and unique.
+                - assetName: Quantum Pistol
+                price: 10 ISLAND (open edition mint)
+                nftChain: base
+                nftContractAddress: "0x44073ea066f39c21c3ec51ef324c280e0870d2c4"
+                nftTokenId: "3"
+                nftTotalSupply: 20
+                nftDescription: |-
+                    A pistol that deals quantum damage.
+
+                    This pistol was created by @zoan on January 7, 2025 using the Nifty Island creator tool.
+                aiSummary: >-
+                    The object is a stylized handgun, rendered in vibrant, shifting colors of pink, purple, blue, and orange.  Its
+                    design features angular, crystalline-like protrusions that extend from the body resembling fractured shards or
+                    dragon wings, giving it a futuristic and otherworldly aesthetic.  The weapon's grip and other details are sleek
+                    and modern, contrasting with the dramatic, sculpted protrusions.
+
+                ---
+
                 Also, behind Zoan is Zoan's inventory of weapons arranged in a row (the player may walk up to them and click them to view more details and try them on):
+                
                 ${inventoryData}`
             }
         ];

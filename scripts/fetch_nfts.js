@@ -69,7 +69,7 @@ async function getNFTMetadata(nft) {
 async function main() {
     try {
         // Parse the NFT URLs from the file
-        const nfts = await parseNFTUrls('weapons.txt');
+        const nfts = await parseNFTUrls('new_weapons.txt');
         const results = [];
         
         // Process each NFT sequentially

@@ -184,14 +184,13 @@ const Scene = () => {
         return 'sword';
     };
 
-    /*
     const weapons = [
         {
             id: 'sword',
             name: 'Quantum Sword',
-            price: '0.001 ETH',
-            model: './weapons/quantum_sword_6.1.glb',
-            animation: './animations/Great Sword Idle.fbx',
+            price: '10 ISLAND',
+            model: 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/weapons/weapon_models_glb/base_0x44073ea066f39c21c3ec51ef324c280e0870d2c4_2_quantum_sword-YXvamvKYDL4qMLTgVe0Z2kowYraxfK.glb',
+            animation: ANIMATION_GREAT_SWORD_IDLE,
             weaponType: 'sword',
             position: { x: 0.05, y: -0.025, z: 0.0 },
             rotation: {
@@ -199,14 +198,18 @@ const Scene = () => {
                 y: Math.PI / 2 + 2 * Math.PI / 16,
                 z: Math.PI / 8 + -2 * Math.PI / 16
             },
-            scale: 1.0
+            scale: 1.0,
+            niftyIslandLink: 'https://www.niftyisland.com/item/base/0x44073ea066f39c21c3ec51ef324c280e0870d2c4/2',
+            chain: 'base',
+            contractAddress: '0x44073ea066f39c21c3ec51ef324c280e0870d2c4',
+            tokenId: '2'
         },
         {
             id: 'pistol',
             name: 'Quantum Pistol',
-            price: '0.001 ETH',
-            model: './weapons/quantum_pistol_3.glb',
-            animation: './animations/Pistol Idle.fbx',
+            price: '10 ISLAND',
+            model: 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/weapons/weapon_models_glb/base_0x44073ea066f39c21c3ec51ef324c280e0870d2c4_3_quantum_pistol-9IYG7ctGW9QectUgSXSDysLt6KLVi7.glb',
+            animation: ANIMATION_PISTOL_IDLE,
             weaponType: 'pistol',
             position: { x: 0.05, y: -0.03, z: 0 },
             rotation: {
@@ -214,12 +217,15 @@ const Scene = () => {
                 y: Math.PI / 2 + Math.PI / 16,
                 z: 0
             },
-            scale: 1.0
+            scale: 1.0,
+            niftyIslandLink: 'https://www.niftyisland.com/item/base/0x44073ea066f39c21c3ec51ef324c280e0870d2c4/3',
+            chain: 'base',
+            contractAddress: '0x44073ea066f39c21c3ec51ef324c280e0870d2c4',
+            tokenId: '3'
         }
     ];
-    */
 
-    const weapons = [];
+    // const weapons = [];
 
     useEffect(() => {
         equippedWeaponRef.current = equippedWeapon;
@@ -1036,12 +1042,10 @@ const Scene = () => {
     // Add these constants near the top of the file with other constants
     const MARKETPLACE_LINKS = {
         sword: {
-            niftyIsland: 'https://niftyisland.com/marketplace/item/123',
-            opensea: 'https://opensea.io/assets/ethereum/123'
+            niftyIsland: 'https://www.niftyisland.com/item/base/0x44073ea066f39c21c3ec51ef324c280e0870d2c4/2'
         },
         pistol: {
-            niftyIsland: 'https://niftyisland.com/marketplace/item/456',
-            opensea: 'https://opensea.io/assets/ethereum/456'
+            niftyIsland: 'https://www.niftyisland.com/item/base/0x44073ea066f39c21c3ec51ef324c280e0870d2c4/3'
         },
         bat: {
             doggyMarket: 'https://doggy.market/nfts/doginalbat'
