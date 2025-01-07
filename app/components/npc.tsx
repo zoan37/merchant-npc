@@ -184,14 +184,13 @@ const Scene = () => {
         return 'sword';
     };
 
-    /*
     const weapons = [
         {
             id: 'sword',
             name: 'Quantum Sword',
-            price: '0.001 ETH',
-            model: './weapons/quantum_sword_6.1.glb',
-            animation: './animations/Great Sword Idle.fbx',
+            price: '10 ISLAND',
+            model: 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/weapons/weapon_models_glb/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219871109443973300352425159294977_quantum_sword-Sb0MfBdeLTRUdTh3vUwKyJLmyvrhbq.glb',
+            animation: ANIMATION_GREAT_SWORD_IDLE,
             weaponType: 'sword',
             position: { x: 0.05, y: -0.025, z: 0.0 },
             rotation: {
@@ -204,9 +203,9 @@ const Scene = () => {
         {
             id: 'pistol',
             name: 'Quantum Pistol',
-            price: '0.001 ETH',
-            model: './weapons/quantum_pistol_3.glb',
-            animation: './animations/Pistol Idle.fbx',
+            price: '10 ISLAND',
+            model: 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/weapons/weapon_models_glb/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219852077337575686566174800216065_quantum_pistol-UFhlmQZLhClxsPuEz9ZQdbBaBPhkli.glb',
+            animation: ANIMATION_PISTOL_IDLE,
             weaponType: 'pistol',
             position: { x: 0.05, y: -0.03, z: 0 },
             rotation: {
@@ -217,9 +216,8 @@ const Scene = () => {
             scale: 1.0
         }
     ];
-    */
 
-    const weapons = [];
+    // const weapons = [];
 
     useEffect(() => {
         equippedWeaponRef.current = equippedWeapon;

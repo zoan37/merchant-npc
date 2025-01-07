@@ -6907,5 +6907,187 @@
       }
     ],
     "_totalSupply": "1337"
+  },
+  {
+    "name": "https",
+    "chain": "base",
+    "contractAddress": "0xc1374b803dfb1a9c87eab9e76929222dba3a8c39",
+    "tokenId": "88700490005035943529316798097329512194005047219871109443973300352425159294977",
+    "metadata": {
+      "contract": {
+        "address": "0xc1374b803DFb1A9c87eaB9e76929222DBa3a8C39",
+        "name": "Nifty Island Creations",
+        "symbol": "NI-CREATE",
+        "tokenType": "ERC1155",
+        "contractDeployer": "0x586FBF5fADB63bA1e28f4987D7e6D6F1BFB9F490",
+        "deployedBlockNumber": 6380501,
+        "openSeaMetadata": {},
+        "spamClassifications": []
+      },
+      "tokenId": "88700490005035943529316798097329512194005047219871109443973300352425159294977",
+      "tokenType": "ERC1155",
+      "name": "Quantum Sword",
+      "description": "This sword was created by @zoan on April 3, 2024 using the Nifty Island creator tool.",
+      "tokenUri": "https://metadata.niftyisland.com/metadata/evm/8453/0xc1374b803dfb1a9c87eab9e76929222dba3a8c39/c41ab2bef4e8a17d8e2089ee7a6aa25e4c640620948061f74e98461d94000001/metadata.json",
+      "image": {
+        "cachedUrl": "https://content.niftyisland.com/nftables/c8a84cc0-3d03-4c4b-9ff0-d71205b087af/v/11/preview.mp4",
+        "originalUrl": "https://content.niftyisland.com/nftables/c8a84cc0-3d03-4c4b-9ff0-d71205b087af/v/11/preview.mp4"
+      },
+      "raw": {
+        "tokenUri": "https://metadata.niftyisland.com/metadata/evm/8453/0xc1374b803dfb1a9c87eab9e76929222dba3a8c39/{id}/metadata.json",
+        "metadata": {
+          "name": "Quantum Sword",
+          "description": "A giant sword that deals quantum level damage. This sword was created by @zoan on April 3, 2024 using the Nifty Island creator tool.",
+          "image": "https://content.niftyisland.com/nftables/c8a84cc0-3d03-4c4b-9ff0-d71205b087af/v/11/preview.mp4",
+          "assets": [
+            {
+              "name": "Quantum Sword",
+              "media_type": "model",
+              "files": [
+                {
+                  "url": "https://content.niftyisland.com/nftables/c8a84cc0-3d03-4c4b-9ff0-d71205b087af/v/11/source.glb",
+                  "file_type": "model/glb"
+                }
+              ]
+            }
+          ],
+          "attributes": [],
+          "metadata_standard": "ETM_v1.0.0",
+          "extensions": [
+            "ETM_MULTIASSET_v1.0.0"
+          ]
+        }
+      },
+      "mint": {},
+      "timeLastUpdated": "2025-01-07T19:57:11.924Z"
+    },
+    "_local_files": [
+      {
+        "asset_name": "Quantum Sword",
+        "original_url": "https://content.niftyisland.com/nftables/c8a84cc0-3d03-4c4b-9ff0-d71205b087af/v/11/source.glb",
+        "local_path": "weapon_models_glb/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219871109443973300352425159294977_quantum_sword.glb",
+        "file_type": "model/glb",
+        "vercel_url": "https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/weapons/weapon_models_glb/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219871109443973300352425159294977_quantum_sword-Sb0MfBdeLTRUdTh3vUwKyJLmyvrhbq.glb"
+      }
+    ],
+    "_screenshots": [
+      {
+        "model_path": "weapon_models_glb/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219871109443973300352425159294977_quantum_sword.glb",
+        "screenshots": [
+          {
+            "angle": 0,
+            "path": "weapon_models_screenshots/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219871109443973300352425159294977_quantum_sword_0deg.jpg"
+          },
+          {
+            "angle": 90,
+            "path": "weapon_models_screenshots/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219871109443973300352425159294977_quantum_sword_90deg.jpg"
+          },
+          {
+            "angle": 180,
+            "path": "weapon_models_screenshots/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219871109443973300352425159294977_quantum_sword_180deg.jpg"
+          },
+          {
+            "angle": 270,
+            "path": "weapon_models_screenshots/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219871109443973300352425159294977_quantum_sword_270deg.jpg"
+          }
+        ]
+      }
+    ],
+    "_summaries": [
+      {
+        "model_path": "weapon_models_glb/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219871109443973300352425159294977_quantum_sword.glb",
+        "summary": "The 3D model depicts a stylized sword, rendered with fluid, vibrant gradients of pink and blue.  The blade and hilt are geometrically shaped but appear to be encased or surrounded by abstract, paint-like splashes and drips of the same gradient colors.  The dynamic, flowing forms create a sense of energy and movement, giving the sword a unique, almost ethereal quality.\n"
+      }
+    ],
+    "_totalSupply": "1"
+  },
+  {
+    "name": "https",
+    "chain": "base",
+    "contractAddress": "0xc1374b803dfb1a9c87eab9e76929222dba3a8c39",
+    "tokenId": "88700490005035943529316798097329512194005047219852077337575686566174800216065",
+    "metadata": {
+      "contract": {
+        "address": "0xc1374b803DFb1A9c87eaB9e76929222DBa3a8C39",
+        "name": "Nifty Island Creations",
+        "symbol": "NI-CREATE",
+        "tokenType": "ERC1155",
+        "contractDeployer": "0x586FBF5fADB63bA1e28f4987D7e6D6F1BFB9F490",
+        "deployedBlockNumber": 6380501,
+        "openSeaMetadata": {},
+        "spamClassifications": []
+      },
+      "tokenId": "88700490005035943529316798097329512194005047219852077337575686566174800216065",
+      "tokenType": "ERC1155",
+      "name": "Quantum Pistol",
+      "description": "This pistol was created by @zoan on April 3, 2024 using the Nifty Island creator tool.",
+      "tokenUri": "https://metadata.niftyisland.com/metadata/evm/8453/0xc1374b803dfb1a9c87eab9e76929222dba3a8c39/c41ab2bef4e8a17d8e2089ee7a6aa25e4c640620570164ac24c34003bb000001/metadata.json",
+      "image": {
+        "cachedUrl": "https://content.niftyisland.com/nftables/41b50ac8-5233-4f23-9628-acaa75435ea4/v/8/preview.mp4",
+        "originalUrl": "https://content.niftyisland.com/nftables/41b50ac8-5233-4f23-9628-acaa75435ea4/v/8/preview.mp4"
+      },
+      "raw": {
+        "tokenUri": "https://metadata.niftyisland.com/metadata/evm/8453/0xc1374b803dfb1a9c87eab9e76929222dba3a8c39/{id}/metadata.json",
+        "metadata": {
+          "name": "Quantum Pistol",
+          "description": "A pistol that deals quantum level damage. This pistol was created by @zoan on April 3, 2024 using the Nifty Island creator tool.",
+          "image": "https://content.niftyisland.com/nftables/41b50ac8-5233-4f23-9628-acaa75435ea4/v/8/preview.mp4",
+          "assets": [
+            {
+              "name": "Quantum Pistol",
+              "media_type": "model",
+              "files": [
+                {
+                  "url": "https://content.niftyisland.com/nftables/41b50ac8-5233-4f23-9628-acaa75435ea4/v/8/source.glb",
+                  "file_type": "model/glb"
+                }
+              ]
+            }
+          ],
+          "attributes": [],
+          "metadata_standard": "ETM_v1.0.0",
+          "extensions": [
+            "ETM_MULTIASSET_v1.0.0"
+          ]
+        }
+      },
+      "mint": {},
+      "timeLastUpdated": "2025-01-07T19:57:15.175Z"
+    },
+    "_local_files": [
+      {
+        "asset_name": "Quantum Pistol",
+        "original_url": "https://content.niftyisland.com/nftables/41b50ac8-5233-4f23-9628-acaa75435ea4/v/8/source.glb",
+        "local_path": "weapon_models_glb/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219852077337575686566174800216065_quantum_pistol.glb",
+        "file_type": "model/glb",
+        "vercel_url": "https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/weapons/weapon_models_glb/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219852077337575686566174800216065_quantum_pistol-UFhlmQZLhClxsPuEz9ZQdbBaBPhkli.glb"
+      }
+    ],
+    "_screenshots": [
+      {
+        "model_path": "weapon_models_glb/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219852077337575686566174800216065_quantum_pistol.glb",
+        "screenshots": [
+          {
+            "angle": 0,
+            "path": "weapon_models_screenshots/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219852077337575686566174800216065_quantum_pistol_0deg.jpg"
+          },
+          {
+            "angle": 180,
+            "path": "weapon_models_screenshots/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219852077337575686566174800216065_quantum_pistol_180deg.jpg"
+          },
+          {
+            "angle": 270,
+            "path": "weapon_models_screenshots/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219852077337575686566174800216065_quantum_pistol_270deg.jpg"
+          }
+        ]
+      }
+    ],
+    "_summaries": [
+      {
+        "model_path": "weapon_models_glb/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219852077337575686566174800216065_quantum_pistol.glb",
+        "summary": "The object is a stylized, futuristic handgun,  exhibiting a dynamic and colorful design.  Its body is a vibrant gradient of pink, purple, and blue hues, reminiscent of a gemstone or other iridescent material.  Sharp, angular protrusions resembling crystalline or flame-like structures adorn the barrel and grip, contrasting with smooth, polished surfaces.  A central, circular feature is visible on the body of the gun, likely a sight or a decorative element. Its overall shape and design suggest a blend of fantasy and technology.\n"
+      }
+    ],
+    "_totalSupply": "1"
   }
 ]
