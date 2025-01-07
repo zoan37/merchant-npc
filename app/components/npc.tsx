@@ -189,7 +189,7 @@ const Scene = () => {
             id: 'sword',
             name: 'Quantum Sword',
             price: '10 ISLAND',
-            model: 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/weapons/weapon_models_glb/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219871109443973300352425159294977_quantum_sword-Sb0MfBdeLTRUdTh3vUwKyJLmyvrhbq.glb',
+            model: 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/weapons/weapon_models_glb/base_0x44073ea066f39c21c3ec51ef324c280e0870d2c4_2_quantum_sword-YXvamvKYDL4qMLTgVe0Z2kowYraxfK.glb',
             animation: ANIMATION_GREAT_SWORD_IDLE,
             weaponType: 'sword',
             position: { x: 0.05, y: -0.025, z: 0.0 },
@@ -204,7 +204,7 @@ const Scene = () => {
             id: 'pistol',
             name: 'Quantum Pistol',
             price: '10 ISLAND',
-            model: 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/weapons/weapon_models_glb/base_0xc1374b803dfb1a9c87eab9e76929222dba3a8c39_88700490005035943529316798097329512194005047219852077337575686566174800216065_quantum_pistol-UFhlmQZLhClxsPuEz9ZQdbBaBPhkli.glb',
+            model: 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/weapons/weapon_models_glb/base_0x44073ea066f39c21c3ec51ef324c280e0870d2c4_3_quantum_pistol-9IYG7ctGW9QectUgSXSDysLt6KLVi7.glb',
             animation: ANIMATION_PISTOL_IDLE,
             weaponType: 'pistol',
             position: { x: 0.05, y: -0.03, z: 0 },
@@ -1034,12 +1034,10 @@ const Scene = () => {
     // Add these constants near the top of the file with other constants
     const MARKETPLACE_LINKS = {
         sword: {
-            niftyIsland: 'https://niftyisland.com/marketplace/item/123',
-            opensea: 'https://opensea.io/assets/ethereum/123'
+            niftyIsland: 'https://www.niftyisland.com/item/base/0x44073ea066f39c21c3ec51ef324c280e0870d2c4/2'
         },
         pistol: {
-            niftyIsland: 'https://niftyisland.com/marketplace/item/456',
-            opensea: 'https://opensea.io/assets/ethereum/456'
+            niftyIsland: 'https://www.niftyisland.com/item/base/0x44073ea066f39c21c3ec51ef324c280e0870d2c4/3'
         },
         bat: {
             doggyMarket: 'https://doggy.market/nfts/doginalbat'

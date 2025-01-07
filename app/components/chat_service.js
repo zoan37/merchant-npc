@@ -90,31 +90,36 @@ class ChatService {
                 - assetName: Quantum Sword
                 price: 10 ISLAND (open edition mint)
                 nftChain: base
-                nftContractAddress: "0xc1374b803dfb1a9c87eab9e76929222dba3a8c39"
-                nftTokenId: "88700490005035943529316798097329512194005047219871109443973300352425159294977"
-                nftTotalSupply: 1
-                nftDescription: A giant sword that deals quantum damage. This sword was created by @zoan on April 3, 2024 using the Nifty Island creator tool.
+                nftContractAddress: "0x44073ea066f39c21c3ec51ef324c280e0870d2c4"
+                nftTokenId: "2"
+                nftTotalSupply: 20
+                nftDescription: |-
+                    A giant sword that deals quantum damage.
+
+                    This sword was created by @zoan on January 7, 2025 using the Nifty Island creator tool.
                 aiSummary: >-
-                    The 3D model depicts a stylized sword, rendered with fluid, vibrant gradients of pink and blue.  The blade and
-                    hilt are geometrically shaped but appear to be encased or surrounded by abstract, paint-like splashes and drips
-                    of the same gradient colors.  The dynamic, flowing forms create a sense of energy and movement, giving the sword
-                    a unique, almost ethereal quality.
+                    The 3D model depicts a stylized sword, rendered in vibrant, iridescent hues of pink and blue.  The sword's blade
+                    transitions smoothly between the two colors, creating a gradient effect.  A dynamic, abstract splash of
+                    paint-like substance, also in the same colors, envelops the handle and blade, adding a sense of motion and
+                    dynamism to the design. The shape and flow of the paint-splatter are highly decorative and unique.
                 - assetName: Quantum Pistol
                 price: 10 ISLAND (open edition mint)
                 nftChain: base
-                nftContractAddress: "0xc1374b803dfb1a9c87eab9e76929222dba3a8c39"
-                nftTokenId: "88700490005035943529316798097329512194005047219852077337575686566174800216065"
-                nftTotalSupply: 1
-                nftDescription: A pisol that deals quantum damage. This pistol was created by @zoan on April 3, 2024 using the Nifty Island creator tool.
+                nftContractAddress: "0x44073ea066f39c21c3ec51ef324c280e0870d2c4"
+                nftTokenId: "3"
+                nftTotalSupply: 20
+                nftDescription: |-
+                    A pistol that deals quantum damage.
+
+                    This pistol was created by @zoan on January 7, 2025 using the Nifty Island creator tool.
                 aiSummary: >-
-                    The object is a stylized, futuristic handgun,  exhibiting a dynamic and colorful design.  Its body is a vibrant
-                    gradient of pink, purple, and blue hues, reminiscent of a gemstone or other iridescent material.  Sharp, angular
-                    protrusions resembling crystalline or flame-like structures adorn the barrel and grip, contrasting with smooth,
-                    polished surfaces.  A central, circular feature is visible on the body of the gun, likely a sight or a
-                    decorative element. Its overall shape and design suggest a blend of fantasy and technology.
+                    The object is a stylized handgun, rendered in vibrant, shifting colors of pink, purple, blue, and orange.  Its
+                    design features angular, crystalline-like protrusions that extend from the body resembling fractured shards or
+                    dragon wings, giving it a futuristic and otherworldly aesthetic.  The weapon's grip and other details are sleek
+                    and modern, contrasting with the dramatic, sculpted protrusions.
 
                 ---
-                
+
                 Also, behind Zoan is Zoan's inventory of weapons arranged in a row (the player may walk up to them and click them to view more details and try them on):
                 
                 ${inventoryData}`
