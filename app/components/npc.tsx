@@ -73,10 +73,13 @@ const ANIMATION_SPEEDS = {
   particleSpeed: 0.05,     
 } as const;
 
-// Add this function near other initialization functions
+// Add these constants near the top with other constants
+const GATE_SIZE_MULTIPLIER = 0.65; // Adjust this value to scale the entire gate
+const GATE_HEIGHT_OFFSET = 2.5;   // Adjust this value to change how high off the ground the gate floats
+
 const createMagicGate = (scene) => {
     // Create the main portal with custom shader for spiral effect
-    const portalGeometry = new THREE.CircleGeometry(5, 64);
+    const portalGeometry = new THREE.CircleGeometry(5 * GATE_SIZE_MULTIPLIER, 64);
     const portalMaterial = new THREE.ShaderMaterial({
         uniforms: {
             time: { value: 0 },
@@ -173,7 +176,7 @@ const createMagicGate = (scene) => {
     // Create a container group for the portal and its effects
     const portalGroup = new THREE.Group();
     scene.add(portalGroup);
-    portalGroup.position.set(0, 1.5, -8);
+    portalGroup.position.set(0, GATE_HEIGHT_OFFSET, -8);
     portalGroup.rotation.y = Math.PI;
 
     const portal = new THREE.Mesh(portalGeometry, portalMaterial);
@@ -181,7 +184,11 @@ const createMagicGate = (scene) => {
 
     // Create glow rings
     const createGlowRing = (radius, opacity) => {
-        const ringGeometry = new THREE.RingGeometry(radius, radius + 0.2, 64);
+        const ringGeometry = new THREE.RingGeometry(
+            radius * GATE_SIZE_MULTIPLIER, 
+            (radius + 0.2) * GATE_SIZE_MULTIPLIER, 
+            64
+        );
         const ringMaterial = new THREE.ShaderMaterial({
             uniforms: {
                 time: { value: 0 }
@@ -222,10 +229,10 @@ const createMagicGate = (scene) => {
 
     for (let i = 0; i < particleCount; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const radius = 4 + Math.random() * 2;
+        const radius = (4 + Math.random() * 2) * GATE_SIZE_MULTIPLIER;
         positions[i * 3] = Math.cos(angle) * radius;
         positions[i * 3 + 1] = Math.sin(angle) * radius;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 0.5;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 0.5 * GATE_SIZE_MULTIPLIER;
         speeds[i] = Math.random() * 0.02 + 0.01;
     }
 
@@ -234,7 +241,7 @@ const createMagicGate = (scene) => {
 
     const particlesMaterial = new THREE.PointsMaterial({
         color: 0x00ffff,
-        size: 0.05,
+        size: 0.05 * GATE_SIZE_MULTIPLIER,
         transparent: true,
         opacity: 0.6,
         blending: THREE.AdditiveBlending
