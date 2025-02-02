@@ -445,7 +445,7 @@ const Scene = () => {
             window.removeEventListener('mousemove', handleWeaponHover);
             window.removeEventListener('click', handleWeaponClick);
         };
-    }, [isNearNPC, isChatting]);
+    }, [isNearGate, isNearNPC, isChatting]);
 
     useEffect(() => {
         if (npcRef.current?.scene) {
