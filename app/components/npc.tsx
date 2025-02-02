@@ -76,7 +76,7 @@ const ANIMATION_SPEEDS = {
 // Add this function near other initialization functions
 const createMagicGate = (scene) => {
     // Create the main portal with custom shader for spiral effect
-    const portalGeometry = new THREE.CircleGeometry(2, 64);
+    const portalGeometry = new THREE.CircleGeometry(5, 64);
     const portalMaterial = new THREE.ShaderMaterial({
         uniforms: {
             time: { value: 0 },
@@ -209,7 +209,7 @@ const createMagicGate = (scene) => {
 
     const glowRings = [];
     for (let i = 0; i < 3; i++) {
-        const ring = createGlowRing(2 + i * 0.5, 0.3 - i * 0.1);
+        const ring = createGlowRing(5 + i * 0.5, 0.3 - i * 0.1);
         glowRings.push(ring);
         portalGroup.add(ring);
     }
@@ -222,7 +222,7 @@ const createMagicGate = (scene) => {
 
     for (let i = 0; i < particleCount; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const radius = 1.6 + Math.random() * 1;
+        const radius = 4 + Math.random() * 2;
         positions[i * 3] = Math.cos(angle) * radius;
         positions[i * 3 + 1] = Math.sin(angle) * radius;
         positions[i * 3 + 2] = (Math.random() - 0.5) * 0.5;
