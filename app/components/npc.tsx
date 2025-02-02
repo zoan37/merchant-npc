@@ -65,6 +65,187 @@ const ANIMATION_WALKING = 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.c
 const ANIMATION_GREAT_SWORD_IDLE = 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/animations/Great%20Sword%20Idle-08F04GwJaQuRTyoOJgMseiYBvFodbF.fbx';
 const ANIMATION_PISTOL_IDLE = 'https://vmja7qb50ap0jvma.public.blob.vercel-storage.com/demo/v1/models/animations/Pistol%20Idle-UNnPpwZlfzGEk7bWquH5YabWhRDHYp.fbx';
 
+// Add these constants near the top with other constants
+const ANIMATION_SPEEDS = {
+  spiralRotation: 0.02,    
+  glowRingBase: 0.01,      
+  glowRingDecrement: 0.002, 
+  particleSpeed: 0.05,     
+} as const;
+
+// Add this function near other initialization functions
+const createMagicGate = (scene) => {
+    // Create the main portal with custom shader for spiral effect
+    const portalGeometry = new THREE.CircleGeometry(2, 64);
+    const portalMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+            time: { value: 0 },
+            intensity: { value: 1.0 }
+        },
+        vertexShader: `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                // Remove viewMatrix from the transformation
+                gl_Position = projectionMatrix * modelMatrix * vec4(position, 1.0);
+            }
+        `,
+        fragmentShader: `
+            uniform float time;
+            uniform float intensity;
+            varying vec2 vUv;
+            
+            float spiral(vec2 st, float t) {
+                vec2 pos = st - vec2(0.5);
+                float r = length(pos) * 2.0;
+                float theta = atan(pos.y, pos.x);
+                
+                // Create multiple softer spiral arms
+                const float armCount = 8.0;
+                float spiral = 0.0;
+                
+                // Layer multiple subtle arms
+                for(float i = 0.0; i < armCount; i++) {
+                    float phase = i * 6.28318 / armCount;
+                    float arm = sin(theta * armCount + r * 3.0 - t * ${ANIMATION_SPEEDS.spiralRotation} + phase);
+                    // Soften the arm pattern
+                    arm = pow(0.5 + 0.5 * arm, 2.0);
+                    spiral += arm;
+                }
+                
+                // Normalize and smooth the result
+                spiral /= armCount;
+                spiral = smoothstep(0.2, 0.8, spiral);
+                
+                return spiral;
+            }
+            
+            void main() {
+                vec2 uv = vUv;
+                vec2 center = uv - vec2(0.5);
+                float dist = length(center);
+                
+                // Create solid white center
+                float centerMask = smoothstep(0.2, 0.0, dist);
+                
+                // Create softer spiral pattern with increased visibility
+                float spiralPattern = spiral(uv, time);
+                float spiralMask = smoothstep(0.6, 0.15, dist) * (1.0 - centerMask);
+                
+                // Increase visibility while keeping soft edges
+                spiralPattern = pow(spiralPattern, 1.2);  // Reduced power for more visibility
+                spiralMask *= mix(0.85, 1.0, spiralPattern);  // Increased base visibility
+                
+                // Enhanced arm glow
+                float armGlow = smoothstep(0.8, 0.0, dist) * spiralPattern;
+                spiralMask += armGlow * 0.3;  // Increased glow intensity
+                
+                // Combine patterns with color
+                vec3 centerColor = vec3(1.0);
+                vec3 spiralColor = mix(
+                    vec3(0.0, 0.5, 1.0),  // Deep blue
+                    vec3(0.5, 0.8, 1.0),  // Light blue
+                    spiralPattern
+                );
+                
+                // Add pulsing to the center
+                float pulse = sin(time * 2.0) * 0.1 + 0.9;
+                centerMask *= pulse;
+                
+                // Combine layers with enhanced spiral visibility
+                vec3 finalColor = mix(
+                    spiralColor * (spiralMask * 1.3),  // Increased spiral intensity
+                    centerColor,
+                    centerMask
+                );
+                
+                // Add enhanced glow effect
+                float glow = smoothstep(1.0, 0.0, dist);
+                finalColor += vec3(0.3, 0.5, 1.0) * glow * 0.6;  // Increased glow
+                
+                gl_FragColor = vec4(finalColor, smoothstep(1.0, 0.0, dist));
+            }
+        `,
+        transparent: true,
+        side: THREE.DoubleSide
+    });
+
+    // Create a container group for the portal and its effects
+    const portalGroup = new THREE.Group();
+    scene.add(portalGroup);
+    portalGroup.position.set(0, 1.5, -8);
+    portalGroup.rotation.y = Math.PI;
+
+    const portal = new THREE.Mesh(portalGeometry, portalMaterial);
+    portalGroup.add(portal);
+
+    // Create glow rings
+    const createGlowRing = (radius, opacity) => {
+        const ringGeometry = new THREE.RingGeometry(radius, radius + 0.2, 64);
+        const ringMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                time: { value: 0 }
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform float time;
+                varying vec2 vUv;
+                void main() {
+                    float alpha = sin(vUv.x * 6.28318 + time) * 0.5 + 0.5;
+                    gl_FragColor = vec4(0.3, 0.6, 1.0, alpha * ${opacity.toFixed(1)});
+                }
+            `,
+            transparent: true,
+            side: THREE.DoubleSide
+        });
+        return new THREE.Mesh(ringGeometry, ringMaterial);
+    };
+
+    const glowRings = [];
+    for (let i = 0; i < 3; i++) {
+        const ring = createGlowRing(2 + i * 0.5, 0.3 - i * 0.1);
+        glowRings.push(ring);
+        portalGroup.add(ring);
+    }
+
+    // Modify particle system to use the portal group's position
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particleCount = 1000;
+    const positions = new Float32Array(particleCount * 3);
+    const speeds = new Float32Array(particleCount);
+
+    for (let i = 0; i < particleCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = 1.6 + Math.random() * 1;
+        positions[i * 3] = Math.cos(angle) * radius;
+        positions[i * 3 + 1] = Math.sin(angle) * radius;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 0.5;
+        speeds[i] = Math.random() * 0.02 + 0.01;
+    }
+
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    particlesGeometry.setAttribute('speed', new THREE.BufferAttribute(speeds, 1));
+
+    const particlesMaterial = new THREE.PointsMaterial({
+        color: 0x00ffff,
+        size: 0.05,
+        transparent: true,
+        opacity: 0.6,
+        blending: THREE.AdditiveBlending
+    });
+
+    const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+    portalGroup.add(particles);
+
+    return { portal, glowRings, particles, particleCount, portalGroup };
+};
+
 const Scene = () => {
     const containerRef = useRef(null);
     const rendererRef = useRef(null);
@@ -867,6 +1048,9 @@ const Scene = () => {
             (error) => console.error(error)
         );
 
+        // Add magic gate
+        const magicGate = createMagicGate(scene);
+
         const clock = new THREE.Clock();
         const moveSpeed = 0.05;
         const rotationSpeed = 0.15;
@@ -955,6 +1139,31 @@ const Scene = () => {
                 avatarRef.current.update(deltaTime);
                 npcRef.current.update(deltaTime);
             }
+
+            // Update magic gate elements
+            magicGate.portal.material.uniforms.time.value = clock.getElapsedTime();
+
+            magicGate.glowRings.forEach((ring, i) => {
+                ring.rotation.z = clock.getElapsedTime() * (ANIMATION_SPEEDS.glowRingBase - i * ANIMATION_SPEEDS.glowRingDecrement);
+                ring.material.uniforms.time.value = clock.getElapsedTime();
+            });
+
+            // Animate particles relative to the portal group
+            const positions = magicGate.particles.geometry.attributes.position.array;
+            const speeds = magicGate.particles.geometry.attributes.speed.array;
+            
+            for (let i = 0; i < magicGate.particleCount; i++) {
+                const i3 = i * 3;
+                const x = positions[i3];
+                const y = positions[i3 + 1];
+                const angle = Math.atan2(y, x) + speeds[i] * ANIMATION_SPEEDS.particleSpeed;
+                const radius = Math.sqrt(x * x + y * y);
+                
+                positions[i3] = Math.cos(angle) * radius;
+                positions[i3 + 1] = Math.sin(angle) * radius;
+            }
+            
+            magicGate.particles.geometry.attributes.position.needsUpdate = true;
 
             controls.update();
             renderer.render(sceneRef.current, camera);
@@ -1237,6 +1446,14 @@ const Scene = () => {
                 // Normalize strings for comparison
                 const normalizedAssetName = weaponAsset.name.trim().toLowerCase().replace(/\s+/g, ' ');
                 const normalizedWeaponName = params.weaponName.trim().toLowerCase().replace(/\s+/g, ' ');
+
+                // Log for debugging
+                console.log('Comparing:', {
+                    normalizedWeaponName,
+                    normalizedAssetName,
+                    originalAssetName: weaponAsset.name,
+                    originalWeaponName: params.weaponName
+                });
 
                 // First try exact match
                 if (normalizedAssetName === normalizedWeaponName) {
