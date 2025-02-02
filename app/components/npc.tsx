@@ -250,6 +250,9 @@ const createMagicGate = (scene) => {
     const particles = new THREE.Points(particlesGeometry, particlesMaterial);
     portalGroup.add(particles);
 
+    // Mark the portal group
+    portalGroup.userData.isPortalGroup = true;
+
     return { portal, glowRings, particles, particleCount, portalGroup };
 };
 
@@ -313,6 +316,12 @@ const Scene = () => {
 
     // Add this state near other state declarations
     const [hasChattedBefore, setHasChattedBefore] = useState(false);
+
+    // Add this state near other state declarations
+    const [isNearGate, setIsNearGate] = useState(false);
+    
+    // Add this constant near other constants
+    const GATE_INTERACTION_DISTANCE = 3.0; // Adjust this value as needed
 
     // Add this helper function near the top of the file
     const inferWeaponType = (params: WeaponActionParams, metadata: any): 'sword' | 'pistol' => {
@@ -497,9 +506,15 @@ const Scene = () => {
             keyStates.current[event.key] = true;
         }
 
-        if (event.key.toLowerCase() === 'f' && isNearNPC && !isChatting) {
-            console.log('Starting chat...');
-            startChat();
+        if (event.key.toLowerCase() === 'f') {
+            // Prioritize gate interaction when near gate
+            if (isNearGate) {
+                console.log('Entering gate...');
+                enterGate();
+            } else if (isNearNPC && !isChatting) {
+                console.log('Starting chat...');
+                startChat();
+            }
         }
 
         if (event.key === 'Escape' && isChatting) {
@@ -1082,8 +1097,22 @@ const Scene = () => {
                 const avatar = avatarRef.current.scene;
                 const npc = npcRef.current.scene;
 
-                const distance = avatar.position.distanceTo(npc.position);
-                setIsNearNPC(distance < INTERACTION_DISTANCE);
+                // Check distance to NPC
+                const distanceToNPC = avatar.position.distanceTo(npc.position);
+                setIsNearNPC(distanceToNPC < INTERACTION_DISTANCE);
+
+                // Check distance to gate
+                if (sceneRef.current) {
+                    // Find the portal group in the scene
+                    const portalGroup = sceneRef.current.children.find(
+                        child => child instanceof THREE.Group && child.userData.isPortalGroup
+                    );
+
+                    if (portalGroup) {
+                        const distanceToGate = avatar.position.distanceTo(portalGroup.position);
+                        setIsNearGate(distanceToGate < GATE_INTERACTION_DISTANCE);
+                    }
+                }
 
                 if (!isChatting) {
                     const moveVector = new THREE.Vector3(0, 0, 0);
@@ -1991,6 +2020,13 @@ const Scene = () => {
         setShowWeaponDetails(true);
     };
 
+    // Add this function to handle gate entry
+    const enterGate = () => {
+        // Add your gate entry logic here
+        console.log('Entering gate...');
+        // For example, you could redirect to another page or trigger an animation
+    };
+
     // Modify the return statement to add the avatar selector UI
     return (
         <div className="relative w-full h-full">
@@ -2093,7 +2129,7 @@ const Scene = () => {
             )}
 
             {/* Interaction Prompt */}
-            {isNearNPC && !isChatting && (
+            {!isNearGate && isNearNPC && !isChatting && (
                 <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded z-10">
                     Press F to talk
                 </div>
@@ -2400,6 +2436,23 @@ const Scene = () => {
                         </div>
                     </CardContent>
                 </Card>
+            )}
+
+            {/* Add gate interaction prompt */}
+            {isNearGate && !isChatting && (
+                <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded z-10">
+                    Press F to enter gate
+                </div>
+            )}
+
+            {/* Add mobile interaction button for gate */}
+            {isMobile && isNearGate && !isChatting && (
+                <Button
+                    className="fixed bottom-32 right-8 z-20 bg-black/75 text-white px-8 py-4 rounded-full"
+                    onClick={enterGate}
+                >
+                    Enter Gate
+                </Button>
             )}
         </div>
     );
