@@ -166,7 +166,7 @@ const createMagicGate = (scene) => {
                 float glow = smoothstep(1.0, 0.0, dist);
                 finalColor += vec3(0.3, 0.5, 1.0) * glow * 0.6;  // Increased glow
                 
-                gl_FragColor = vec4(finalColor, smoothstep(1.0, 0.0, dist));
+                gl_FragColor = vec4(finalColor, smoothstep(1.0, 0.3, dist));
             }
         `,
         transparent: true,
