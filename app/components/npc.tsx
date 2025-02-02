@@ -86,8 +86,8 @@ const createMagicGate = (scene) => {
             varying vec2 vUv;
             void main() {
                 vUv = uv;
-                // Remove viewMatrix from the transformation
-                gl_Position = projectionMatrix * modelMatrix * vec4(position, 1.0);
+                // Use modelViewMatrix instead of separate matrices
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
             }
         `,
         fragmentShader: `
