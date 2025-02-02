@@ -1511,6 +1511,8 @@ const Scene = () => {
 
     // Add near the top of the Scene component
     const loadWeapons = async () => {
+        return;
+        
         const loader = new GLTFLoader();
         const spacing = 0.5; // Space between weapons
 
